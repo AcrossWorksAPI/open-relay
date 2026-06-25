@@ -31,6 +31,18 @@ That narrow path should inspect repo state, summarize changed files, collect
 tests run, produce structured Markdown, preserve provenance, and ask the second
 agent for review.
 
+## Protocol
+
+The first protocol slice is the `review-request` packet:
+
+- Packet spec: `docs/protocol/review-request-packet.md`
+- Markdown example: `examples/review-request/relay.md`
+- JSON example: `examples/review-request/relay.json`
+
+This packet is intentionally narrow. It defines the minimum context needed to
+ask a second reviewer to inspect completed repository work before Open Relay
+chooses a runtime or implements the CLI.
+
 ## Non-Goals For MVP
 
 - Full project management app

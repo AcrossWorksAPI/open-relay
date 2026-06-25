@@ -15,6 +15,9 @@ or old plan files as inactive until this registry and current code agree.
 | `SECURITY.md` | Security policy and reporting process | Active |
 | `CONTRIBUTING.md` | Contribution workflow and review expectations | Active |
 | `.github/workflows/ci.yml` | First CI guardrail | Active |
+| `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
+| `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
+| `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -29,7 +32,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active product implementation plan exists yet; next plan should define the smallest useful relay packet. |
+| `docs/superpowers/plans/2026-06-26-review-request-packet-spec.md` | In progress | Across Works | Defines the smallest useful `review-request` packet before runtime selection. |
 
 ## Implemented Or Historical Plans
 

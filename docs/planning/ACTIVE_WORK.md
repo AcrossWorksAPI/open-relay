@@ -5,8 +5,8 @@ Last updated: 2026-06-26
 ## Current Direction
 
 Establish Open Relay as a local-first handoff and review protocol before product
-implementation. The current first planning focus is: define the smallest useful
-relay packet.
+implementation. The active slice defines the smallest useful relay packet as a
+`review-request` handoff from completed Codex work to Claude review.
 
 ## Current Implementation Source
 
@@ -19,6 +19,9 @@ relay packet.
 | `SECURITY.md` | Active | Vulnerability reporting and security policy. |
 | `CONTRIBUTING.md` | Active | Contribution workflow and review expectations. |
 | `.github/workflows/ci.yml` | Active | First dependency-free CI workflow. |
+| `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
+| `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
+| `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
 | `docs/planning/ROADMAP.md` | Active | Parseable roadmap. |
@@ -29,24 +32,24 @@ relay packet.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Smallest useful relay packet undefined | High | Requires owner decision before implementation. |
+| Smallest useful relay packet under review | Medium | `review-request` packet spec and examples are in progress before runtime selection. |
 | Runtime/framework unknown | High | TypeScript vs Python remains open. |
 | Verification command limited before runtime exists | Medium | Use `git diff --check` plus required GitHub Actions governance checks. |
 | Runtime-specific CI missing | Medium | Add package/build/test checks after TypeScript or Python is chosen. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Packet schema and redaction rules undefined | Medium | Lifecycle matrix marks packet surfaces planned or candidate. |
+| Full JSON Schema and redaction rules undefined | Medium | First protocol doc defines required fields and redaction notes; formal schema is later. |
 
 ## Next Recommended Work
 
-1. Define the smallest useful relay packet for review-request handoffs.
+1. Finish PR and Claude review for the `review-request` packet spec.
 2. Choose TypeScript or Python for the local CLI.
-3. Draft `docs/protocol/relay-schema.md` and packet-type docs.
+3. Convert the accepted packet shape into a formal JSON Schema.
 4. Create a first implementation plan for a review-request packet generator.
 5. Add runtime-specific build/test/smoke checks once runtime config exists.
 
 ## Current Owner Decisions Needed
 
-- Minimal required relay packet fields.
+- Whether the proposed `review-request` packet fields are enough for the first release.
 - TypeScript or Python runtime.
 - CLI only, or CLI plus MCP server.
 - Packet storage location: repo-local, global user directory, or both.

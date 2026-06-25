@@ -11,9 +11,9 @@ Allowed cell values: `Shipped`, `Planned`, `Deferred`, `Future candidate`,
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Roadmap governance docs | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | Planned | Planned | N/A | N/A | Planned | Docs created in this baseline; git history becomes evidence after commit. |
 | Local Codex roadmap skill | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | N/A | Planned | N/A | N/A | Planned | Project-local skill at `.codex/skills/project-roadmap-system/SKILL.md`. |
-| Relay packet | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | Deferred | N/A | Planned | First focus is review-request packet from local git state. |
-| Relay packet schema | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | JSON schema and Markdown docs are candidates. |
-| Render template | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Codex and Claude templates are initial targets. |
+| Relay packet | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | Deferred | N/A | Planned | Review-request packet docs and examples are the first slice; runtime behavior remains planned. |
+| Relay packet schema | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Protocol shape is documented first; formal JSON Schema remains planned. |
+| Render template | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Initial review-request Markdown rendering order is documented; template tooling remains planned. |
 | Local repository context collector | Planned | Planned | Planned | N/A | N/A | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Must avoid leaking secrets or raw sensitive data. |
 | Review loop | Future candidate | Future candidate | Future candidate | Future candidate | Future candidate | N/A | Future candidate | Future candidate | Future candidate | Deferred | N/A | Future candidate | Implementation handoff, review request, review response, resume project. |
 | Manager/library/assignment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown; needs owner decision if multi-user or hosted scope appears. |

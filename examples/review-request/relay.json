@@ -1,0 +1,139 @@
+{
+  "packet_version": "0.1",
+  "packet_type": "review-request",
+  "created_at": "2026-06-26T00:00:00Z",
+  "goal": "Add open-source project hardening to a new local-first CLI/protocol repository without choosing a runtime or implementing product code.",
+  "requested_review": {
+    "audience": "Claude Code",
+    "focus": [
+      "documentation clarity",
+      "contributor safety",
+      "CI guardrails"
+    ],
+    "requested_output": "Findings first, then open questions, then a short summary."
+  },
+  "repository": {
+    "name": "example/open-relay",
+    "local_path": "redacted",
+    "base_branch": "main",
+    "working_branch": "codex/open-source-hardening",
+    "head_commit": "abc1234",
+    "pull_request_url": "https://github.com/example/open-relay/pull/2"
+  },
+  "change_summary": {
+    "summary": "Adds community and safety documents, issue and PR templates, Dependabot configuration, a first dependency-free GitHub Actions workflow, and planning-doc updates that record the hardening slice.",
+    "behavioral_intent": "Improve open-source readiness without changing product behavior.",
+    "excluded_scope": [
+      "runtime selection",
+      "CLI implementation",
+      "package publishing"
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "SECURITY.md",
+      "status": "added",
+      "role": "Vulnerability reporting and security policy",
+      "review_priority": "high"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "status": "added",
+      "role": "Contribution workflow and review expectations",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "added",
+      "role": "Governance CI checks",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "status": "added",
+      "role": "GitHub Actions dependency updates",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/ROADMAP.md",
+      "status": "modified",
+      "role": "Roadmap status for hardening slice",
+      "review_priority": "medium"
+    }
+  ],
+  "verification": [
+    {
+      "kind": "command",
+      "command": "git diff --check",
+      "result": "passed",
+      "evidence": "Local whitespace check completed with exit code 0."
+    },
+    {
+      "kind": "ci",
+      "command": "Open Relay CI / Governance Checks",
+      "result": "passed",
+      "evidence": "GitHub Actions run on PR #2."
+    },
+    {
+      "kind": "command",
+      "command": "YAML parse check",
+      "result": "passed",
+      "evidence": "Workflow, Dependabot, and issue template YAML parsed locally."
+    }
+  ],
+  "risks": [
+    {
+      "severity": "medium",
+      "description": "CI is governance-only until runtime is chosen.",
+      "handling": "Runtime-specific tests will be added after TypeScript or Python is selected."
+    },
+    {
+      "severity": "low",
+      "description": "Contribution docs may evolve as maintainers learn the workflow.",
+      "handling": "Keep docs lightweight and update through PRs."
+    }
+  ],
+  "provenance": [
+    {
+      "type": "file",
+      "reference": "SECURITY.md",
+      "supports": "Security policy exists."
+    },
+    {
+      "type": "file",
+      "reference": "CONTRIBUTING.md",
+      "supports": "Contribution workflow exists."
+    },
+    {
+      "type": "file",
+      "reference": ".github/workflows/ci.yml",
+      "supports": "Governance CI exists."
+    },
+    {
+      "type": "command",
+      "reference": "git diff --check",
+      "supports": "Local whitespace verification passed."
+    },
+    {
+      "type": "pull_request",
+      "reference": "https://github.com/example/open-relay/pull/2",
+      "supports": "Review and merge context."
+    },
+    {
+      "type": "ci_run",
+      "reference": "https://github.com/example/open-relay/actions/runs/123456789",
+      "supports": "CI passed."
+    }
+  ],
+  "redactions": [
+    {
+      "field": "repository.local_path",
+      "reason": "Local absolute path is not needed for public review."
+    },
+    {
+      "field": "all",
+      "reason": "No secrets, tokens, private logs, customer data, or private repository content are included."
+    }
+  ],
+  "next_action": "Review whether this packet provides enough context to critique the PR without asking the human to copy/paste additional state."
+}
