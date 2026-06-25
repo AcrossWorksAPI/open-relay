@@ -28,7 +28,11 @@
 ## Acceptance Criteria
 
 - [x] Packet purpose and review workflow are documented.
+- [x] Reviewer repository-access assumption is documented.
+- [x] Base commit, head commit, and diff range are documented.
 - [x] Required fields are listed with purpose.
+- [x] Nested object and array-entry shapes are documented.
+- [x] `changed_files` exhaustiveness is defined.
 - [x] Markdown rendering order is defined.
 - [x] JSON top-level shape is documented.
 - [x] Synthetic Markdown example exists.

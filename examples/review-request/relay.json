@@ -17,8 +17,11 @@
     "local_path": "redacted",
     "base_branch": "main",
     "working_branch": "codex/open-source-hardening",
+    "base_commit": "def5678",
     "head_commit": "abc1234",
-    "pull_request_url": "https://github.com/example/open-relay/pull/2"
+    "diff_range": "def5678..abc1234",
+    "pull_request_url": "https://github.com/example/open-relay/pull/2",
+    "reviewer_access": "Reviewer must have read access to the repository and PR."
   },
   "change_summary": {
     "summary": "Adds community and safety documents, issue and PR templates, Dependabot configuration, a first dependency-free GitHub Actions workflow, and planning-doc updates that record the hardening slice.",
@@ -27,7 +30,8 @@
       "runtime selection",
       "CLI implementation",
       "package publishing"
-    ]
+    ],
+    "total_files_changed": 17
   },
   "changed_files": [
     {
@@ -43,6 +47,42 @@
       "review_priority": "high"
     },
     {
+      "path": "CODE_OF_CONDUCT.md",
+      "status": "added",
+      "role": "Community conduct standard",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "status": "added",
+      "role": "Pull request review checklist",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "status": "added",
+      "role": "Bug report intake form",
+      "review_priority": "medium"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "status": "added",
+      "role": "Feature request intake form",
+      "review_priority": "medium"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/question.yml",
+      "status": "added",
+      "role": "Question intake form",
+      "review_priority": "low"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "status": "added",
+      "role": "Issue template chooser settings",
+      "review_priority": "low"
+    },
+    {
       "path": ".github/workflows/ci.yml",
       "status": "added",
       "role": "Governance CI checks",
@@ -55,10 +95,46 @@
       "review_priority": "medium"
     },
     {
+      "path": "README.md",
+      "status": "modified",
+      "role": "Public project links and community references",
+      "review_priority": "medium"
+    },
+    {
+      "path": "AGENTS.md",
+      "status": "modified",
+      "role": "Repository agent workflow guidance",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/STATUS.md",
+      "status": "modified",
+      "role": "Owner-readable hardening status",
+      "review_priority": "medium"
+    },
+    {
       "path": "docs/planning/ROADMAP.md",
       "status": "modified",
       "role": "Roadmap status for hardening slice",
       "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/ACTIVE_WORK.md",
+      "status": "modified",
+      "role": "Active work and risk updates",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/PLAN_REGISTRY.md",
+      "status": "modified",
+      "role": "Plan-source classification updates",
+      "review_priority": "low"
+    },
+    {
+      "path": "docs/planning/VERSION_LEDGER.md",
+      "status": "modified",
+      "role": "Commit, PR, and smoke evidence updates",
+      "review_priority": "low"
     }
   ],
   "verification": [
@@ -95,26 +171,6 @@
   ],
   "provenance": [
     {
-      "type": "file",
-      "reference": "SECURITY.md",
-      "supports": "Security policy exists."
-    },
-    {
-      "type": "file",
-      "reference": "CONTRIBUTING.md",
-      "supports": "Contribution workflow exists."
-    },
-    {
-      "type": "file",
-      "reference": ".github/workflows/ci.yml",
-      "supports": "Governance CI exists."
-    },
-    {
-      "type": "command",
-      "reference": "git diff --check",
-      "supports": "Local whitespace verification passed."
-    },
-    {
       "type": "pull_request",
       "reference": "https://github.com/example/open-relay/pull/2",
       "supports": "Review and merge context."
@@ -123,17 +179,23 @@
       "type": "ci_run",
       "reference": "https://github.com/example/open-relay/actions/runs/123456789",
       "supports": "CI passed."
+    },
+    {
+      "type": "user_note",
+      "reference": "owner hardening request",
+      "supports": "Open-source hardening was requested before product implementation."
     }
   ],
   "redactions": [
     {
       "field": "repository.local_path",
-      "reason": "Local absolute path is not needed for public review."
-    },
-    {
-      "field": "all",
-      "reason": "No secrets, tokens, private logs, customer data, or private repository content are included."
+      "reason": "Local absolute path is not needed for public review.",
+      "replacement": "redacted"
     }
   ],
+  "sensitive_data": {
+    "excluded": true,
+    "notes": "No secrets, tokens, private logs, customer data, or private repository content are included."
+  },
   "next_action": "Review whether this packet provides enough context to critique the PR without asking the human to copy/paste additional state."
 }
