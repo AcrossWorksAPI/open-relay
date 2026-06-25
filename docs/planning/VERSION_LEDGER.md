@@ -5,7 +5,7 @@ Last updated: 2026-06-26
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, and first protocol draft
+- Current baseline: Open Relay project brief, governance baseline, and first protocol baseline
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -22,7 +22,7 @@ captured is not alert delivered.
 | Project foundation governance baseline | Done | 2026-06-26 | Merge commit `3f19fa2` on `main` | PR #1: `https://github.com/AcrossWorksAPI/open-relay/pull/1` | N/A, docs-only baseline | Passed `git diff --check` on 2026-06-26 | Revert the baseline merge commit if owner rejects the workflow. |
 | Open Relay brief and remote alignment | Done | 2026-06-26 | Merge commit `3f19fa2` on `main` | PR #1: `https://github.com/AcrossWorksAPI/open-relay/pull/1` | N/A, docs-only baseline | Passed `git diff --cached --check` on 2026-06-26 | Revert the docs update commit if owner changes product direction. |
 | Open-source hardening and first CI | Done | 2026-06-26 | Merge commit `f05c61b` on `main` | PR #2: `https://github.com/AcrossWorksAPI/open-relay/pull/2` | N/A, docs/config baseline | `Governance Checks` passed on PR #2 and is required on `main` | Revert hardening merge commit if it blocks contribution flow unexpectedly. |
-| Smallest useful relay packet | In progress | 2026-06-26 | Branch `codex/review-request-packet-spec`; commit pending | PR pending | N/A, docs/protocol slice | Local checks required before PR review | Revert the protocol docs if the first packet shape is rejected. |
+| Smallest useful relay packet | Done | 2026-06-26 | Merge commit `3a23ba1` on `main` | PR #5: `https://github.com/AcrossWorksAPI/open-relay/pull/5` | N/A, docs/protocol slice | `Governance Checks` passed on PR #5; Claude re-review reported no remaining findings | Revert merge commit `3a23ba1` if the reviewed packet shape is rejected. |
 
 ## Rollback Notes
 

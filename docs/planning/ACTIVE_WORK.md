@@ -5,8 +5,8 @@ Last updated: 2026-06-26
 ## Current Direction
 
 Establish Open Relay as a local-first handoff and review protocol before product
-implementation. The active slice defines the smallest useful relay packet as a
-`review-request` handoff from completed Codex work to Claude review.
+implementation. The reviewed `review-request` packet is now the source shape
+for the next schema and CLI planning slice.
 
 ## Current Implementation Source
 
@@ -32,24 +32,23 @@ implementation. The active slice defines the smallest useful relay packet as a
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Smallest useful relay packet under review | Medium | `review-request` packet spec and examples are in progress before runtime selection. |
+| Formal JSON Schema not created | Medium | Use the reviewed `review-request` packet spec as the source shape. |
 | Runtime/framework unknown | High | TypeScript vs Python remains open. |
 | Verification command limited before runtime exists | Medium | Use `git diff --check` plus required GitHub Actions governance checks. |
 | Runtime-specific CI missing | Medium | Add package/build/test checks after TypeScript or Python is chosen. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Full JSON Schema and redaction rules undefined | Medium | First protocol doc defines required fields and redaction notes; formal schema is later. |
+| Runtime redaction behavior undefined | Medium | Protocol doc defines redaction notes; CLI behavior remains planned. |
 
 ## Next Recommended Work
 
-1. Finish PR and Claude review for the `review-request` packet spec.
-2. Choose TypeScript or Python for the local CLI.
-3. Convert the accepted packet shape into a formal JSON Schema.
-4. Create a first implementation plan for a review-request packet generator.
-5. Add runtime-specific build/test/smoke checks once runtime config exists.
+1. Choose TypeScript or Python for the local CLI.
+2. Convert the accepted packet shape into a formal JSON Schema.
+3. Create a first implementation plan for a review-request packet generator.
+4. Add runtime-specific build/test/smoke checks once runtime config exists.
+5. Draft Codex and Claude render templates from the reviewed packet example.
 
 ## Current Owner Decisions Needed
 
-- Whether the proposed `review-request` packet fields are enough for the first release.
 - TypeScript or Python runtime.
 - CLI only, or CLI plus MCP server.
 - Packet storage location: repo-local, global user directory, or both.
