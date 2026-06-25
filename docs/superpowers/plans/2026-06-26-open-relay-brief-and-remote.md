@@ -35,8 +35,8 @@ or runtime config in this pass.
   reflect current product facts.
 - [x] Remote `origin` points to `https://github.com/AcrossWorksAPI/open-relay.git`.
 - [x] `git diff --check` passes.
-- [ ] Branch is pushed.
-- [ ] Draft PR is opened.
+- [x] Branch is pushed.
+- [x] Draft PR is opened.
 
 ## Test Plan
 

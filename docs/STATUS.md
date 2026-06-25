@@ -17,13 +17,14 @@ release/versioning convention are still `Unknown; needs owner decision`.
 | Product brief | Done | Local-first handoff/review protocol and CLI-first MVP are captured. |
 | Product implementation | Deferred | No product source or owner-approved first implementation slice exists yet. |
 | Verification setup | Planned | Only `git diff --check` is currently known. |
-| PR workflow | In progress | Remote `origin` points to `https://github.com/AcrossWorksAPI/open-relay.git`; branch push and draft PR are next. |
+| PR workflow | Done | Draft PR #1 is open at `https://github.com/AcrossWorksAPI/open-relay/pull/1`. |
 
 ## Latest Smoke And Verification Evidence
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
 | 2026-06-26 | `git diff --check` | Passed | Docs/governance baseline only; no project test command exists yet. |
+| 2026-06-26 | Draft PR #1 | Open | `https://github.com/AcrossWorksAPI/open-relay/pull/1` |
 
 ## Next Step
 
