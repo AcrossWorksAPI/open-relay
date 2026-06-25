@@ -39,10 +39,10 @@
 - [x] Dependabot config covers GitHub Actions.
 - [x] CI workflow runs without package/runtime dependencies.
 - [x] `git diff --check` passes locally.
-- [ ] CI passes on the PR.
-- [ ] PR is merged to `main`.
-- [ ] Local `main` is pulled and pruned.
-- [ ] The CI check is required on `main` branch protection.
+- [x] CI passes on the PR.
+- [x] PR is merged to `main`.
+- [x] Local `main` is pulled and pruned.
+- [x] The CI check is required on `main` branch protection.
 
 ## Test Plan
 

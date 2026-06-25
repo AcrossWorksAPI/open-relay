@@ -19,7 +19,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | --- | --- | --- | --- | --- | --- | --- |
 | Baseline | Project foundation governance baseline | Done | P0 | No | - | docs/superpowers/plans/2026-06-26-project-foundation-baseline.md |
 | Baseline | Open Relay brief and remote alignment | Done | P0 | No | Project foundation governance baseline | docs/superpowers/plans/2026-06-26-open-relay-brief-and-remote.md |
-| Baseline | Open-source hardening and first CI | In progress | P0 | No | Open Relay brief and remote alignment | docs/superpowers/plans/2026-06-26-open-source-hardening.md |
+| Baseline | Open-source hardening and first CI | Done | P0 | No | Open Relay brief and remote alignment | docs/superpowers/plans/2026-06-26-open-source-hardening.md |
 | Unversioned | Smallest useful relay packet definition | Planned | P0 | Required | Open Relay brief and remote alignment | - |
 | Unversioned | Runtime and verification selection | Planned | P0 | Required | Smallest useful relay packet definition | - |
 | Unversioned | Review-request packet CLI MVP | Candidate | P1 | Candidate | Runtime and verification selection | - |

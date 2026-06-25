@@ -37,7 +37,7 @@ or old plan files as inactive until this registry and current code agree.
 | --- | --- | --- |
 | `docs/superpowers/plans/2026-06-26-project-foundation-baseline.md` | Done | Created project governance baseline; no product features implemented. |
 | `docs/superpowers/plans/2026-06-26-open-relay-brief-and-remote.md` | Done | Captured Open Relay brief, updated roadmap/status, configured GitHub remote, and prepared branch for PR. |
-| `docs/superpowers/plans/2026-06-26-open-source-hardening.md` | In progress | Adds security, contribution, conduct, templates, Dependabot, CI, and branch-protection follow-up. |
+| `docs/superpowers/plans/2026-06-26-open-source-hardening.md` | Done | Added security, contribution, conduct, templates, Dependabot, CI, and required branch-protection check. |
 
 ## Superseded Or Dormant Plans
 

@@ -31,18 +31,18 @@ relay packet.
 | --- | --- | --- |
 | Smallest useful relay packet undefined | High | Requires owner decision before implementation. |
 | Runtime/framework unknown | High | TypeScript vs Python remains open. |
-| Verification command limited before runtime exists | Medium | Use `git diff --check` plus GitHub Actions governance checks. |
-| Community safety docs incomplete | Medium | Security, contribution, conduct, and templates are being added. |
+| Verification command limited before runtime exists | Medium | Use `git diff --check` plus required GitHub Actions governance checks. |
+| Runtime-specific CI missing | Medium | Add package/build/test checks after TypeScript or Python is chosen. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Packet schema and redaction rules undefined | Medium | Lifecycle matrix marks packet surfaces planned or candidate. |
 
 ## Next Recommended Work
 
-1. Merge open-source hardening and require the new CI check on `main`.
-2. Define the smallest useful relay packet for review-request handoffs.
-3. Choose TypeScript or Python for the local CLI.
-4. Draft `docs/protocol/relay-schema.md` and packet-type docs.
-5. Create a first implementation plan for a review-request packet generator.
+1. Define the smallest useful relay packet for review-request handoffs.
+2. Choose TypeScript or Python for the local CLI.
+3. Draft `docs/protocol/relay-schema.md` and packet-type docs.
+4. Create a first implementation plan for a review-request packet generator.
+5. Add runtime-specific build/test/smoke checks once runtime config exists.
 
 ## Current Owner Decisions Needed
 

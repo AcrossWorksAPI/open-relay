@@ -15,9 +15,9 @@ owner decision`.
 | --- | --- | --- |
 | Governance baseline | Done | Initial roadmap, status, ledger, plan registry, local skill, and lifecycle docs are created. |
 | Product brief | Done | Local-first handoff/review protocol and CLI-first MVP are captured. |
-| Open-source hardening | In progress | Security, contribution, conduct, issue/PR templates, Dependabot, and first CI workflow are being added. |
+| Open-source hardening | Done | Security, contribution, conduct, issue/PR templates, Dependabot, and first CI workflow are in place. |
 | Product implementation | Deferred | No product source or owner-approved first implementation slice exists yet. |
-| Verification setup | In progress | `git diff --check` is local; GitHub Actions CI is being added. |
+| Verification setup | Done | `git diff --check` is local; GitHub Actions `Governance Checks` is required on `main`. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
 ## Latest Smoke And Verification Evidence
@@ -26,11 +26,12 @@ owner decision`.
 | --- | --- | --- | --- |
 | 2026-06-26 | `git diff --check` | Passed | Docs/governance baseline only; no project test command exists yet. |
 | 2026-06-26 | PR #1 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/1` |
+| 2026-06-26 | PR #2 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/2`; `Governance Checks` passed and is required on `main`. |
 
 ## Next Step
 
-Finish the open-source hardening PR, require the CI check on `main`, then define
-the smallest useful relay packet and choose the first implementation runtime.
+Define the smallest useful relay packet and choose the first implementation
+runtime.
 
 ## Owner Decisions Needed
 
