@@ -33,6 +33,7 @@
 - [x] Required fields are listed with purpose.
 - [x] Nested object and array-entry shapes are documented.
 - [x] `changed_files` exhaustiveness is defined.
+- [x] Markdown and JSON examples carry the same required facts.
 - [x] Markdown rendering order is defined.
 - [x] JSON top-level shape is documented.
 - [x] Synthetic Markdown example exists.

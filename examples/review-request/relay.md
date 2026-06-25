@@ -33,6 +33,7 @@ This change adds community and safety documents, issue and PR templates,
 Dependabot configuration, a first dependency-free GitHub Actions workflow, and
 planning-doc updates that record the hardening slice.
 
+- Behavioral intent: Improve open-source readiness without changing product behavior.
 - Total files changed: 17
 - Excluded scope: runtime selection, CLI implementation, package publishing
 

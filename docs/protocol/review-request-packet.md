@@ -122,10 +122,13 @@ the reviewer start in the right place, but it must not hide lower-priority files
 
 | Key | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `kind` | string | Yes | `command`, `ci`, `manual`, `not_run`, or `external`. |
+| `kind` | string | Yes | `command`, `ci`, `manual`, or `external`. |
 | `command` | string | Yes | Command, check name, or evidence label. |
 | `result` | string | Yes | `passed`, `failed`, `not_run`, or `unknown`. |
 | `evidence` | string | Yes | Short evidence note, URL, run ID, or reason. |
+
+Use `result: "not_run"` to record a skipped command or check. `kind` should
+describe the check type, not its result.
 
 ### `risks[]`
 
@@ -157,6 +160,13 @@ or `verification`. Do not duplicate every file path or command there.
 Do not use placeholder redactions such as `field: "all"` for a general "no
 secrets included" claim. Use an empty `redactions` array when no field was
 redacted, and use `sensitive_data` for optional exclusion notes.
+
+### `sensitive_data`
+
+| Key | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `excluded` | boolean | Yes | Whether secrets, tokens, private logs, customer data, or private repository content were excluded. |
+| `notes` | string | Yes | Short human-readable exclusion note. |
 
 ## Field Rules
 
@@ -190,8 +200,9 @@ A human-readable `relay.md` should render the same packet in this order:
 6. Verification
 7. Risks and assumptions
 8. Provenance
-9. Redactions and sensitive data note
-10. Next action
+9. Redactions
+10. Sensitive data
+11. Next action
 
 Markdown should be concise enough to paste into an AI review prompt, but it
 must not hide risk or verification gaps.
