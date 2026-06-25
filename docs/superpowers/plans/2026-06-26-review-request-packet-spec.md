@@ -38,9 +38,9 @@
 - [x] JSON top-level shape is documented.
 - [x] Synthetic Markdown example exists.
 - [x] Synthetic JSON example exists and is valid JSON.
-- [ ] Local governance checks pass.
-- [ ] PR is opened and CI passes.
-- [ ] Claude review is requested after CI passes.
+- [x] Local governance checks pass.
+- [x] PR is opened and CI passes.
+- [x] Claude review is requested after CI passes.
 
 ## Test Plan
 
