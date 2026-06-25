@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 - Project name: Open Relay
-- Status: Product brief, governance baseline, and review-request protocol draft
+- Status: Product brief, governance baseline, and review-request protocol baseline
 - Last updated: 2026-06-26
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, and first protocol draft
+- Current baseline: Open Relay project brief, governance baseline, and first protocol baseline
 
 ## Project Purpose
 
@@ -20,7 +20,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Baseline | Project foundation governance baseline | Done | P0 | No | - | docs/superpowers/plans/2026-06-26-project-foundation-baseline.md |
 | Baseline | Open Relay brief and remote alignment | Done | P0 | No | Project foundation governance baseline | docs/superpowers/plans/2026-06-26-open-relay-brief-and-remote.md |
 | Baseline | Open-source hardening and first CI | Done | P0 | No | Open Relay brief and remote alignment | docs/superpowers/plans/2026-06-26-open-source-hardening.md |
-| Unversioned | Smallest useful relay packet definition | In progress | P0 | Required | Open Relay brief and remote alignment | docs/superpowers/plans/2026-06-26-review-request-packet-spec.md |
+| Unversioned | Smallest useful relay packet definition | Done | P0 | No | Open Relay brief and remote alignment | docs/superpowers/plans/2026-06-26-review-request-packet-spec.md |
 | Unversioned | Runtime and verification selection | Planned | P0 | Required | Smallest useful relay packet definition | - |
 | Unversioned | Review-request packet CLI MVP | Candidate | P1 | Candidate | Runtime and verification selection | - |
 | Unversioned | Codex and Claude render templates | Candidate | P1 | Candidate | Review-request packet CLI MVP | - |
@@ -29,9 +29,9 @@ Markdown/JSON relay packet schema, not a SaaS app.
 
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
-| Protocol | Minimal relay packet fields | Before CLI implementation | Candidate | Review-request packet PR passes CI and review | docs/superpowers/plans/2026-06-26-review-request-packet-spec.md |
-| Runtime | TypeScript or Python CLI runtime | Before implementation | Candidate | Review-request packet shape is accepted | - |
-| Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | First packet spec survives review | - |
+| Protocol | Formal JSON Schema for reviewed packet | Before CLI implementation | Candidate | Runtime and package target selected | docs/superpowers/plans/2026-06-26-review-request-packet-spec.md |
+| Runtime | TypeScript or Python CLI runtime | Before implementation | Candidate | Owner chooses runtime or repo adds config | - |
+| Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | JSON Schema and generator plan are drafted | - |
 | Security | Local redaction and provenance rules | Before packets include sensitive data | Candidate | Packet schema includes repo diffs, logs, or notes | - |
 | Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime/package target selected | - |
 
