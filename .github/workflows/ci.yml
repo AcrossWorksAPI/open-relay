@@ -1,0 +1,133 @@
+name: Open Relay CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  governance-checks:
+    name: Governance Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check HEAD
+          if git grep -nI '[[:blank:]]$' -- .; then
+            echo "Trailing whitespace found in tracked files." >&2
+            exit 1
+          fi
+
+      - name: Check required project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          required_files=(
+            "README.md"
+            "LICENSE"
+            "SECURITY.md"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "AGENTS.md"
+            "CLAUDE.md"
+            ".codex/skills/project-roadmap-system/SKILL.md"
+            ".github/PULL_REQUEST_TEMPLATE.md"
+            ".github/dependabot.yml"
+            "docs/STATUS.md"
+            "docs/product/PROJECT_BRIEF.md"
+            "docs/planning/ROADMAP.md"
+            "docs/planning/ACTIVE_WORK.md"
+            "docs/planning/PLAN_REGISTRY.md"
+            "docs/planning/VERSION_LEDGER.md"
+            "docs/planning/ENTITY_LIFECYCLE_CHECKLIST.md"
+            "docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md"
+          )
+          for file in "${required_files[@]}"; do
+            if [[ ! -s "$file" ]]; then
+              echo "Missing or empty required file: $file" >&2
+              exit 1
+            fi
+          done
+
+      - name: Check roadmap parser-safe values
+        shell: bash
+        run: |
+          set -euo pipefail
+          awk -F '|' '
+            BEGIN {
+              allowed_status["Live"]=1
+              allowed_status["Done"]=1
+              allowed_status["In progress"]=1
+              allowed_status["Planned"]=1
+              allowed_status["Deferred"]=1
+              allowed_status["Candidate"]=1
+              allowed_gate["Required"]=1
+              allowed_gate["No"]=1
+              allowed_gate["Candidate"]=1
+              allowed_gate["-"]=1
+            }
+            function trim(value) {
+              gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+              return value
+            }
+            /^## Versioned Slices/ {
+              table = "versioned"
+              next
+            }
+            /^## Candidate Scope/ {
+              table = "candidate"
+              next
+            }
+            /^## / && $0 !~ /^## Versioned Slices/ && $0 !~ /^## Candidate Scope/ {
+              table = ""
+            }
+            table == "versioned" && /^\|/ && $0 !~ /^\| ---/ && $2 !~ /Version/ {
+              status = trim($4)
+              gate = trim($6)
+              if (status != "" && !(status in allowed_status)) {
+                print "Invalid roadmap status: " status > "/dev/stderr"
+                exit 1
+              }
+              if (gate != "" && !(gate in allowed_gate)) {
+                print "Invalid roadmap client gate: " gate > "/dev/stderr"
+                exit 1
+              }
+            }
+            table == "candidate" && /^\|/ && $0 !~ /^\| ---/ && $2 !~ /Lane/ {
+              status = trim($5)
+              if (status != "Candidate") {
+                print "Invalid candidate status: " status > "/dev/stderr"
+                exit 1
+              }
+            }
+          ' docs/planning/ROADMAP.md
+
+      - name: Check sensitive placeholders
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '(AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}|BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY)' \
+            --exclude-dir=.git \
+            --exclude='*.png' \
+            .; then
+            echo "Potential secret-like value found. Remove it or document why it is safe." >&2
+            exit 1
+          fi
+
+      - name: Check no placeholder plan text
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '\b(TBD|TODO|FIXME)\b' docs README.md AGENTS.md CLAUDE.md SECURITY.md CONTRIBUTING.md CODE_OF_CONDUCT.md; then
+            echo "Placeholder planning text found." >&2
+            exit 1
+          fi

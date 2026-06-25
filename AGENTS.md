@@ -61,6 +61,7 @@ ledger, lifecycle, or closeout work.
 Discovered from this repository:
 
 - `git diff --check`
+- GitHub Actions: `Open Relay CI / Governance Checks`
 
 No project test, build, lint, smoke, package, or deployment command is present
 yet. The repository currently has a Node-style `.gitignore`, but no package or

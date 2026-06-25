@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest a capability or workflow.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What workflow friction should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should Open Relay do?
+    validations:
+      required: true
+  - type: textarea
+    id: packet-impact
+    attributes:
+      label: Packet or protocol impact
+      description: Does this affect relay fields, templates, provenance, redaction, or validation?
+    validations:
+      required: false
+  - type: textarea
+    id: exclusions
+    attributes:
+      label: Non-goals
+      description: What should this not include?
+    validations:
+      required: false

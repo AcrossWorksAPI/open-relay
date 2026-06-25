@@ -16,6 +16,9 @@ relay packet.
 | `.codex/skills/project-roadmap-system/SKILL.md` | Active | Local Codex roadmap skill. |
 | `master_build.md` | Active | Executive entrypoint. |
 | `README.md` | Active | Public project summary. |
+| `SECURITY.md` | Active | Vulnerability reporting and security policy. |
+| `CONTRIBUTING.md` | Active | Contribution workflow and review expectations. |
+| `.github/workflows/ci.yml` | Active | First dependency-free CI workflow. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
 | `docs/planning/ROADMAP.md` | Active | Parseable roadmap. |
@@ -28,18 +31,18 @@ relay packet.
 | --- | --- | --- |
 | Smallest useful relay packet undefined | High | Requires owner decision before implementation. |
 | Runtime/framework unknown | High | TypeScript vs Python remains open. |
-| Verification command unknown beyond `git diff --check` | Medium | Do not invent tests; update when stack appears. |
-| Branch/PR not published yet | Medium | Remote is configured; push and draft PR are next after verification. |
+| Verification command limited before runtime exists | Medium | Use `git diff --check` plus GitHub Actions governance checks. |
+| Community safety docs incomplete | Medium | Security, contribution, conduct, and templates are being added. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Packet schema and redaction rules undefined | Medium | Lifecycle matrix marks packet surfaces planned or candidate. |
 
 ## Next Recommended Work
 
-1. Define the smallest useful relay packet for review-request handoffs.
-2. Choose TypeScript or Python for the local CLI.
-3. Draft `docs/protocol/relay-schema.md` and packet-type docs.
-4. Create a first implementation plan for a review-request packet generator.
-5. Add verified build/test/smoke commands when runtime config exists.
+1. Merge open-source hardening and require the new CI check on `main`.
+2. Define the smallest useful relay packet for review-request handoffs.
+3. Choose TypeScript or Python for the local CLI.
+4. Draft `docs/protocol/relay-schema.md` and packet-type docs.
+5. Create a first implementation plan for a review-request packet generator.
 
 ## Current Owner Decisions Needed
 

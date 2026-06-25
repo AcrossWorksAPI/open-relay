@@ -53,3 +53,9 @@ This repository uses the Across Works Codex roadmap baseline:
 - `.codex/skills/project-roadmap-system/SKILL.md`
 
 See `docs/product/PROJECT_BRIEF.md` for the current product brief.
+
+## Community And Security
+
+- Contribution guide: `CONTRIBUTING.md`
+- Security policy: `SECURITY.md`
+- Code of conduct: `CODE_OF_CONDUCT.md`
