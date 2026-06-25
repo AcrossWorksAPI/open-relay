@@ -12,6 +12,9 @@ or old plan files as inactive until this registry and current code agree.
 | `AGENTS.md` | Repository agent instructions | Active |
 | `.codex/skills/project-roadmap-system/SKILL.md` | Local Codex roadmap workflow | Active |
 | `README.md` | Public project summary | Active |
+| `SECURITY.md` | Security policy and reporting process | Active |
+| `CONTRIBUTING.md` | Contribution workflow and review expectations | Active |
+| `.github/workflows/ci.yml` | First CI guardrail | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -34,6 +37,7 @@ or old plan files as inactive until this registry and current code agree.
 | --- | --- | --- |
 | `docs/superpowers/plans/2026-06-26-project-foundation-baseline.md` | Done | Created project governance baseline; no product features implemented. |
 | `docs/superpowers/plans/2026-06-26-open-relay-brief-and-remote.md` | Done | Captured Open Relay brief, updated roadmap/status, configured GitHub remote, and prepared branch for PR. |
+| `docs/superpowers/plans/2026-06-26-open-source-hardening.md` | In progress | Adds security, contribution, conduct, templates, Dependabot, CI, and branch-protection follow-up. |
 
 ## Superseded Or Dormant Plans
 
