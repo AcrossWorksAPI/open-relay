@@ -1,0 +1,201 @@
+{
+  "packet_version": "0.1",
+  "packet_type": "review-request",
+  "created_at": "2026-06-26T00:00:00Z",
+  "goal": "Add open-source project hardening to a new local-first CLI/protocol repository without choosing a runtime or implementing product code.",
+  "requested_review": {
+    "audience": "Claude Code",
+    "focus": [
+      "documentation clarity",
+      "contributor safety",
+      "CI guardrails"
+    ],
+    "requested_output": "Findings first, then open questions, then a short summary."
+  },
+  "repository": {
+    "name": "example/open-relay",
+    "local_path": "redacted",
+    "base_branch": "main",
+    "working_branch": "codex/open-source-hardening",
+    "base_commit": "def5678",
+    "head_commit": "abc1234",
+    "diff_range": "def5678..abc1234",
+    "pull_request_url": "https://github.com/example/open-relay/pull/2",
+    "reviewer_access": "Reviewer must have read access to the repository and PR."
+  },
+  "change_summary": {
+    "summary": "Adds community and safety documents, issue and PR templates, Dependabot configuration, a first dependency-free GitHub Actions workflow, and planning-doc updates that record the hardening slice.",
+    "behavioral_intent": "Improve open-source readiness without changing product behavior.",
+    "excluded_scope": [
+      "runtime selection",
+      "CLI implementation",
+      "package publishing"
+    ],
+    "total_files_changed": 17
+  },
+  "changed_files": [
+    {
+      "path": "SECURITY.md",
+      "status": "added",
+      "role": "Vulnerability reporting and security policy",
+      "review_priority": "high"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "status": "added",
+      "role": "Contribution workflow and review expectations",
+      "review_priority": "high"
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "status": "added",
+      "role": "Community conduct standard",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "status": "added",
+      "role": "Pull request review checklist",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
+      "status": "added",
+      "role": "Bug report intake form",
+      "review_priority": "medium"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
+      "status": "added",
+      "role": "Feature request intake form",
+      "review_priority": "medium"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/question.yml",
+      "status": "added",
+      "role": "Question intake form",
+      "review_priority": "low"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "status": "added",
+      "role": "Issue template chooser settings",
+      "review_priority": "low"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "added",
+      "role": "Governance CI checks",
+      "review_priority": "high"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "status": "added",
+      "role": "GitHub Actions dependency updates",
+      "review_priority": "medium"
+    },
+    {
+      "path": "README.md",
+      "status": "modified",
+      "role": "Public project links and community references",
+      "review_priority": "medium"
+    },
+    {
+      "path": "AGENTS.md",
+      "status": "modified",
+      "role": "Repository agent workflow guidance",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/STATUS.md",
+      "status": "modified",
+      "role": "Owner-readable hardening status",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/ROADMAP.md",
+      "status": "modified",
+      "role": "Roadmap status for hardening slice",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/ACTIVE_WORK.md",
+      "status": "modified",
+      "role": "Active work and risk updates",
+      "review_priority": "medium"
+    },
+    {
+      "path": "docs/planning/PLAN_REGISTRY.md",
+      "status": "modified",
+      "role": "Plan-source classification updates",
+      "review_priority": "low"
+    },
+    {
+      "path": "docs/planning/VERSION_LEDGER.md",
+      "status": "modified",
+      "role": "Commit, PR, and smoke evidence updates",
+      "review_priority": "low"
+    }
+  ],
+  "verification": [
+    {
+      "kind": "command",
+      "command": "git diff --check",
+      "result": "passed",
+      "evidence": "Local whitespace check completed with exit code 0."
+    },
+    {
+      "kind": "ci",
+      "command": "Open Relay CI / Governance Checks",
+      "result": "passed",
+      "evidence": "GitHub Actions run on PR #2."
+    },
+    {
+      "kind": "command",
+      "command": "YAML parse check",
+      "result": "passed",
+      "evidence": "Workflow, Dependabot, and issue template YAML parsed locally."
+    }
+  ],
+  "risks": [
+    {
+      "severity": "medium",
+      "description": "CI is governance-only until runtime is chosen.",
+      "handling": "Runtime-specific tests will be added after TypeScript or Python is selected."
+    },
+    {
+      "severity": "low",
+      "description": "Contribution docs may evolve as maintainers learn the workflow.",
+      "handling": "Keep docs lightweight and update through PRs."
+    }
+  ],
+  "provenance": [
+    {
+      "type": "pull_request",
+      "reference": "https://github.com/example/open-relay/pull/2",
+      "supports": "Review and merge context."
+    },
+    {
+      "type": "ci_run",
+      "reference": "https://github.com/example/open-relay/actions/runs/123456789",
+      "supports": "CI passed."
+    },
+    {
+      "type": "user_note",
+      "reference": "owner hardening request",
+      "supports": "Open-source hardening was requested before product implementation."
+    }
+  ],
+  "redactions": [
+    {
+      "field": "repository.local_path",
+      "reason": "Local absolute path is not needed for public review.",
+      "replacement": "redacted"
+    }
+  ],
+  "sensitive_data": {
+    "excluded": true,
+    "notes": "No secrets, tokens, private logs, customer data, or private repository content are included."
+  },
+  "next_action": "Review whether this packet provides enough context to critique the PR without asking the human to copy/paste additional state."
+}

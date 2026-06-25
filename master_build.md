@@ -24,7 +24,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Runtime/framework | Unknown; needs owner decision | TypeScript vs Python remains open |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief and governance baseline | Current branch docs baseline |
+| Current baseline | Open Relay project brief, governance baseline, and review-request protocol draft | Current branch docs baseline |
 
 ## Scope
 
@@ -35,6 +35,7 @@ Current scope is planning and governance setup only:
 - plan registry
 - version ledger
 - owner-readable status
+- first review-request packet spec and examples
 - product brief
 - local Codex roadmap skill
 - Superpowers plan folder
@@ -65,15 +66,15 @@ Current scope is planning and governance setup only:
 
 | Priority | Work | Status | Owner decision needed |
 | --- | --- | --- | --- |
-| P0 | Define the smallest useful relay packet | Planned | Yes |
+| P0 | Define the smallest useful relay packet | In progress | Review PR |
 | P0 | Choose first implementation runtime, TypeScript or Python | Planned | Yes |
-| P0 | Write initial relay packet schema and packet-type docs | Planned | Yes |
+| P0 | Write initial relay packet schema and packet-type docs | In progress | Review PR |
 | P1 | Implement local CLI review-request packet generator | Candidate | Yes |
 | P1 | Add Codex-ready and Claude-ready render templates | Candidate | Yes |
 
 ## Known Gaps
 
-- Smallest useful relay packet is not defined yet.
+- Smallest useful relay packet is drafted and awaiting PR/Claude review.
 - No runtime, framework, package, test, build, deployment, or smoke command is
   present.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
