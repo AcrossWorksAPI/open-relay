@@ -28,6 +28,7 @@ or old plan files as inactive until this registry and current code agree.
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Runtime/schema CLI design | Active |
+| `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Git-state review-request generator design | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -42,7 +43,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans after PR #11 merge. |
+| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Codex | Plan for local git-state review-request packet generation, redaction defaults, CLI wiring, tests, and closeout. |
 
 ## Implemented Or Historical Plans
 

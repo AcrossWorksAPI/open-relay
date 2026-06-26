@@ -40,6 +40,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - product brief
 - TypeScript CLI-first runtime decision
 - runtime/schema validation CLI implementation
+- git-state generator design and implementation plan
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -74,13 +75,12 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Choose first implementation runtime | Done | No |
 | P0 | Write initial relay packet schema and packet-type docs | Done | No |
 | P0 | Implement runtime/schema validation CLI | Done | No |
-| P1 | Implement local CLI review-request packet generator | Candidate | Yes |
+| P1 | Implement local CLI review-request packet generator | Planned | No |
 | P1 | Add Codex-ready and Claude-ready render templates | Candidate | Yes |
 
 ## Known Gaps
 
-- The first schema validator exists; live git-state packet generation is not
-  implemented yet.
+- The git-state packet generator is planned but not implemented yet.
 - Package publishing, deployment, and release smoke evidence are not present
   yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.

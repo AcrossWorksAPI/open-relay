@@ -23,7 +23,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
 | Unversioned | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| Unversioned | Review-request packet CLI MVP | Planned | High | Candidate | Runtime schema validation CLI | - |
+| Unversioned | Review-request packet CLI MVP | Planned | High | Candidate | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
 | Unversioned | Codex and Claude render templates | Candidate | Medium | Candidate | Review-request packet CLI MVP | - |
 
 ## Candidate Scope
@@ -31,8 +31,8 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
 | Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI is merged | - |
-| Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | JSON Schema and generator plan are drafted | - |
-| Security | Local redaction and provenance rules | Before packets include sensitive data | Candidate | Packet schema includes repo diffs, logs, or notes | - |
+| Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | Git-state generator plan is reviewed | - |
+| Security | Private redaction rule files | Before packets include sensitive data beyond git metadata | Candidate | Fixed generator redaction defaults are insufficient | - |
 | Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI is merged | - |
 
 ## Update Rules
