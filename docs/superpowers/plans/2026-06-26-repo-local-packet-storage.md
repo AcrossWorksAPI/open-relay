@@ -4,7 +4,7 @@
 
 **Goal:** Add `open-relay save review-request` to save validated review-request JSON and Markdown bundles in repo-local storage.
 
-**Architecture:** Reuse the existing generator parser, git collector, packet builder, validator, and renderer. Add a small storage module that writes `relay.json`, `relay.md`, and `manifest.json` under `.open-relay/review-requests/<storage_id>/` without echoing absolute paths.
+**Architecture:** Reuse the existing generator parser, git collector, packet builder, validator, and renderer. Add a small storage module that writes `relay.json`, `relay.md`, and `manifest.json` under `.open-relay/review-requests/<storage_id>/` without echoing absolute paths. Write `manifest.json` last as the bundle-completion marker and best-effort remove the new bundle directory if a mid-write failure occurs.
 
 **Tech Stack:** TypeScript, Node.js built-in test runner, Node `fs/path` APIs, existing CLI parser, existing review-request generator and renderer, existing package smoke script.
 
@@ -67,12 +67,6 @@ Expected: TypeScript build fails because `src/storage.ts` does not exist.
 Create `src/storage.ts`:
 
 ```ts
-import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-
-import { renderReviewRequestMarkdown } from "./renderReviewRequest";
-import type { ReviewRequestPacket } from "./reviewRequest";
-
 export type SavedReviewRequestBundle = {
   storageId: string;
 };
@@ -210,7 +204,7 @@ Expected: selected tests fail because `saveReviewRequestBundle` is missing.
 Update `src/storage.ts`:
 
 ```ts
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { renderReviewRequestMarkdown } from "./renderReviewRequest";
@@ -261,9 +255,14 @@ export async function saveReviewRequestBundle(
     }
   };
 
-  await writeFile(join(bundleDir, "relay.json"), `${JSON.stringify(input.packet, null, 2)}\n`, "utf8");
-  await writeFile(join(bundleDir, "relay.md"), renderReviewRequestMarkdown(input.packet), "utf8");
-  await writeFile(join(bundleDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  try {
+    await writeFile(join(bundleDir, "relay.json"), `${JSON.stringify(input.packet, null, 2)}\n`, "utf8");
+    await writeFile(join(bundleDir, "relay.md"), renderReviewRequestMarkdown(input.packet), "utf8");
+    await writeFile(join(bundleDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  } catch (error: unknown) {
+    await rm(bundleDir, { recursive: true, force: true });
+    throw error;
+  }
 
   return { storageId };
 }

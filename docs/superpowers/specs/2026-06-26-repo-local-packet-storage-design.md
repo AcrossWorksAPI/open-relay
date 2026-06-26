@@ -117,6 +117,9 @@ Behavior:
 - `--output` exits `2` with
   `--output is not supported for save review-request; use --storage-dir to choose a storage root.`
 - On success, stdout prints `Saved review-request packet: <storage_id>`.
+- The success message intentionally prints only the storage id, even when
+  `--storage-dir` is user supplied, so default and explicit storage roots share
+  one sanitized output contract.
 - On write failure, stderr prints `Could not save review-request packet.` and
   does not echo the storage path.
 - Existing `generate`, `render`, and `handoff` behavior remains unchanged.
@@ -162,7 +165,8 @@ overwrite an existing bundle.
 ```
 
 The manifest intentionally duplicates only storage metadata. The packet content
-stays in `relay.json`.
+stays in `relay.json`. Implementations must write `manifest.json` last; future
+read/list commands should treat a bundle without `manifest.json` as incomplete.
 
 ## Architecture
 
@@ -217,7 +221,7 @@ The CLI must preserve the existing sanitized posture:
 | Audit | Filesystem bundle plus git/PR/test evidence. No telemetry. |
 | Notifications | Deferred; saving does not notify reviewers. |
 | Billing/quota | N/A; local CLI only. |
-| Recovery | Failed saves leave sanitized errors. Implementation should avoid partial success by writing files only after packet validation; cleanup of partially created directories is best-effort. |
+| Recovery | Failed saves leave sanitized errors. Implementation should avoid partial success by writing files only after packet validation, write `manifest.json` last as the completion marker, and best-effort remove a newly created bundle directory if a mid-write failure occurs. |
 | Smoke | `npm run check`, `npm run smoke:pack`, `git diff --check`, CLI save smoke, installed package save smoke. |
 
 ## Testing Strategy
