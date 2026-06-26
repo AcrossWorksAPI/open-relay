@@ -9,8 +9,8 @@ implementation. The reviewed `review-request` packet, merged validation CLI,
 merged JSON-only git-state generator, merged Markdown renderer, and merged
 package smoke form the current CLI baseline. The CLI can now prove
 installability from a local npm tarball before any live/publish claim. Direct
-Markdown generation implementation is active so a local user can generate a
-review-ready Markdown packet in one command. The approved first runtime
+Markdown generation is merged so a local user can generate a review-ready
+Markdown packet in one command. The approved first runtime
 direction is a TypeScript CLI on Node.js with npm; MCP server support is
 deferred until the CLI is useful.
 
@@ -72,20 +72,17 @@ deferred until the CLI is useful.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Direct Markdown generation not merged | Low | Implementation is active for `generate review-request --format markdown`; existing `render review-request` remains available. |
+| Higher-level handoff workflow absent | Low | Direct Markdown generation is merged; a future command can wrap generate/validate/render into an even clearer local handoff workflow. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the direct Markdown generation implementation PR for GitHub CI and
-   Claude review.
-2. After direct Markdown generation merges, plan a higher-level handoff command
-   that generates, validates, and renders a
+1. Plan a higher-level handoff command that generates, validates, and renders a
    review packet in one local workflow.
-3. Revisit permanent packet storage location after stdout and explicit
+2. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-4. Decide whether private redaction rule files are needed before package
+3. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed
