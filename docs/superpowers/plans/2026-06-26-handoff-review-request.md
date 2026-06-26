@@ -15,7 +15,7 @@
 - Modify `src/cli.ts`: add help text and a `handoff review-request` route that calls the generator with forced Markdown format.
 - Modify `tests/cli.test.ts`: add CLI behavior tests for help, stdout, output-file, unsupported `--format`, write-failure sanitization, and parity with direct Markdown generation.
 - Modify `scripts/smoke-pack.js`: prove the installed CLI can run `handoff review-request`.
-- Modify `AGENTS.md`: update current scope and non-goals now that direct Markdown generation is merged and handoff planning is active.
+- Modify `AGENTS.md`: update current scope and non-goals now that direct Markdown generation is merged and handoff implementation is active.
 - Modify `docs/STATUS.md`: record handoff planning and verification evidence.
 - Modify `docs/planning/ROADMAP.md`: add handoff workflow as the next in-progress slice.
 - Modify `docs/planning/ACTIVE_WORK.md`: record this design and plan as active sources and update next recommended work.
@@ -30,7 +30,7 @@
 - Modify: `tests/cli.test.ts`
 - Modify: `src/cli.ts`
 
-- [ ] **Step 1: Add tests for handoff help and Markdown stdout**
+- [x] **Step 1: Add tests for handoff help and Markdown stdout**
 
 Add these tests to `tests/cli.test.ts`, reusing the existing
 `createChangedGitRepo` helper:
@@ -78,7 +78,7 @@ test("handoff review-request writes markdown to stdout", () => {
 });
 ```
 
-- [ ] **Step 2: Run focused tests and confirm they fail**
+- [x] **Step 2: Run focused tests and confirm they fail**
 
 Run:
 
@@ -88,7 +88,7 @@ npm test -- --test-name-pattern="prints handoff review-request|handoff review-re
 
 Expected: selected tests fail because the handoff route is missing.
 
-- [ ] **Step 3: Add help text and route**
+- [x] **Step 3: Add help text and route**
 
 In `src/cli.ts`, add this usage line:
 
@@ -129,7 +129,7 @@ function hasFlag(args: string[], flag: string): boolean {
 }
 ```
 
-- [ ] **Step 4: Run focused tests and confirm they pass**
+- [x] **Step 4: Run focused tests and confirm they pass**
 
 Run:
 
@@ -144,7 +144,7 @@ Expected: selected tests pass.
 **Files:**
 - Modify: `tests/cli.test.ts`
 
-- [ ] **Step 1: Add output-file, unsupported-format, write-failure, and parity tests**
+- [x] **Step 1: Add output-file, unsupported-format, write-failure, and parity tests**
 
 Add these tests to `tests/cli.test.ts`:
 
@@ -287,7 +287,7 @@ function stripCreatedAt(markdown: string): string {
 }
 ```
 
-- [ ] **Step 2: Run focused handoff tests**
+- [x] **Step 2: Run focused handoff tests**
 
 Run:
 
@@ -310,7 +310,7 @@ Expected: selected tests pass.
 - Modify: `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 - Modify: `master_build.md`
 
-- [ ] **Step 1: Update package smoke**
+- [x] **Step 1: Update package smoke**
 
 In `scripts/smoke-pack.js`, after the installed CLI direct Markdown generation
 smoke, add:
@@ -336,7 +336,7 @@ assert.match(handoff, /^# Review Request Relay Packet/);
 assert.match(handoff, /## Next Action/);
 ```
 
-- [ ] **Step 2: Update roadmap/status docs for implementation branch**
+- [x] **Step 2: Update roadmap/status docs for implementation branch**
 
 During implementation, record:
 
@@ -347,7 +347,7 @@ During implementation, record:
 Keep storage, agent-specific templates, app orchestration, external delivery,
 package publishing, and live release deferred.
 
-- [ ] **Step 3: Run full verification**
+- [x] **Step 3: Run full verification**
 
 Run:
 
@@ -359,7 +359,7 @@ git diff --check
 
 Expected: all commands pass.
 
-- [ ] **Step 4: Push and open implementation PR**
+- [x] **Step 4: Push and open implementation PR**
 
 ```bash
 git push -u origin codex/handoff-review-request-implementation

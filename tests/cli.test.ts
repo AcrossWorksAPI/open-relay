@@ -35,6 +35,16 @@ test("prints render review-request in help", () => {
   assert.match(result.stdout, /open-relay render review-request/);
 });
 
+test("prints handoff review-request in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay handoff review-request/);
+  assert.match(result.stdout, /creates local review handoff Markdown; it does not send it anywhere/i);
+});
+
 test("validates the example packet", () => {
   const result = spawnSync(
     process.execPath,
@@ -356,6 +366,166 @@ test("generates review-request markdown to a file", () => {
   }
 });
 
+test("handoff review-request writes markdown to stdout", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "handoff",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious."
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /^# Review Request Relay Packet/);
+    assert.match(result.stdout, /## Next Action/);
+    assert.doesNotMatch(result.stdout, /^\{/);
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("handoff review-request writes markdown to a file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "handoff",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious.",
+      "--output", outputPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Wrote review-request Markdown/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stderr, "");
+    assert.match(readFileSync(outputPath, "utf8"), /^# Review Request Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("handoff review-request rejects explicit format", () => {
+  for (const formatFlag of [["--format", "json"], ["--format=markdown"]]) {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "handoff",
+      "review-request",
+      "--base", "origin/main",
+      "--head", "HEAD",
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious.",
+      ...formatFlag
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /--format is not supported for handoff review-request/);
+    assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+  }
+});
+
+test("handoff review-request rejects unwritable output paths without echoing path values", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR", "relay.md");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "handoff",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious.",
+      "--output", outputPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Could not write review-request Markdown/);
+    assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("handoff review-request matches direct markdown generation", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    const commonArgs = [
+      "--base", base,
+      "--head", head,
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious."
+    ];
+
+    const handoff = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "handoff",
+      "review-request",
+      ...commonArgs
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+    const generated = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      ...commonArgs,
+      "--format", "markdown"
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(handoff.status, 0);
+    assert.equal(generated.status, 0);
+    assert.equal(stripCreatedAt(handoff.stdout), stripCreatedAt(generated.stdout));
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("rejects generate review-request with invalid format", () => {
   const result = spawnSync(process.execPath, [
     cliPath,
@@ -567,6 +737,10 @@ function createChangedGitRepo(directory: string): { base: string; head: string }
   runGit(directory, "commit", "-m", "change readme");
   const head = runGit(directory, "rev-parse", "HEAD").trim();
   return { base, head };
+}
+
+function stripCreatedAt(markdown: string): string {
+  return markdown.replace(/- Created at: `[^`]+`/, "- Created at: `<timestamp>`");
 }
 
 function runGit(cwd: string, ...args: string[]): string {

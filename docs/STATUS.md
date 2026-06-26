@@ -16,9 +16,10 @@ another reviewer without introducing agent-specific prompt dialects yet. npm
 package metadata, an allowlisted package packlist, and local tarball install
 smoke are merged as the release-readiness gate before publishing. Direct
 Markdown generation is merged so the generator can emit review-ready Markdown
-without a separate render step. Local handoff workflow planning is active for a
-clearer review-request command. npm registry publishing, persistent packet
-storage, external agent invocation, and private redaction rules remain deferred.
+without a separate render step. Local handoff workflow implementation is in
+progress as a stacked branch behind the planning PR. npm registry publishing,
+persistent packet storage, external agent invocation, and private redaction
+rules remain deferred.
 
 ## Active Work
 
@@ -39,7 +40,8 @@ storage, external agent invocation, and private redaction rules remain deferred.
 | Direct Markdown generation planning | Done | PR #22 merged the design and implementation plan for `generate review-request --format markdown` while keeping JSON as the default and reusing the existing renderer. |
 | Direct Markdown generation implementation | Done | PR #23 merged `--format json|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
 | Local handoff workflow planning | In progress | Design and implementation plan add `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, and direct generator Markdown output are merged; local handoff workflow is planned next; agent-specific prompt dialects, registry publishing, private redaction rules, and external orchestration remain unbuilt. |
+| Local handoff workflow implementation | In progress | Stacked branch adds `handoff review-request`, help text, CLI regressions, parity with direct Markdown generation, sanitized write-error behavior, and installed-package smoke coverage. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, and direct generator Markdown output are merged; local handoff workflow implementation is stacked behind planning review; agent-specific prompt dialects, registry publishing, private redaction rules, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -79,11 +81,13 @@ storage, external agent invocation, and private redaction rules remain deferred.
 | 2026-06-26 | PR #23 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/23`; merge commit `80501da`; `Governance Checks` passed, Claude review reported no findings, and direct Markdown generation merged without agent-specific templates, storage, publish, or live-release claims. |
 | 2026-06-26 | Local handoff workflow planning branch | In progress | PR #25: `https://github.com/AcrossWorksAPI/open-relay/pull/25`; design source `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-handoff-review-request.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR; `Governance Checks` passed. |
 | 2026-06-26 | Claude review fixes for PR #25 | Passed | Added visible local-only help wording, tightened planned `--format` rejection to include `--format=...`, narrowed lifecycle wording to local request creation, and re-ran `npm run check`, `npm run smoke:pack`, and `git diff --check`. |
+| 2026-06-26 | Local handoff workflow implementation branch checks | Passed | Draft PR #26: `https://github.com/AcrossWorksAPI/open-relay/pull/26`; stacked branch `codex/handoff-review-request-implementation`; `npm run check` passed with 61 tests, `npm run smoke:pack` verified installed CLI `handoff review-request`, and `git diff --check` passed locally before PR. |
 
 ## Next Step
 
-Open the local handoff workflow planning PR, wait for CI and Claude review,
-then implement `handoff review-request`.
+Merge the local handoff workflow planning PR after Claude review, then retarget
+or rebase the stacked implementation PR onto `main` and request Claude
+implementation review.
 
 ## Owner Decisions Needed
 

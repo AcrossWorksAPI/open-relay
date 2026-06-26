@@ -8,8 +8,8 @@ owner instructions when they exist.
 - Project name: Open Relay.
 - Current known scope: local-first AI handoff/review protocol, TypeScript CLI
   validation, review-request packet generation, Markdown/JSON relay packet
-  schema, Markdown rendering, direct Markdown generation, package-readiness
-  smoke, and Across Works roadmap governance.
+  schema, Markdown rendering, direct Markdown generation, local handoff workflow
+  command, package-readiness smoke, and Across Works roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
@@ -19,6 +19,8 @@ owner instructions when they exist.
 - Generator behavior: local git-state `review-request` JSON generation.
 - Renderer behavior: `review-request` JSON-to-Markdown rendering through
   `open-relay render review-request`.
+- Handoff behavior: `open-relay handoff review-request` creates local
+  review-request Markdown by composing the existing generator and renderer path.
 - Non-goals for the current runtime slice: MCP server support, package
   registry publishing, hosted deployment, external agent invocation,
   persistent packet storage, and agent-specific prompt templates.
