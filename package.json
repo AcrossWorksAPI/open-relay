@@ -10,7 +10,9 @@
   "scripts": {
     "test": "npm run build && node --test \"dist/tests/**/*.test.js\"",
     "build": "tsc -p tsconfig.json",
-    "check": "npm test"
+    "check": "npm test",
+    "prepack": "npm run build",
+    "smoke:pack": "node scripts/smoke-pack.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,23 @@
     "open-relay": "./dist/src/cli.js"
   },
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist/src/",
+    "dist/schemas/",
+    "schemas/",
+    "examples/",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "ajv": "^8.20.0"
   },
