@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 
 import { parseGenerateReviewRequestArgs } from "./args";
 import { collectGitContext } from "./git";
-import { buildReviewRequestPacket } from "./reviewRequest";
+import { renderReviewRequestMarkdown } from "./renderReviewRequest";
+import { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
 import { validatePacket, validatePacketFile } from "./schema";
 
 const usage = `Open Relay
@@ -12,6 +13,7 @@ const usage = `Open Relay
 Usage:
   open-relay validate <packet.json>
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <packet.json>]
+  open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay --help
 `;
 
@@ -31,8 +33,95 @@ export async function run(argv: string[]): Promise<number> {
     return generateReviewRequestCommand(args.slice(2));
   }
 
+  if (args[0] === "render" && args[1] === "review-request") {
+    return renderReviewRequestCommand(args.slice(2));
+  }
+
   process.stderr.write(`Unknown command: ${args.join(" ")}\n\n${usage}`);
   return 2;
+}
+
+type RenderReviewRequestArgs =
+  | { ok: true; packetPath: string; output?: string }
+  | { ok: false; message: string };
+
+async function renderReviewRequestCommand(args: string[]): Promise<number> {
+  const parsed = parseRenderReviewRequestArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  try {
+    const raw = await readFile(parsed.packetPath, "utf8");
+    const packet = JSON.parse(raw) as unknown;
+    const result = validatePacket(packet);
+
+    if (!result.valid) {
+      process.stderr.write(`Invalid review-request packet: ${parsed.packetPath}\n`);
+      for (const error of result.errors) {
+        process.stderr.write(`- ${error}\n`);
+      }
+      return 1;
+    }
+
+    const markdown = renderReviewRequestMarkdown(packet as ReviewRequestPacket);
+
+    if (parsed.output) {
+      try {
+        await writeFile(parsed.output, markdown, "utf8");
+      } catch {
+        process.stderr.write("Could not write review-request Markdown.\n");
+        return 1;
+      }
+      process.stdout.write("Wrote review-request Markdown.\n");
+    } else {
+      process.stdout.write(markdown);
+    }
+
+    return 0;
+  } catch (error: unknown) {
+    const message = error instanceof SyntaxError
+      ? `Invalid JSON in ${parsed.packetPath}`
+      : "Could not render review-request packet.";
+
+    process.stderr.write(`${message}\n`);
+    return 1;
+  }
+}
+
+function parseRenderReviewRequestArgs(args: string[]): RenderReviewRequestArgs {
+  const packetPath = args[0];
+  let output: string | undefined;
+
+  if (!packetPath) {
+    return { ok: false, message: "Missing packet path." };
+  }
+
+  for (let index = 1; index < args.length; index += 1) {
+    const arg = args[index];
+
+    if (arg !== "--output") {
+      return {
+        ok: false,
+        message: arg.startsWith("--") ? `Unknown flag: ${arg}` : `Unexpected argument: ${arg}`
+      };
+    }
+
+    if (output) {
+      return { ok: false, message: "Duplicate flag: --output" };
+    }
+
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      return { ok: false, message: "Missing value for --output" };
+    }
+
+    output = value;
+    index += 1;
+  }
+
+  return { ok: true, packetPath, ...(output ? { output } : {}) };
 }
 
 async function generateReviewRequestCommand(args: string[]): Promise<number> {

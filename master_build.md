@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, and render-template planning in progress | PR #14 merge commit `fd0960c`; render planning source `docs/superpowers/plans/2026-06-26-render-review-request.md`; package/release target remains undecided |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, and render-template implementation in progress | PR #16 merge commit `5b03b8d`; implementation branch `codex/render-review-request-implementation`; package/release target remains undecided |
 
 ## Scope
 
@@ -41,7 +41,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - TypeScript CLI-first runtime decision
 - runtime/schema validation CLI implementation
 - git-state generator design, implementation plan, and merged JSON-only CLI implementation
-- render review-request design and implementation plan
+- render review-request design, implementation plan, and implementation branch
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -51,8 +51,6 @@ Current scope is the first local protocol and validation CLI baseline:
 ## Non-Goals
 
 - MCP server support
-- Package publishing
-- Hosted deployment setup
 - Package publishing
 - Hosted deployment setup
 - Agent-specific prompt dialects beyond the neutral packet renderer
@@ -84,8 +82,8 @@ Current scope is the first local protocol and validation CLI baseline:
 ## Known Gaps
 
 - The git-state packet generator is merged but not packaged or released yet.
-- Markdown rendering is planned but not implemented until the render-template
-  implementation PR merges.
+- Markdown rendering is implemented on the active branch but not merged until
+  the render-template implementation PR lands.
 - Package publishing, deployment, and release smoke evidence are not present
   yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.

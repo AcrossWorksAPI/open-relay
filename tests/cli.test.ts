@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -24,6 +24,15 @@ test("prints generate review-request in help", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay generate review-request/);
+});
+
+test("prints render review-request in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay render review-request/);
 });
 
 test("validates the example packet", () => {
@@ -250,12 +259,141 @@ test("generates a schema-valid review-request packet to a file", () => {
   }
 });
 
-test("exports the validator from the package entrypoint", () => {
+test("renders a review-request packet to stdout", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "review-request", "examples/review-request/relay.json"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Review Request Relay Packet/);
+  assert.match(result.stdout, /## Next Action/);
+  assert.equal(result.stderr, "");
+});
+
+test("renders a review-request packet to a file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
+
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [cliPath, "render", "review-request", "examples/review-request/relay.json", "--output", outputPath],
+      { encoding: "utf8" }
+    );
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Wrote review-request Markdown/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stderr, "");
+    assert.match(readFileSync(outputPath, "utf8"), /^# Review Request Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("rejects render review-request with missing path", () => {
+  const result = spawnSync(process.execPath, [cliPath, "render", "review-request"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Missing packet path/);
+  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects render review-request with unknown flags", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "review-request", "examples/review-request/relay.json", "--template", "claude"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unknown flag: --template/);
+  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects render review-request with duplicate output flags", () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      cliPath,
+      "render",
+      "review-request",
+      "examples/review-request/relay.json",
+      "--output", "first.md",
+      "--output", "second.md"
+    ],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Duplicate flag: --output/);
+  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects render review-request with extra positional arguments", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "review-request", "examples/review-request/relay.json", "extra"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unexpected argument: extra/);
+  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects invalid render JSON without printing file contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const packetPath = join(directory, "bad.json");
+  writeFileSync(packetPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "render", "review-request", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid JSON/);
+  assert.doesNotMatch(result.stderr, /SECRET/);
+});
+
+test("rejects schema-invalid render packets", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const packetPath = join(directory, "packet.json");
+  writeFileSync(packetPath, JSON.stringify({ packet_version: "0.1" }), "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "render", "review-request", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid review-request packet/);
+  assert.match(result.stderr, /must have required property/);
+});
+
+test("rejects unwritable render output paths without echoing path values", () => {
+  const outputPath = join(tmpdir(), "SECRET_OUTPUT_SHOULD_NOT_APPEAR", "relay.md");
+
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "review-request", "examples/review-request/relay.json", "--output", outputPath],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Could not write review-request Markdown/);
+  assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+});
+
+test("exports the validator and renderer from the package entrypoint", () => {
   const result = spawnSync(
     process.execPath,
     [
       "-e",
-      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1);"
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1);"
     ],
     {
       encoding: "utf8"

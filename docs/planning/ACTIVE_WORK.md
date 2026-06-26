@@ -7,7 +7,7 @@ Last updated: 2026-06-26
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
 and merged JSON-only git-state generator are now joined by the active
-render-template planning slice. The approved first runtime direction is a
+render-template implementation slice. The approved first runtime direction is a
 TypeScript CLI on Node.js with npm; MCP server support is deferred until the
 CLI is useful.
 
@@ -29,6 +29,7 @@ CLI is useful.
 | `src/args.ts` | Active | Generator command argument parsing. |
 | `src/git.ts` | Active | Local git context collection for base/head commits, diff range, and changed files. |
 | `src/redaction.ts` | Active | Fail-closed remote URL redaction helper. |
+| `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/schema.ts` | Active | Reusable packet validation module. |
 | `src/cli.ts` | Active | Local CLI entrypoint, `validate`, and draft `generate review-request` command. |
@@ -37,6 +38,7 @@ CLI is useful.
 | `tests/args.test.ts` | Active | Generator argument parser tests. |
 | `tests/git.test.ts` | Active | Git context collector tests. |
 | `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
+| `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `.github/workflows/ci.yml` | Active | Governance and TypeScript runtime CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
@@ -62,15 +64,15 @@ CLI is useful.
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Markdown rendering not implemented yet | Medium | Renderer-first design and implementation plan are active; generator still writes JSON only until the implementation PR merges. |
+| Markdown rendering not merged yet | Medium | Renderer implementation is active on branch; generator still writes JSON only until the implementation PR merges. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the render-template planning PR for Claude/GitHub review.
-2. Implement `open-relay render review-request <packet.json> [--output <relay.md>]`
-   after the planning PR is green.
+1. Open the render-template implementation PR for Claude/GitHub review.
+2. Merge the implementation once CI and Claude review are clean, then run
+   closeout to mark the slice Done.
 3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
 4. Define package/release target and live-readiness smoke criteria.

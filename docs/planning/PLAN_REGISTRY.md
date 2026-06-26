@@ -22,6 +22,7 @@ or old plan files as inactive until this registry and current code agree.
 | `src/args.ts` | Generator argument parser | Active |
 | `src/git.ts` | Local git context collector | Active |
 | `src/redaction.ts` | Remote URL redaction helper | Active |
+| `src/renderReviewRequest.ts` | Review-request Markdown renderer | Active |
 | `src/reviewRequest.ts` | Review-request packet builder | Active |
 | `src/schema.ts` | Packet validation module | Active |
 | `src/cli.ts` | Local CLI entrypoint, validation, and generator routing | Active |
@@ -30,6 +31,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/args.test.ts` | Generator argument parser tests | Active |
 | `tests/git.test.ts` | Git context collector tests | Active |
 | `tests/redaction.test.ts` | Remote URL redaction tests | Active |
+| `tests/renderReviewRequest.test.ts` | Review-request Markdown renderer tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
 | `.github/workflows/ci.yml` | Governance and runtime CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -54,7 +56,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-render-review-request.md` | In progress | Codex | Renderer-first implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`; implementation PR follows after planning review. |
+| `docs/superpowers/plans/2026-06-26-render-review-request.md` | In progress | Codex | Renderer-first implementation is active on `codex/render-review-request-implementation`; merge closeout follows after CI and Claude review. |
 
 ## Implemented Or Historical Plans
 
