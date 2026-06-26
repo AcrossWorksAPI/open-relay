@@ -61,7 +61,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | In progress | Codex | Planning `generate review-request --format markdown`, parser/CLI tests, package smoke update, and closeout. |
+| `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | In progress | Codex | Implementing `generate review-request --format markdown`, parser/CLI tests, package smoke update, and closeout. |
 
 ## Implemented Or Historical Plans
 

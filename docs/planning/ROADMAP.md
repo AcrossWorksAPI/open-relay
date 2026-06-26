@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, and direct Markdown generation planning in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, and direct Markdown generation implementation in progress
 Last updated: 2026-06-26
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, and direct Markdown generation planning in progress
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, and direct Markdown generation implementation in progress
 
 ## Project Purpose
 

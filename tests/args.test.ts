@@ -27,6 +27,7 @@ test("parses required generator flags and defaults", () => {
     "Security and privacy risks",
     "Missing verification or test coverage"
   ]);
+  assert.equal(result.options.format, "json");
   assert.equal(result.options.output, undefined);
 });
 
@@ -125,6 +126,70 @@ test("rejects duplicate singleton generator flags", () => {
 
   assert.match(result.message, /Duplicate flag/);
   assert.match(result.message, /--goal/);
+
+  const duplicateFormat = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--format", "json",
+    "--format", "markdown"
+  ]);
+
+  assert.equal(duplicateFormat.ok, false);
+  if (duplicateFormat.ok) {
+    throw new Error("expected parse failure");
+  }
+  assert.match(duplicateFormat.message, /Duplicate flag/);
+  assert.match(duplicateFormat.message, /--format/);
+});
+
+test("parses generator format options", () => {
+  const defaultResult = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent"
+  ]);
+
+  if (!defaultResult.ok) {
+    assert.fail(defaultResult.message);
+  }
+  assert.equal(defaultResult.options.format, "json");
+
+  const markdownResult = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--format", "markdown"
+  ]);
+
+  if (!markdownResult.ok) {
+    assert.fail(markdownResult.message);
+  }
+  assert.equal(markdownResult.options.format, "markdown");
+});
+
+test("rejects invalid generator format", () => {
+  const result = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--format", "html"
+  ]);
+
+  assert.equal(result.ok, false);
+  if (result.ok) {
+    throw new Error("expected parse failure");
+  }
+
+  assert.match(result.message, /Invalid format: html/);
 });
 
 test("rejects malformed verification and risk entries", () => {

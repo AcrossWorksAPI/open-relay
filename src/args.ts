@@ -11,12 +11,15 @@ export type RiskInput = {
   handling: string;
 };
 
+export type GenerateReviewRequestFormat = "json" | "markdown";
+
 export type GenerateReviewRequestOptions = {
   base: string;
   head: string;
   goal: string;
   summary: string;
   behavioralIntent: string;
+  format: GenerateReviewRequestFormat;
   output?: string;
   audience: string;
   focus: string[];
@@ -58,6 +61,7 @@ const allowedValueFlags = new Set([
   "--goal",
   "--summary",
   "--behavioral-intent",
+  "--format",
   "--output",
   "--audience",
   "--focus",
@@ -133,6 +137,11 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
     return risks;
   }
 
+  const format = parseFormat(first(values, "--format"));
+  if (!format) {
+    return { ok: false, message: `Invalid format: ${first(values, "--format")}` };
+  }
+
   return {
     ok: true,
     options: {
@@ -141,6 +150,7 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
       goal: required(values, "--goal"),
       summary: required(values, "--summary"),
       behavioralIntent: required(values, "--behavioral-intent"),
+      format,
       output: first(values, "--output"),
       audience: first(values, "--audience") ?? "Claude Code",
       focus: values.get("--focus") ?? defaultFocus,
@@ -153,6 +163,18 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
       includeLocalPath
     }
   };
+}
+
+function parseFormat(value: string | undefined): GenerateReviewRequestFormat | undefined {
+  if (value === undefined) {
+    return "json";
+  }
+
+  if (value === "json" || value === "markdown") {
+    return value;
+  }
+
+  return undefined;
 }
 
 type VerificationParseResult =
