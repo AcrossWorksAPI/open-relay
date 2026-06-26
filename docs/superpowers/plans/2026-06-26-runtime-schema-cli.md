@@ -335,7 +335,7 @@ Create `schemas/review-request.schema.json`:
     },
     "created_at": {
       "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T.+Z$"
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$"
     },
     "goal": {
       "type": "string",
@@ -1146,3 +1146,6 @@ git commit -m "docs: close runtime schema cli slice"
 - MCP server support, package publishing, and hosted deployment are deferred by
   design.
 - Lifecycle, security, verification, and roadmap closeout steps are explicit.
+- `packet_version` is pinned to `0.1` for the first validator; a future `0.2`
+  packet requires version-aware validation instead of widening this schema in
+  place.

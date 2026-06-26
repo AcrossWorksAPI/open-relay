@@ -21,7 +21,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Baseline | Open Relay brief and remote alignment | Done | High | No | Project foundation governance baseline | - |
 | Baseline | Open-source hardening and first CI | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
-| Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
+| Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
 | Unversioned | Runtime schema validation CLI | Planned | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
 | Unversioned | Review-request packet CLI MVP | Candidate | Medium | Candidate | Runtime schema validation CLI | - |
 | Unversioned | Codex and Claude render templates | Candidate | Medium | Candidate | Review-request packet CLI MVP | - |
@@ -34,7 +34,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI passes local and CI checks | - |
 | Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | JSON Schema and generator plan are drafted | - |
 | Security | Local redaction and provenance rules | Before packets include sensitive data | Candidate | Packet schema includes repo diffs, logs, or notes | - |
-| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI passes local and CI checks | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
+| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI passes local and CI checks | - |
 
 ## Update Rules
 
