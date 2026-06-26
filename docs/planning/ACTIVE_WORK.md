@@ -6,9 +6,10 @@ Last updated: 2026-06-26
 
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet and merged validation CLI
-are now the source shape for the generator slice. The approved first runtime
-direction is a TypeScript CLI on Node.js with npm; MCP server support is
-deferred until the CLI is useful.
+are now the source shape for the generator slice. Draft PR #14 implements the
+first JSON-only git-state generator behind the still-open planning PR #13. The
+approved first runtime direction is a TypeScript CLI on Node.js with npm; MCP
+server support is deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -25,10 +26,18 @@ deferred until the CLI is useful.
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
 | `src/index.ts` | Active | Runtime exports. |
+| `src/args.ts` | Active | Generator command argument parsing. |
+| `src/git.ts` | Active | Local git context collection for base/head commits, diff range, and changed files. |
+| `src/redaction.ts` | Active | Fail-closed remote URL redaction helper. |
+| `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/schema.ts` | Active | Reusable packet validation module. |
-| `src/cli.ts` | Active | Local CLI entrypoint and `validate` command. |
+| `src/cli.ts` | Active | Local CLI entrypoint, `validate`, and draft `generate review-request` command. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
+| `tests/args.test.ts` | Active | Generator argument parser tests. |
+| `tests/git.test.ts` | Active | Git context collector tests. |
+| `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
+| `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `.github/workflows/ci.yml` | Active | Governance and TypeScript runtime CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
@@ -47,18 +56,19 @@ deferred until the CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Packet generator not implemented | High | Generator design and implementation plan are active; implementation should follow after review. |
+| Generator implementation not merged | High | Draft PR #14 is green and stacked behind planning PR #13; do not request Claude implementation review until PR #13 is accepted. |
 | Package publishing target unknown | Medium | Keep `private: true` until owner selects npm/package release policy. |
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
-| Runtime CI limited to validation slice | Low | CI runs build and tests for the current CLI; broaden checks as generator behavior is added. |
+| Runtime CI now covers generator draft | Low | CI runs build and tests for validation plus generator behavior on draft PR #14. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Private redaction rule files undefined | Medium | Generator plan uses fixed fail-closed redaction defaults and defers private rule files. |
+| Markdown rendering and prompt templates deferred | Medium | Generator writes JSON only; Codex/Claude render templates remain candidate follow-up work. |
+| Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Review the git-state generator design and implementation plan.
-2. Implement `open-relay generate review-request` after plan review.
-3. Verify generated packets validate against `schemas/review-request.schema.json`.
+1. Review the git-state generator design and implementation plan in PR #13.
+2. Retarget/rebase draft implementation PR #14 after PR #13 is accepted.
+3. Ask Claude to review PR #14 after CI is green on the retargeted PR.
 4. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
 5. Draft Codex and Claude render templates from the reviewed packet example.

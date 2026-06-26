@@ -15,9 +15,11 @@ owner instructions when they exist.
 - Package manager: npm.
 - Deployment target: Local CLI, no hosted MVP.
 - Test stack: TypeScript compiler plus Node's built-in test runner.
+- Generator behavior: local git-state `review-request` JSON generation; no
+  Markdown renderer yet.
 - Non-goals for the current runtime slice: MCP server support, package
-  publishing, hosted deployment, and automatic packet generation from live git
-  state.
+  publishing, hosted deployment, Markdown rendering, and agent-specific prompt
+  templates.
 
 ## Required Starting Point
 

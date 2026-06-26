@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript schema-validation CLI baseline | PR #11 merge commit `6f6f25e` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript schema-validation CLI baseline | PR #11 merge commit `6f6f25e`; generator implementation is in progress on draft PR #14 |
 
 ## Scope
 
@@ -40,7 +40,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - product brief
 - TypeScript CLI-first runtime decision
 - runtime/schema validation CLI implementation
-- git-state generator design and implementation plan
+- git-state generator design, implementation plan, and in-progress draft implementation PR
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -49,10 +49,10 @@ Current scope is the first local protocol and validation CLI baseline:
 
 ## Non-Goals
 
-- Packet generation from live git state
 - MCP server support
 - Package publishing
 - Hosted deployment setup
+- Markdown rendering and agent-specific prompt templates
 - External service provisioning
 - Importing assumptions from Hosted Portal, Studio, npm, Python, Cloudflare,
   Render, or any other project
@@ -75,12 +75,13 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Choose first implementation runtime | Done | No |
 | P0 | Write initial relay packet schema and packet-type docs | Done | No |
 | P0 | Implement runtime/schema validation CLI | Done | No |
-| P1 | Implement local CLI review-request packet generator | Planned | No |
+| P1 | Implement local CLI review-request packet generator | In progress | No |
 | P1 | Add Codex-ready and Claude-ready render templates | Candidate | Yes |
 
 ## Known Gaps
 
-- The git-state packet generator is planned but not implemented yet.
+- The git-state packet generator is implemented on draft PR #14 but not merged
+  yet.
 - Package publishing, deployment, and release smoke evidence are not present
   yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
