@@ -37,7 +37,9 @@ or old plan files as inactive until this registry and current code agree.
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Runtime/schema CLI design | Active |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Git-state review-request generator design | Active |
+| `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Review-request Markdown renderer design | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
+| `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -52,7 +54,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active execution plans. |
+| `docs/superpowers/plans/2026-06-26-render-review-request.md` | In progress | Codex | Renderer-first implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`; implementation PR follows after planning review. |
 
 ## Implemented Or Historical Plans
 

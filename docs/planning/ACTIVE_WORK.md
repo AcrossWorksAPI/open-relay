@@ -5,10 +5,11 @@ Last updated: 2026-06-26
 ## Current Direction
 
 Establish Open Relay as a local-first handoff and review protocol before product
-implementation. The reviewed `review-request` packet and merged validation CLI
-are now joined by the merged JSON-only git-state generator. The approved first
-runtime direction is a TypeScript CLI on Node.js with npm; MCP server support is
-deferred until the CLI is useful.
+implementation. The reviewed `review-request` packet, merged validation CLI,
+and merged JSON-only git-state generator are now joined by the active
+render-template planning slice. The approved first runtime direction is a
+TypeScript CLI on Node.js with npm; MCP server support is deferred until the
+CLI is useful.
 
 ## Current Implementation Source
 
@@ -43,7 +44,9 @@ deferred until the CLI is useful.
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
+| `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
+| `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -59,22 +62,25 @@ deferred until the CLI is useful.
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Markdown rendering and prompt templates deferred | Medium | Generator writes JSON only; Codex/Claude render templates remain candidate follow-up work. |
+| Markdown rendering not implemented yet | Medium | Renderer-first design and implementation plan are active; generator still writes JSON only until the implementation PR merges. |
+| Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Draft Codex and Claude render templates from the reviewed packet example and
-   merged JSON generator.
-2. Revisit permanent packet storage location after stdout and explicit
+1. Open the render-template planning PR for Claude/GitHub review.
+2. Implement `open-relay render review-request <packet.json> [--output <relay.md>]`
+   after the planning PR is green.
+3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-3. Define package/release target and live-readiness smoke criteria.
-4. Decide whether private redaction rule files are needed before package
+4. Define package/release target and live-readiness smoke criteria.
+5. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed
 
 - Packet storage location: repo-local, global user directory, or both.
-- Codex/Claude specificity versus agent-neutral templates.
+- Codex/Claude specificity versus agent-neutral templates. Current plan starts
+  agent-neutral and defers dialects.
 - Redaction rules from day one.
 - Package/release target and live-readiness criteria.

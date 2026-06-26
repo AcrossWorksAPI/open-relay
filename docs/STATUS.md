@@ -10,7 +10,10 @@ protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
 review handoffs. The first runtime direction is approved as a TypeScript CLI on
 Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. Release/versioning
-convention is still `Unknown; needs owner decision`.
+convention is still `Unknown; needs owner decision`. The next slice is now
+planned: a neutral `review-request` JSON-to-Markdown renderer that can serve
+Codex, Claude, or another reviewer without introducing agent-specific prompt
+dialects yet.
 
 ## Active Work
 
@@ -24,7 +27,8 @@ convention is still `Unknown; needs owner decision`.
 | Runtime/schema validation CLI | Done | PR #11 merged TypeScript package config, JSON Schema, reusable validator, `open-relay validate`, tests, and runtime CI. |
 | Git-state generator planning | Done | PR #13 merged the JSON-first packet generation design, explicit output/stdout storage choice, and fail-closed redaction defaults. |
 | Git-state generator implementation | Done | PR #14 merged argument parsing, typo/unknown/duplicate flag rejection, sanitized git/write errors and output messages, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
-| Product implementation | In progress | Validation and JSON-only packet generation are merged; Markdown rendering, prompt templates, package publishing, and release smoke remain unbuilt. |
+| Render-template planning | In progress | Design and implementation plan now define `open-relay render review-request <packet.json> [--output <relay.md>]` as the next renderer-first slice. |
+| Product implementation | In progress | Validation and JSON-only packet generation are merged; Markdown rendering is planned next; direct generator Markdown output, agent-specific prompt dialects, package publishing, and release smoke remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, and `npm run check` are local; GitHub Actions `Governance Checks` includes runtime checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -48,13 +52,12 @@ convention is still `Unknown; needs owner decision`.
 | 2026-06-26 | Git-state generator implementation branch checks | Passed | PR #14 branch: `https://github.com/AcrossWorksAPI/open-relay/pull/14`; local `npm ci`, `npm run check` with 31 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, sanitized success output, NUL-delimited name-status parsing, precise remote-redaction reasons, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed before merge. |
 | 2026-06-26 | PR #13 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/13`; merge commit `cd1462c`; `Governance Checks` passed. |
 | 2026-06-26 | PR #14 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/14`; merge commit `fd0960c`; final merged-main `npm run check` passed with 31 tests, `git diff --check` passed, generated packet smoke and validation passed, and packet leak scan found no local paths or secret-shaped strings. |
+| 2026-06-26 | Render-template planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-render-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-render-review-request.md`; local verification pending before PR. |
 
 ## Next Step
 
-Choose the next slice: Codex/Claude render templates, release/package target,
-or private redaction rule files. The strongest next engineering slice is
-Codex/Claude render templates because it turns the merged JSON packet into the
-human handoff format the project is meant to reduce.
+Open the render-template planning PR, then implement the renderer in a stacked
+or follow-on implementation PR after planning review is green.
 
 ## Owner Decisions Needed
 
@@ -62,6 +65,8 @@ human handoff format the project is meant to reduce.
   directory, or both? The generator plan avoids this by using stdout or an
   explicit `--output` path.
 - How opinionated should Open Relay be about Codex and Claude specifically?
+  The current renderer plan keeps the first template agent-neutral and defers
+  agent-specific prompt dialects.
 - Should private redaction rule files exist from day one? The generator plan
   starts with fixed fail-closed redaction defaults.
 - What package and release target should be used when the CLI is ready to
