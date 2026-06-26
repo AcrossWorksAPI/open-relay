@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, and runtime/schema CLI planning
+Status: Product brief, governance baseline, review-request protocol baseline, and runtime/schema validation CLI implementation
 Last updated: 2026-06-26
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript CLI-first planning baseline
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript CLI-first runtime branch
 
 ## Project Purpose
 
@@ -22,19 +22,18 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Baseline | Open-source hardening and first CI | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
-| Unversioned | Runtime schema validation CLI | Planned | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| Unversioned | Review-request packet CLI MVP | Candidate | Medium | Candidate | Runtime schema validation CLI | - |
+| Unversioned | Runtime schema validation CLI | In progress | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
+| Unversioned | Review-request packet CLI MVP | Planned | High | Candidate | Runtime schema validation CLI | - |
 | Unversioned | Codex and Claude render templates | Candidate | Medium | Candidate | Review-request packet CLI MVP | - |
 
 ## Candidate Scope
 
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
-| Protocol | Formal JSON Schema for reviewed packet | During runtime schema validation CLI | Candidate | TypeScript CLI direction approved | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI passes local and CI checks | - |
+| Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI PR merges | - |
 | Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | JSON Schema and generator plan are drafted | - |
 | Security | Local redaction and provenance rules | Before packets include sensitive data | Candidate | Packet schema includes repo diffs, logs, or notes | - |
-| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI passes local and CI checks | - |
+| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI PR merges | - |
 
 ## Update Rules
 

@@ -58,16 +58,16 @@ argument parsing outgrows `process.argv`.
 
 ## Acceptance Criteria
 
-- [ ] `npm ci` installs from `package-lock.json`.
-- [ ] `npm run build` compiles TypeScript into `dist/`.
-- [ ] `npm test` runs schema and CLI tests through Node's built-in test runner.
-- [ ] `npm run check` runs build and test checks.
-- [ ] `schemas/review-request.schema.json` validates `examples/review-request/relay.json`.
-- [ ] An invalid packet returns actionable schema errors.
-- [ ] `node dist/src/cli.js validate examples/review-request/relay.json` exits `0`.
-- [ ] `node dist/src/cli.js validate <invalid-json-file>` exits non-zero without echoing full file contents.
-- [ ] CI runs governance checks plus the TypeScript runtime check.
-- [ ] Roadmap/status docs record TypeScript CLI as the selected first runtime.
+- [x] `npm ci` installs from `package-lock.json`.
+- [x] `npm run build` compiles TypeScript into `dist/`.
+- [x] `npm test` runs schema and CLI tests through Node's built-in test runner.
+- [x] `npm run check` runs build and test checks.
+- [x] `schemas/review-request.schema.json` validates `examples/review-request/relay.json`.
+- [x] An invalid packet returns actionable schema errors.
+- [x] `node dist/src/cli.js validate examples/review-request/relay.json` exits `0`.
+- [x] `node dist/src/cli.js validate <invalid-json-file>` exits non-zero without echoing full file contents.
+- [x] CI runs governance checks plus the TypeScript runtime check.
+- [x] Roadmap/status docs record TypeScript CLI as the selected first runtime.
 
 ## Task 1: Runtime Scaffold And Help Command
 
@@ -79,7 +79,7 @@ argument parsing outgrows `process.argv`.
 - Create: `src/cli.ts`
 - Create: `tests/cli.test.ts`
 
-- [ ] **Step 1: Create npm package metadata**
+- [x] **Step 1: Create npm package metadata**
 
 Run:
 
@@ -104,7 +104,7 @@ Expected:
 package.json and package-lock.json exist, and package.json contains build, test, and check scripts.
 ```
 
-- [ ] **Step 2: Add TypeScript configuration**
+- [x] **Step 2: Add TypeScript configuration**
 
 Create `tsconfig.json`:
 
@@ -132,7 +132,7 @@ Create `tsconfig.json`:
 }
 ```
 
-- [ ] **Step 3: Write the failing CLI help test**
+- [x] **Step 3: Write the failing CLI help test**
 
 Create `tests/cli.test.ts`:
 
@@ -154,7 +154,7 @@ test("prints help", () => {
 });
 ```
 
-- [ ] **Step 4: Run the failing check**
+- [x] **Step 4: Run the failing check**
 
 Run:
 
@@ -168,7 +168,7 @@ Expected:
 FAIL because src/cli.ts does not exist yet.
 ```
 
-- [ ] **Step 5: Add the minimal CLI entrypoint**
+- [x] **Step 5: Add the minimal CLI entrypoint**
 
 Create `src/index.ts`:
 
@@ -213,7 +213,7 @@ if (require.main === module) {
 }
 ```
 
-- [ ] **Step 6: Verify the scaffold passes**
+- [x] **Step 6: Verify the scaffold passes**
 
 Run:
 
@@ -227,7 +227,7 @@ Expected:
 TypeScript compiles and the CLI help test passes.
 ```
 
-- [ ] **Step 7: Commit the scaffold**
+- [x] **Step 7: Commit the scaffold**
 
 Run:
 
@@ -243,7 +243,7 @@ git commit -m "feat: add TypeScript CLI scaffold"
 - Create: `src/schema.ts`
 - Create: `tests/schema.test.ts`
 
-- [ ] **Step 1: Write schema validation tests**
+- [x] **Step 1: Write schema validation tests**
 
 Create `tests/schema.test.ts`:
 
@@ -285,7 +285,7 @@ test("rejects mismatched changed file count", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the failing schema tests**
+- [x] **Step 2: Run the failing schema tests**
 
 Run:
 
@@ -299,7 +299,7 @@ Expected:
 FAIL because src/schema.ts does not exist yet.
 ```
 
-- [ ] **Step 3: Add the formal schema**
+- [x] **Step 3: Add the formal schema**
 
 Create `schemas/review-request.schema.json`:
 
@@ -684,7 +684,7 @@ Create `schemas/review-request.schema.json`:
 }
 ```
 
-- [ ] **Step 4: Add the validation module**
+- [x] **Step 4: Add the validation module**
 
 Create `src/schema.ts`:
 
@@ -773,7 +773,7 @@ export { validatePacket, validatePacketFile, type ValidationResult } from "./sch
 export const version = "0.0.0";
 ```
 
-- [ ] **Step 5: Run the schema checks**
+- [x] **Step 5: Run the schema checks**
 
 Run:
 
@@ -787,7 +787,7 @@ Expected:
 Schema tests pass for the valid example and fail-case packet.
 ```
 
-- [ ] **Step 6: Commit schema validation**
+- [x] **Step 6: Commit schema validation**
 
 Run:
 
@@ -802,7 +802,7 @@ git commit -m "feat: add review-request schema validation"
 - Modify: `src/cli.ts`
 - Modify: `tests/cli.test.ts`
 
-- [ ] **Step 1: Extend CLI tests for validate behavior**
+- [x] **Step 1: Extend CLI tests for validate behavior**
 
 Replace `tests/cli.test.ts` with:
 
@@ -865,7 +865,7 @@ test("rejects schema-invalid packets", () => {
 });
 ```
 
-- [ ] **Step 2: Run the failing CLI behavior tests**
+- [x] **Step 2: Run the failing CLI behavior tests**
 
 Run:
 
@@ -879,7 +879,7 @@ Expected:
 FAIL because the validate command has not been implemented.
 ```
 
-- [ ] **Step 3: Implement validate command**
+- [x] **Step 3: Implement validate command**
 
 Replace `src/cli.ts` with:
 
@@ -952,7 +952,7 @@ if (require.main === module) {
 }
 ```
 
-- [ ] **Step 4: Verify validate command behavior**
+- [x] **Step 4: Verify validate command behavior**
 
 Run:
 
@@ -968,7 +968,7 @@ npm run check passes.
 The validate command prints that examples/review-request/relay.json is valid.
 ```
 
-- [ ] **Step 5: Commit validate command**
+- [x] **Step 5: Commit validate command**
 
 Run:
 
@@ -982,7 +982,7 @@ git commit -m "feat: add packet validation command"
 **Files:**
 - Modify: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Add runtime checks to CI**
+- [x] **Step 1: Add runtime checks to CI**
 
 In `.github/workflows/ci.yml`, add these steps after the required project files
 check and before the roadmap parser check:
@@ -1001,7 +1001,7 @@ check and before the roadmap parser check:
         run: npm run check
 ```
 
-- [ ] **Step 2: Run local checks**
+- [x] **Step 2: Run local checks**
 
 Run:
 
@@ -1017,7 +1017,7 @@ Expected:
 All commands pass.
 ```
 
-- [ ] **Step 3: Commit CI update**
+- [x] **Step 3: Commit CI update**
 
 Run:
 
@@ -1039,7 +1039,7 @@ git commit -m "ci: run TypeScript runtime checks"
 - Modify: `docs/planning/VERSION_LEDGER.md`
 - Modify: `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 
-- [ ] **Step 1: Update public usage docs**
+- [x] **Step 1: Update public usage docs**
 
 Add a short CLI section to `README.md`:
 
@@ -1054,12 +1054,12 @@ npm run check
 node dist/src/cli.js validate examples/review-request/relay.json
 ```
 
-The first command validates a `review-request` JSON packet against
+The validate command checks a `review-request` JSON packet against
 `schemas/review-request.schema.json`. Packet generation from live git state is
 planned after schema validation is stable.
 ````
 
-- [ ] **Step 2: Update repository instructions**
+- [x] **Step 2: Update repository instructions**
 
 In `AGENTS.md`, replace the runtime unknowns with:
 
@@ -1084,7 +1084,7 @@ Update the discovered verification commands:
 - GitHub Actions: `Open Relay CI / Governance Checks`
 ```
 
-- [ ] **Step 3: Update planning docs**
+- [x] **Step 3: Update planning docs**
 
 Make these status changes:
 
@@ -1095,14 +1095,14 @@ Make these status changes:
   `Planned`.
 - `docs/planning/ACTIVE_WORK.md`: replace runtime-unknown risk with the
   remaining risk that runtime exists but generator behavior is not built.
-- `docs/planning/PLAN_REGISTRY.md`: move this plan from active to implemented
-  after the runtime PR merges.
-- `docs/planning/VERSION_LEDGER.md`: add merge, PR, and smoke evidence for the
-  runtime/schema CLI slice.
+- `docs/planning/PLAN_REGISTRY.md`: keep this plan in progress until the
+  runtime PR merges, then move it from active to implemented.
+- `docs/planning/VERSION_LEDGER.md`: add branch and local smoke evidence for
+  the runtime/schema CLI slice; add merge and PR evidence after the PR lands.
 - `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`: mark `Relay packet schema`
   validation cells as shipped where schema and CLI validation now exist.
 
-- [ ] **Step 4: Run final local verification**
+- [x] **Step 4: Run final local verification**
 
 Run:
 
@@ -1118,7 +1118,7 @@ Expected:
 All commands pass.
 ```
 
-- [ ] **Step 5: Commit documentation closeout**
+- [x] **Step 5: Commit documentation closeout**
 
 Run:
 

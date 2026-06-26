@@ -25,11 +25,11 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript CLI-first planning baseline | Current branch docs baseline |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript schema-validation CLI baseline | Current branch docs baseline |
 
 ## Scope
 
-Current scope is planning and governance setup only:
+Current scope is the first local protocol and validation CLI baseline:
 
 - parseable roadmap
 - active work dashboard
@@ -39,7 +39,7 @@ Current scope is planning and governance setup only:
 - first review-request packet spec and examples
 - product brief
 - TypeScript CLI-first runtime decision
-- runtime/schema validation implementation plan
+- runtime/schema validation CLI implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -48,8 +48,7 @@ Current scope is planning and governance setup only:
 
 ## Non-Goals
 
-- Product feature implementation
-- Runtime source implementation
+- Packet generation from live git state
 - MCP server support
 - Package publishing
 - Hosted deployment setup
@@ -74,14 +73,15 @@ Current scope is planning and governance setup only:
 | P0 | Define the smallest useful relay packet | Done | No |
 | P0 | Choose first implementation runtime | Done | No |
 | P0 | Write initial relay packet schema and packet-type docs | Done | No |
-| P0 | Implement runtime/schema validation CLI | Planned | No |
+| P0 | Implement runtime/schema validation CLI | In progress | No |
 | P1 | Implement local CLI review-request packet generator | Candidate | Yes |
 | P1 | Add Codex-ready and Claude-ready render templates | Candidate | Yes |
 
 ## Known Gaps
 
-- Formal JSON Schema has not been implemented from the reviewed packet shape.
-- Runtime target is selected, but no package, source, test, build, deployment,
-  or smoke command is present yet.
+- The first schema validator exists; live git-state packet generation is not
+  implemented yet.
+- Package publishing, deployment, and release smoke evidence are not present
+  yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
 - No live version, deployment, package, or runtime smoke evidence exists yet.

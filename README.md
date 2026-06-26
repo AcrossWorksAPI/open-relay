@@ -43,8 +43,22 @@ The first protocol slice is the `review-request` packet:
 - JSON example: `examples/review-request/relay.json`
 
 This packet is intentionally narrow. It defines the minimum context needed to
-ask a second reviewer to inspect completed repository work before Open Relay
-implements the CLI.
+ask a second reviewer to inspect completed repository work before Open Relay's
+generator is implemented.
+
+## CLI
+
+Open Relay starts as a local TypeScript CLI.
+
+```bash
+npm ci
+npm run check
+node dist/src/cli.js validate examples/review-request/relay.json
+```
+
+The validate command checks a `review-request` JSON packet against
+`schemas/review-request.schema.json`. Packet generation from live git state is
+planned after schema validation is stable.
 
 ## Runtime Plan
 
@@ -53,8 +67,8 @@ implements the CLI.
 - Runtime/schema CLI implementation plan:
   `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md`
 
-The first code slice should validate `review-request` JSON packets against a
-formal schema before generating packets from live git state.
+The first code slice validates `review-request` JSON packets against a formal
+schema before generating packets from live git state.
 
 ## Non-Goals For MVP
 

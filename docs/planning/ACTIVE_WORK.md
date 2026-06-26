@@ -6,9 +6,9 @@ Last updated: 2026-06-26
 
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet is now the source shape
-for the next schema and CLI planning slice. The approved first runtime direction
-is a TypeScript CLI on Node.js with npm; MCP server support is deferred until
-the CLI is useful.
+for the schema and CLI validation slice. The approved first runtime direction is
+a TypeScript CLI on Node.js with npm; MCP server support is deferred until the
+CLI is useful.
 
 ## Current Implementation Source
 
@@ -20,7 +20,16 @@ the CLI is useful.
 | `README.md` | Active | Public project summary. |
 | `SECURITY.md` | Active | Vulnerability reporting and security policy. |
 | `CONTRIBUTING.md` | Active | Contribution workflow and review expectations. |
-| `.github/workflows/ci.yml` | Active | First dependency-free CI workflow. |
+| `package.json` | Active | npm package metadata and build/test/check scripts. |
+| `package-lock.json` | Active | Locked npm dependency graph. |
+| `tsconfig.json` | Active | TypeScript compiler configuration. |
+| `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
+| `src/index.ts` | Active | Runtime exports. |
+| `src/schema.ts` | Active | Reusable packet validation module. |
+| `src/cli.ts` | Active | Local CLI entrypoint and `validate` command. |
+| `tests/schema.test.ts` | Active | Schema validation tests. |
+| `tests/cli.test.ts` | Active | CLI behavior tests. |
+| `.github/workflows/ci.yml` | Active | Governance and TypeScript runtime CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
@@ -36,18 +45,19 @@ the CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Formal JSON Schema not implemented | Medium | Use the reviewed `review-request` packet spec and runtime/schema CLI plan as the source shape. |
-| Runtime config not implemented | High | TypeScript CLI-first direction is approved; package scaffold remains planned. |
-| Verification command limited before runtime exists | Medium | Use `git diff --check` plus required GitHub Actions governance checks. |
-| Runtime-specific CI missing | Medium | Add package/build/test checks when the TypeScript package scaffold is implemented. |
+| Packet generator not implemented | High | Next product slice should generate review-request packets from local git state. |
+| Package publishing target unknown | Medium | Keep `private: true` until owner selects npm/package release policy. |
+| Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
+| Runtime CI limited to validation slice | Low | CI runs build and tests for the current CLI; broaden checks as generator behavior is added. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Runtime redaction behavior undefined | Medium | Protocol doc defines redaction notes; CLI behavior remains planned. |
+| Runtime redaction behavior undefined | Medium | Protocol doc defines redaction notes; generator behavior remains planned. |
 
 ## Next Recommended Work
 
-1. Implement the TypeScript package scaffold from the active plan.
-2. Convert the accepted packet shape into `schemas/review-request.schema.json`.
-3. Add `open-relay validate <packet.json>` behavior and runtime CI.
+1. Open the runtime/schema validation CLI PR and wait for CI.
+2. Request Claude review for schema parity, CLI error behavior, dependency
+   minimality, and roadmap accuracy.
+3. Resolve review findings, merge, pull, and prune.
 4. Draft the generator plan for local git-state review-request packets.
 5. Draft Codex and Claude render templates from the reviewed packet example.
 

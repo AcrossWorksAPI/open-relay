@@ -14,7 +14,16 @@ or old plan files as inactive until this registry and current code agree.
 | `README.md` | Public project summary | Active |
 | `SECURITY.md` | Security policy and reporting process | Active |
 | `CONTRIBUTING.md` | Contribution workflow and review expectations | Active |
-| `.github/workflows/ci.yml` | First CI guardrail | Active |
+| `package.json` | npm package metadata and runtime scripts | Active |
+| `package-lock.json` | Locked npm dependency graph | Active |
+| `tsconfig.json` | TypeScript compiler configuration | Active |
+| `schemas/review-request.schema.json` | Formal review-request packet schema | Active |
+| `src/index.ts` | Runtime exports | Active |
+| `src/schema.ts` | Packet validation module | Active |
+| `src/cli.ts` | Local CLI entrypoint | Active |
+| `tests/schema.test.ts` | Schema validation tests | Active |
+| `tests/cli.test.ts` | CLI behavior tests | Active |
+| `.github/workflows/ci.yml` | Governance and runtime CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
@@ -33,7 +42,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Active | Codex | Implement TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, and roadmap closeout. |
+| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | In progress | Codex | Implements TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, and roadmap updates. Move to implemented after the runtime PR merges. |
 
 ## Implemented Or Historical Plans
 
