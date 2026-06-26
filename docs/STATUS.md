@@ -10,10 +10,10 @@ protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
 review handoffs. The first runtime direction is approved as a TypeScript CLI on
 Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. Release/versioning
-convention is still `Unknown; needs owner decision`. The next slice is now
-planned: a neutral `review-request` JSON-to-Markdown renderer that can serve
-Codex, Claude, or another reviewer without introducing agent-specific prompt
-dialects yet.
+convention is still `Unknown; needs owner decision`. The active slice implements
+a neutral `review-request` JSON-to-Markdown renderer that can serve Codex,
+Claude, or another reviewer without introducing agent-specific prompt dialects
+yet.
 
 ## Active Work
 
@@ -27,8 +27,9 @@ dialects yet.
 | Runtime/schema validation CLI | Done | PR #11 merged TypeScript package config, JSON Schema, reusable validator, `open-relay validate`, tests, and runtime CI. |
 | Git-state generator planning | Done | PR #13 merged the JSON-first packet generation design, explicit output/stdout storage choice, and fail-closed redaction defaults. |
 | Git-state generator implementation | Done | PR #14 merged argument parsing, typo/unknown/duplicate flag rejection, sanitized git/write errors and output messages, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
-| Render-template planning | In progress | Design and implementation plan now define `open-relay render review-request <packet.json> [--output <relay.md>]` as the next renderer-first slice. |
-| Product implementation | In progress | Validation and JSON-only packet generation are merged; Markdown rendering is planned next; direct generator Markdown output, agent-specific prompt dialects, package publishing, and release smoke remain unbuilt. |
+| Render-template planning | Done | PR #16 merged the renderer-first design and implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`. |
+| Render-template implementation | In progress | Active branch adds the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, and render behavior tests. |
+| Product implementation | In progress | Validation and JSON-only packet generation are merged; Markdown rendering is implemented on the active branch; direct generator Markdown output, agent-specific prompt dialects, package publishing, and release smoke remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, and `npm run check` are local; GitHub Actions `Governance Checks` includes runtime checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -52,13 +53,15 @@ dialects yet.
 | 2026-06-26 | Git-state generator implementation branch checks | Passed | PR #14 branch: `https://github.com/AcrossWorksAPI/open-relay/pull/14`; local `npm ci`, `npm run check` with 31 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, sanitized success output, NUL-delimited name-status parsing, precise remote-redaction reasons, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed before merge. |
 | 2026-06-26 | PR #13 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/13`; merge commit `cd1462c`; `Governance Checks` passed. |
 | 2026-06-26 | PR #14 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/14`; merge commit `fd0960c`; final merged-main `npm run check` passed with 31 tests, `git diff --check` passed, generated packet smoke and validation passed, and packet leak scan found no local paths or secret-shaped strings. |
-| 2026-06-26 | Render-template planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-render-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-render-review-request.md`; local verification pending before PR. |
+| 2026-06-26 | Render-template planning branch | Merged | Design source `docs/superpowers/specs/2026-06-26-render-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-render-review-request.md`; PR #16 merged after CI and Claude review. |
 | 2026-06-26 | Claude review for PR #16 | Findings addressed | Corrected the plan's verification-field model from `notes` to schema-valid `evidence`, added example Markdown snapshot parity, added inline/list newline-normalization requirements, and recorded prompt-injection risk for packet-authored free text; `npm run check`, `git diff --check`, and targeted stale-field scan passed locally. |
+| 2026-06-26 | PR #16 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/16`; merge commit `5b03b8d`; `Governance Checks` passed and Claude re-review reported no remaining findings. |
+| 2026-06-26 | Render-template implementation branch checks | Passed | `npm run check` passed with 46 tests, `git diff --check` passed, stdout render smoke passed, output-file render smoke passed, and invalid-JSON render leak smoke did not print `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
 
 ## Next Step
 
-Open the render-template planning PR, then implement the renderer in a stacked
-or follow-on implementation PR after planning review is green.
+Open the render-template implementation PR, request Claude review after GitHub
+CI is green, then merge and run closeout once review findings are resolved.
 
 ## Owner Decisions Needed
 

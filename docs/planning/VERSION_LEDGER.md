@@ -5,7 +5,7 @@ Last updated: 2026-06-26
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, and render-template planning in progress
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, and render-template implementation in progress
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -27,7 +27,8 @@ captured is not alert delivered.
 | Runtime/schema validation CLI implementation | Done | 2026-06-26 | Merge commit `6f6f25e` on `main` | PR #11: `https://github.com/AcrossWorksAPI/open-relay/pull/11` | N/A, local CLI baseline only | `npm ci`, `npm run check` with 8 tests, `git diff --check`, `node dist/src/cli.js validate examples/review-request/relay.json`, package entrypoint smoke, and invalid-JSON leak smoke passed locally on 2026-06-26; `Governance Checks` passed on PR #11; Claude re-review reported no remaining findings | Revert merge commit `6f6f25e` if the validator or CLI direction is rejected. |
 | Git-state generator planning | Done | 2026-06-26 | Merge commit `cd1462c` on `main` | PR #13: `https://github.com/AcrossWorksAPI/open-relay/pull/13` | N/A, docs/planning slice only | `npm run check`, `git diff --check`, placeholder scan, and secret-pattern scan passed locally on 2026-06-26; `Governance Checks` passed on PR #13; Claude plan review findings addressed for redaction semantics, typed snippets, explicit diff semantics, and NUL-delimited name-status handling | Revert merge commit `cd1462c` if the generator command shape or redaction defaults are rejected. |
 | Git-state generator implementation | Done | 2026-06-26 | Merge commit `fd0960c` on `main` | PR #14: `https://github.com/AcrossWorksAPI/open-relay/pull/14` | N/A, local CLI MVP only | `npm ci`, `npm run check` with 31 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, sanitized success output, NUL-delimited name-status parsing, precise remote-redaction reasons, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed on PR #14; final merged-main smoke and packet leak scan passed | Revert merge commit `fd0960c` if generated packet behavior or redaction defaults are rejected. |
-| Render-template planning | In progress | 2026-06-26 | Planning branch `codex/render-review-request-planning`; commit `26cc530` plus PR #16 review-fix follow-up | PR #16: `https://github.com/AcrossWorksAPI/open-relay/pull/16` | N/A, docs/planning slice only | `npm run check` with 31 tests, `git diff --check`, placeholder/stale-field scan, and `item.notes` regression scan passed locally; Claude review findings addressed for schema-valid verification `evidence`, example snapshot parity, inline/list newline normalization, and prompt-injection risk documentation | Revert the planning commits if the renderer command shape is rejected. |
+| Render-template planning | Done | 2026-06-26 | Merge commit `5b03b8d` on `main` | PR #16: `https://github.com/AcrossWorksAPI/open-relay/pull/16` | N/A, docs/planning slice only | `npm run check` with 31 tests, `git diff --check`, placeholder/stale-field scan, and `item.notes` regression scan passed locally; `Governance Checks` passed; Claude re-review reported no remaining findings | Revert merge commit `5b03b8d` if the renderer command shape is rejected. |
+| Render-template implementation | In progress | 2026-06-26 | Branch `codex/render-review-request-implementation` | Implementation PR pending | N/A, local CLI branch only | `npm run check` passed with 46 tests, `git diff --check` passed, stdout render smoke passed, output-file render smoke passed, and invalid-JSON render leak smoke did not print `SECRET_TOKEN_SHOULD_NOT_APPEAR`; branch adds pure renderer, CLI route, parser edge-case tests, package export, sanitized render errors, and example Markdown snapshot regeneration | Revert implementation branch commits if renderer output or CLI route is rejected. |
 
 ## Rollback Notes
 
@@ -40,5 +41,8 @@ captured is not alert delivered.
   template or release slices because it has no persistent data model.
 - Render-template planning can be reverted independently because it does not
   change runtime behavior until an implementation PR merges.
+- Render-template implementation can be reverted independently from future
+  release or storage slices because it changes only local CLI rendering,
+  examples, and tests.
 - Product rollback strategy is `Unknown; needs owner decision` because no
   package target, release channel, or persistent data model exists yet.
