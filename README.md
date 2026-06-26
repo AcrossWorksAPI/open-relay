@@ -57,8 +57,26 @@ node dist/src/cli.js validate examples/review-request/relay.json
 ```
 
 The validate command checks a `review-request` JSON packet against
-`schemas/review-request.schema.json`. Packet generation from live git state is
-planned after schema validation is stable.
+`schemas/review-request.schema.json`.
+
+## Generate Review Packets
+
+Generate a `review-request` JSON packet from local git state:
+
+```bash
+npm run build
+node dist/src/cli.js generate review-request \
+  --base origin/main \
+  --head HEAD \
+  --goal "Review this implementation slice" \
+  --summary "Summarizes the branch for review." \
+  --behavioral-intent "Help a second reviewer inspect the exact diff range." \
+  --output relay.json
+node dist/src/cli.js validate relay.json
+```
+
+The generator writes JSON only. Markdown rendering and agent-specific prompt
+templates remain planned follow-up slices.
 
 ## Runtime Plan
 
@@ -66,9 +84,14 @@ planned after schema validation is stable.
   `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md`
 - Runtime/schema CLI implementation plan:
   `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md`
+- Git-state generator design:
+  `docs/superpowers/specs/2026-06-26-git-state-generator-design.md`
+- Git-state generator implementation plan:
+  `docs/superpowers/plans/2026-06-26-git-state-generator.md`
 
 The first code slice validates `review-request` JSON packets against a formal
-schema before generating packets from live git state.
+schema. The next implementation slice generates JSON packets from live git
+state while keeping Markdown rendering deferred.
 
 ## Non-Goals For MVP
 

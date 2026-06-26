@@ -19,16 +19,25 @@ or old plan files as inactive until this registry and current code agree.
 | `tsconfig.json` | TypeScript compiler configuration | Active |
 | `schemas/review-request.schema.json` | Formal review-request packet schema | Active |
 | `src/index.ts` | Runtime exports | Active |
+| `src/args.ts` | Generator argument parser | Active |
+| `src/git.ts` | Local git context collector | Active |
+| `src/redaction.ts` | Remote URL redaction helper | Active |
+| `src/reviewRequest.ts` | Review-request packet builder | Active |
 | `src/schema.ts` | Packet validation module | Active |
-| `src/cli.ts` | Local CLI entrypoint | Active |
+| `src/cli.ts` | Local CLI entrypoint, validation, and generator routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
+| `tests/args.test.ts` | Generator argument parser tests | Active |
+| `tests/git.test.ts` | Git context collector tests | Active |
+| `tests/redaction.test.ts` | Remote URL redaction tests | Active |
+| `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
 | `.github/workflows/ci.yml` | Governance and runtime CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Runtime/schema CLI design | Active |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Git-state review-request generator design | Active |
+| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -43,7 +52,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Codex | Plan for local git-state review-request packet generation, redaction defaults, CLI wiring, tests, and closeout. |
+| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Codex | Plan for local git-state review-request packet generation, redaction defaults, CLI wiring, tests, and closeout; draft implementation PR #14 is open and green. |
 
 ## Implemented Or Historical Plans
 

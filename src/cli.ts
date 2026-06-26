@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 
-import { validatePacketFile } from "./schema";
+import { writeFile } from "node:fs/promises";
+
+import { parseGenerateReviewRequestArgs } from "./args";
+import { collectGitContext } from "./git";
+import { buildReviewRequestPacket } from "./reviewRequest";
+import { validatePacket, validatePacketFile } from "./schema";
 
 const usage = `Open Relay
 
 Usage:
   open-relay validate <packet.json>
+  open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <packet.json>]
   open-relay --help
 `;
 
@@ -21,8 +27,59 @@ export async function run(argv: string[]): Promise<number> {
     return validateCommand(args[1]);
   }
 
-  process.stderr.write(`Unknown command: ${args[0]}\n\n${usage}`);
+  if (args[0] === "generate" && args[1] === "review-request") {
+    return generateReviewRequestCommand(args.slice(2));
+  }
+
+  process.stderr.write(`Unknown command: ${args.join(" ")}\n\n${usage}`);
   return 2;
+}
+
+async function generateReviewRequestCommand(args: string[]): Promise<number> {
+  const parsed = parseGenerateReviewRequestArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  try {
+    const git = collectGitContext({
+      cwd: process.cwd(),
+      baseRef: parsed.options.base,
+      headRef: parsed.options.head,
+      includeLocalPath: parsed.options.includeLocalPath
+    });
+    const packet = buildReviewRequestPacket({ options: parsed.options, git });
+    const result = validatePacket(packet);
+
+    if (!result.valid) {
+      process.stderr.write("Generated review-request packet failed validation.\n");
+      for (const error of result.errors) {
+        process.stderr.write(`- ${error}\n`);
+      }
+      return 1;
+    }
+
+    const json = `${JSON.stringify(packet, null, 2)}\n`;
+
+    if (parsed.options.output) {
+      try {
+        await writeFile(parsed.options.output, json, "utf8");
+      } catch {
+        process.stderr.write("Could not write review-request packet.\n");
+        return 1;
+      }
+      process.stdout.write("Wrote review-request packet.\n");
+    } else {
+      process.stdout.write(json);
+    }
+
+    return 0;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(`Could not generate review-request packet: ${message}\n`);
+    return 1;
+  }
 }
 
 async function validateCommand(path: string | undefined): Promise<number> {
