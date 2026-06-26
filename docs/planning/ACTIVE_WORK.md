@@ -12,8 +12,9 @@ installability from a local npm tarball before any live/publish claim. Direct
 Markdown generation is merged so a local user can generate a review-ready
 Markdown packet in one command. Local `handoff review-request` is merged to
 make the review-request path clearer as a workflow command. The approved first
-runtime direction is a TypeScript CLI on Node.js with npm; MCP server support is
-deferred until the CLI is useful.
+runtime direction is a TypeScript CLI on Node.js with npm. Repo-local packet
+storage planning is active to make saved handoff packets durable without adding
+global storage, hosted sync, or external orchestration.
 
 ## Current Implementation Source
 
@@ -55,11 +56,13 @@ deferred until the CLI is useful.
 | `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md` | Active | Design for npm package target and tarball install smoke before publishing. |
 | `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md` | Active | Design for `generate review-request --format markdown`. |
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
+| `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
 | `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Active | Implementation plan for direct Markdown output from the generator. |
 | `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Active | Implementation plan for the local handoff review-request command. |
+| `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | Active | Implementation plan for `save review-request` repo-local storage. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -75,19 +78,21 @@ deferred until the CLI is useful.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
+| Repo-local packet storage not implemented | Medium | Planning is active for explicit `.open-relay/review-requests` bundle storage through `save review-request`. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Revisit permanent packet storage location after stdout and explicit
-   `--output` behavior is proven.
-2. Decide whether private redaction rule files are needed before package
+1. Open the repo-local packet storage planning PR for GitHub CI and Claude
+   review.
+2. Implement `save review-request` after planning review is green.
+3. Decide whether private redaction rule files are needed before package
    publishing.
-3. Plan the first agent-specific prompt dialect or wrapper only if the neutral
+4. Plan the first agent-specific prompt dialect or wrapper only if the neutral
    Markdown handoff proves insufficient.
-4. Define npm publish owner, first semver version, changelog, and tag workflow.
+5. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
 
