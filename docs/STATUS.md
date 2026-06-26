@@ -16,8 +16,9 @@ another reviewer without introducing agent-specific prompt dialects yet. npm
 package metadata, an allowlisted package packlist, and local tarball install
 smoke are merged as the release-readiness gate before publishing. Direct
 Markdown generation is merged so the generator can emit review-ready Markdown
-without a separate render step. npm registry publishing, persistent packet
-storage, and private redaction rules remain deferred.
+without a separate render step. Local handoff workflow planning is active for a
+clearer review-request command. npm registry publishing, persistent packet
+storage, external agent invocation, and private redaction rules remain deferred.
 
 ## Active Work
 
@@ -37,7 +38,8 @@ storage, and private redaction rules remain deferred.
 | Package/release smoke implementation | Done | PR #20 merged `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
 | Direct Markdown generation planning | Done | PR #22 merged the design and implementation plan for `generate review-request --format markdown` while keeping JSON as the default and reusing the existing renderer. |
 | Direct Markdown generation implementation | Done | PR #23 merged `--format json|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, and direct generator Markdown output are merged; agent-specific prompt dialects, registry publishing, private redaction rules, and higher-level handoff orchestration remain unbuilt. |
+| Local handoff workflow planning | In progress | Design and implementation plan add `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, and direct generator Markdown output are merged; local handoff workflow is planned next; agent-specific prompt dialects, registry publishing, private redaction rules, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -75,11 +77,12 @@ storage, and private redaction rules remain deferred.
 | 2026-06-26 | PR #22 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/22`; merge commit `36f95dc`; `Governance Checks` passed and Claude plan review reported no substantive findings. |
 | 2026-06-26 | Direct Markdown generation implementation branch checks | Passed | `npm run check` passed with 55 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, and verified installed CLI direct Markdown generation; `git diff --check` passed. |
 | 2026-06-26 | PR #23 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/23`; merge commit `80501da`; `Governance Checks` passed, Claude review reported no findings, and direct Markdown generation merged without agent-specific templates, storage, publish, or live-release claims. |
+| 2026-06-26 | Local handoff workflow planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-handoff-review-request.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR. |
 
 ## Next Step
 
-Plan the next relay workflow slice: a higher-level local handoff command that
-generates, validates, and renders a review packet in one workflow.
+Open the local handoff workflow planning PR, wait for CI and Claude review,
+then implement `handoff review-request`.
 
 ## Owner Decisions Needed
 

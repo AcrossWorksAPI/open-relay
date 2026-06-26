@@ -10,7 +10,8 @@ merged JSON-only git-state generator, merged Markdown renderer, and merged
 package smoke form the current CLI baseline. The CLI can now prove
 installability from a local npm tarball before any live/publish claim. Direct
 Markdown generation is merged so a local user can generate a review-ready
-Markdown packet in one command. The approved first runtime
+Markdown packet in one command. Local handoff workflow planning is active to
+make the review-request path clearer as a workflow command. The approved first runtime
 direction is a TypeScript CLI on Node.js with npm; MCP server support is
 deferred until the CLI is useful.
 
@@ -53,10 +54,12 @@ deferred until the CLI is useful.
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
 | `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md` | Active | Design for npm package target and tarball install smoke before publishing. |
 | `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md` | Active | Design for `generate review-request --format markdown`. |
+| `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
 | `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Active | Implementation plan for direct Markdown output from the generator. |
+| `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Active | Implementation plan for the local handoff review-request command. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -72,17 +75,17 @@ deferred until the CLI is useful.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Higher-level handoff workflow absent | Low | Direct Markdown generation is merged; a future command can wrap generate/validate/render into an even clearer local handoff workflow. |
+| Higher-level handoff workflow not implemented | Low | Planning is active for `handoff review-request`, a Markdown-first local workflow command. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Plan a higher-level handoff command that generates, validates, and renders a
-   review packet in one local workflow.
-2. Revisit permanent packet storage location after stdout and explicit
+1. Open the local handoff workflow planning PR for GitHub CI and Claude review.
+2. Implement `handoff review-request` after planning review is green.
+3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-3. Decide whether private redaction rule files are needed before package
+4. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed
