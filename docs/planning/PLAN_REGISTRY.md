@@ -1,6 +1,6 @@
 # Open Relay Plan Registry
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
 
 This registry classifies active and historical planning sources. Treat unlisted
 or old plan files as inactive until this registry and current code agree.
@@ -65,7 +65,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | In progress | Codex | Planning `save review-request`, repo-local bundle storage, CLI tests, package smoke update, and closeout. |
+| `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | In progress | Codex | Implementing `save review-request`, repo-local bundle storage, CLI tests, package smoke update, and closeout. |
 
 ## Implemented Or Historical Plans
 

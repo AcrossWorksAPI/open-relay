@@ -1,6 +1,6 @@
 # Open Relay Active Work
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
 
 ## Current Direction
 
@@ -11,10 +11,10 @@ package smoke form the current CLI baseline. The CLI can now prove
 installability from a local npm tarball before any live/publish claim. Direct
 Markdown generation is merged so a local user can generate a review-ready
 Markdown packet in one command. Local `handoff review-request` is merged to
-make the review-request path clearer as a workflow command. The approved first
-runtime direction is a TypeScript CLI on Node.js with npm. Repo-local packet
-storage planning is active to make saved handoff packets durable without adding
-global storage, hosted sync, or external orchestration.
+make the review-request path clearer as a workflow command. Repo-local packet
+storage implementation is active to make saved handoff packets durable without
+adding global storage, hosted sync, or external orchestration. The approved
+first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -38,6 +38,7 @@ global storage, hosted sync, or external orchestration.
 | `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/schema.ts` | Active | Reusable packet validation module. |
+| `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
 | `src/cli.ts` | Active | Local CLI entrypoint for `validate`, `generate review-request`, `render review-request`, and `handoff review-request` behavior. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
@@ -46,6 +47,7 @@ global storage, hosted sync, or external orchestration.
 | `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
+| `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
@@ -78,25 +80,24 @@ global storage, hosted sync, or external orchestration.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Repo-local packet storage not implemented | Medium | Planning is active for explicit `.open-relay/review-requests` bundle storage through `save review-request`. |
+| Repo-local packet storage not merged | Medium | Implementation branch adds explicit `.open-relay/review-requests` bundle storage through `save review-request`; merge remains gated by CI and review. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the repo-local packet storage planning PR for GitHub CI and Claude
-   review.
-2. Implement `save review-request` after planning review is green.
-3. Decide whether private redaction rule files are needed before package
+1. Open the repo-local packet storage implementation PR for GitHub CI and
+   Claude review.
+2. Decide whether private redaction rule files are needed before package
    publishing.
-4. Plan the first agent-specific prompt dialect or wrapper only if the neutral
+3. Plan the first agent-specific prompt dialect or wrapper only if the neutral
    Markdown handoff proves insufficient.
-5. Define npm publish owner, first semver version, changelog, and tag workflow.
+4. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
 
-- Packet storage location: repo-local, global user directory, or both.
+- Global packet storage in addition to repo-local storage.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
 - Redaction rules from day one.

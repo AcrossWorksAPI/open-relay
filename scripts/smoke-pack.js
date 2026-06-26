@@ -7,6 +7,7 @@ const {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync
@@ -123,6 +124,26 @@ try {
   const handoff = readFileSync(handoffMarkdown, "utf8");
   assert.match(handoff, /^# Review Request Relay Packet/);
   assert.match(handoff, /## Next Action/);
+
+  runCli(cli, [
+    "save",
+    "review-request",
+    "--base", base,
+    "--head", head,
+    "--goal", "Smoke package save",
+    "--summary", "Verifies installed CLI can save a packet bundle.",
+    "--behavioral-intent", "Prove package tarball supports repo-local storage."
+  ], {
+    cwd: gitRepo,
+    contains: "Saved review-request packet:"
+  });
+
+  const savedRoot = join(gitRepo, ".open-relay", "review-requests");
+  const [savedId] = readdirSync(savedRoot);
+  const savedDir = join(savedRoot, savedId);
+  assert.match(readFileSync(join(savedDir, "relay.md"), "utf8"), /^# Review Request Relay Packet/);
+  assert.equal(JSON.parse(readFileSync(join(savedDir, "relay.json"), "utf8")).packet_type, "review-request");
+  assert.equal(JSON.parse(readFileSync(join(savedDir, "manifest.json"), "utf8")).storage_id, savedId);
 
   const badJson = join(workspace, "bad.json");
   writeFileSync(badJson, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");

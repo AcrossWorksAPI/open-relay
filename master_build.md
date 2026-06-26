@@ -1,6 +1,6 @@
 # Open Relay Master Build
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
 
 This is the executive entrypoint for Open Relay. It links the current roadmap,
 status, plan registry, and version ledger used by Across Works Codex workflow.
@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, and repo-local packet storage planning in progress | PR #26 merge commit `c95f409`; storage planning source `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, and repo-local packet storage implementation in progress | PR #28 merge commit `bdefbb8`; storage implementation source `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` |
 
 ## Scope
 
@@ -45,7 +45,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - package/release smoke design, implementation plan, merged implementation, and CI guardrail
 - direct Markdown generation design, implementation plan, merged implementation, and package smoke coverage
 - local handoff workflow design, implementation plan, merged implementation, and package smoke coverage
-- repo-local packet storage design and implementation plan
+- repo-local packet storage design, implementation plan, and active implementation branch
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -96,9 +96,9 @@ Current scope is the first local protocol and validation CLI baseline:
   `open-relay render review-request`.
 - Local `handoff review-request` is merged as a Markdown-first convenience
   command; external agent invocation remains deferred.
-- Repo-local packet storage is planned as explicit `.open-relay/review-requests`
-  bundles; global storage, list/read/delete/archive, retention, and hosted sync
-  remain deferred.
+- Repo-local packet storage is implemented on branch as explicit
+  `.open-relay/review-requests` bundles; global storage,
+  list/read/delete/archive, retention, and hosted sync remain deferred.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
