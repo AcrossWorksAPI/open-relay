@@ -1,0 +1,76 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { test } from "node:test";
+
+const cliPath = "dist/src/cli.js";
+
+test("prints help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay validate <packet\.json>/);
+  assert.equal(result.stderr, "");
+});
+
+test("validates the example packet", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "validate", "examples/review-request/relay.json"],
+    {
+      encoding: "utf8"
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /valid review-request packet/);
+  assert.equal(result.stderr, "");
+});
+
+test("rejects invalid JSON without printing file contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-"));
+  const packetPath = join(directory, "bad.json");
+  writeFileSync(packetPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "validate", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid JSON/);
+  assert.doesNotMatch(result.stderr, /SECRET/);
+});
+
+test("rejects schema-invalid packets", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-"));
+  const packetPath = join(directory, "packet.json");
+  writeFileSync(packetPath, JSON.stringify({ packet_version: "0.1" }), "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "validate", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid review-request packet/);
+  assert.match(result.stderr, /must have required property/);
+});
+
+test("exports the validator from the package entrypoint", () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "-e",
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1);"
+    ],
+    {
+      encoding: "utf8"
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stderr, "");
+});

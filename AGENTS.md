@@ -6,19 +6,18 @@ owner instructions when they exist.
 ## Project Scope
 
 - Project name: Open Relay.
-- Current known scope: local-first AI handoff/review protocol, CLI planning,
-  Markdown/JSON relay packet schema, prompt templates, and Across Works roadmap
-  governance.
+- Current known scope: local-first AI handoff/review protocol, TypeScript CLI
+  validation, Markdown/JSON relay packet schema, prompt templates, and Across
+  Works roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
 - Package manager: npm.
-- Deployment target: local CLI, no hosted MVP.
-- Test stack: not present yet; planned as TypeScript compiler plus Node's
-  built-in test runner.
-- Non-goals for this baseline: product features, deployment setup, external
-  service provisioning, MCP server support, package publishing, and speculative
-  architecture.
+- Deployment target: Local CLI, no hosted MVP.
+- Test stack: TypeScript compiler plus Node's built-in test runner.
+- Non-goals for the current runtime slice: MCP server support, package
+  publishing, hosted deployment, and automatic packet generation from live git
+  state.
 
 ## Required Starting Point
 
@@ -65,12 +64,11 @@ ledger, lifecycle, or closeout work.
 Discovered from this repository:
 
 - `git diff --check`
+- `npm ci`
+- `npm run build`
+- `npm test`
+- `npm run check`
 - GitHub Actions: `Open Relay CI / Governance Checks`
-
-No project test, build, lint, smoke, package, or deployment command is present
-yet. The repository currently has a Node-style `.gitignore`, but no package or
-runtime config. Do not invent test commands. When project source/config is
-added, update this section with verified commands and evidence.
 
 ## Roadmap Governance
 

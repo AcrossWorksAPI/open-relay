@@ -5,7 +5,7 @@ Last updated: 2026-06-26
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript CLI-first planning baseline
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript schema-validation CLI branch
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -24,11 +24,14 @@ captured is not alert delivered.
 | Open-source hardening and first CI | Done | 2026-06-26 | Merge commit `f05c61b` on `main` | PR #2: `https://github.com/AcrossWorksAPI/open-relay/pull/2` | N/A, docs/config baseline | `Governance Checks` passed on PR #2 and is required on `main` | Revert hardening merge commit if it blocks contribution flow unexpectedly. |
 | Smallest useful relay packet | Done | 2026-06-26 | Merge commit `3a23ba1` on `main` | PR #5: `https://github.com/AcrossWorksAPI/open-relay/pull/5` | N/A, docs/protocol slice | `Governance Checks` passed on PR #5; Claude re-review reported no remaining findings | Revert merge commit `3a23ba1` if the reviewed packet shape is rejected. |
 | Runtime and schema CLI planning | Done | 2026-06-26 | Merge commit `5c87d46` on `main` | PR #9: `https://github.com/AcrossWorksAPI/open-relay/pull/9` | N/A, docs/planning slice | Local governance checks passed; `Governance Checks` passed on PR #9; Claude plan review received via owner handoff with low findings addressed | Revert merge commit `5c87d46` if the TypeScript CLI-first direction changes. |
+| Runtime/schema validation CLI implementation | In progress | 2026-06-26 | Branch `codex/runtime-schema-cli` through review-fix commit `9c9083b` | PR #11: `https://github.com/AcrossWorksAPI/open-relay/pull/11` | N/A, local CLI branch only | `npm ci`, `npm run check` with 8 tests, `git diff --check`, `node dist/src/cli.js validate examples/review-request/relay.json`, package entrypoint smoke, and invalid-JSON leak smoke passed locally on 2026-06-26; `Governance Checks` passed on PR #11 before review fixes | Revert the implementation PR if the validator or CLI direction is rejected. |
 
 ## Rollback Notes
 
 - Governance docs can be reverted by reverting the baseline commit.
 - Protocol docs can be reverted independently because no runtime or persistent
   data model depends on them yet.
+- Runtime schema validation can be reverted independently while packet
+  generation and release behavior remain unbuilt.
 - Product rollback strategy is `Unknown; needs owner decision` because no
-  runtime, package target, or persistent data model exists yet.
+  package target, release channel, or persistent data model exists yet.

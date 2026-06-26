@@ -1,0 +1,39 @@
+{
+  "name": "@acrossworks/open-relay",
+  "version": "0.0.0",
+  "description": "Local-first AI handoff and review protocol CLI",
+  "main": "dist/src/index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "npm run build && node --test \"dist/tests/**/*.test.js\"",
+    "build": "tsc -p tsconfig.json",
+    "check": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AcrossWorksAPI/open-relay.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AcrossWorksAPI/open-relay/issues"
+  },
+  "homepage": "https://github.com/AcrossWorksAPI/open-relay#readme",
+  "bin": {
+    "open-relay": "./dist/src/cli.js"
+  },
+  "private": true,
+  "dependencies": {
+    "ajv": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "typescript": "^6.0.3"
+  },
+  "types": "dist/src/index.d.ts"
+}
