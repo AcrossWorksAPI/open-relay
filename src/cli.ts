@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { validatePacketFile } from "./schema";
+
 const usage = `Open Relay
 
 Usage:
@@ -15,8 +17,41 @@ export async function run(argv: string[]): Promise<number> {
     return 0;
   }
 
+  if (args[0] === "validate") {
+    return validateCommand(args[1]);
+  }
+
   process.stderr.write(`Unknown command: ${args[0]}\n\n${usage}`);
   return 2;
+}
+
+async function validateCommand(path: string | undefined): Promise<number> {
+  if (!path) {
+    process.stderr.write(`Missing packet path.\n\n${usage}`);
+    return 2;
+  }
+
+  try {
+    const result = await validatePacketFile(path);
+
+    if (result.valid) {
+      process.stdout.write(`${path} is a valid review-request packet.\n`);
+      return 0;
+    }
+
+    process.stderr.write(`Invalid review-request packet: ${path}\n`);
+    for (const error of result.errors) {
+      process.stderr.write(`- ${error}\n`);
+    }
+    return 1;
+  } catch (error: unknown) {
+    const message = error instanceof SyntaxError
+      ? `Invalid JSON in ${path}: ${error.message}`
+      : `Could not validate ${path}: ${error instanceof Error ? error.message : String(error)}`;
+
+    process.stderr.write(`${message}\n`);
+    return 1;
+  }
 }
 
 if (require.main === module) {
