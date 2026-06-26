@@ -28,6 +28,7 @@ If any fact is missing from those files or the repository, write
 - Keep roadmap tables parseable Markdown.
 - Use parser-safe roadmap statuses: `Live`, `Done`, `In progress`, `Planned`,
   `Deferred`, `Candidate`.
+- Use parser-safe roadmap priorities: `High`, `Medium`, `Low`, `-`.
 - Use parser-safe client gate values: `Required`, `No`, `Candidate`, `-`.
 - Source-plan cells must point to committed repo-relative Markdown docs or `-`.
 - Hosted Roadmap Hub displays committed snapshots only. Local uncommitted files

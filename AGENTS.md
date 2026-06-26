@@ -74,6 +74,8 @@ added, update this section with verified commands and evidence.
 - Update `docs/planning/ROADMAP.md`, `docs/planning/ACTIVE_WORK.md`, and
   `docs/planning/PLAN_REGISTRY.md` when scope, priority, status, or source of
   truth changes.
+- Roadmap priority cells must use Hosted-Hub-safe values: `High`, `Medium`,
+  `Low`, or `-`.
 - Update `docs/planning/VERSION_LEDGER.md` when a baseline, version, PR,
   deploy, smoke, or rollback fact changes.
 - Hosted Roadmap Hub displays committed snapshots only. Commit local roadmap
