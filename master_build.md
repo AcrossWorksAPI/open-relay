@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, and merged review-request Markdown renderer | PR #17 merge commit `c62ea27`; package/release target remains undecided |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, and package/release smoke planning in progress | PR #18 merge commit `cf1dc5d`; package target planning source `docs/superpowers/plans/2026-06-26-package-release-smoke.md` |
 
 ## Scope
 
@@ -42,6 +42,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - runtime/schema validation CLI implementation
 - git-state generator design, implementation plan, and merged JSON-only CLI implementation
 - render review-request design, implementation plan, merged implementation, tests, and example snapshot
+- package/release smoke design and implementation plan
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -51,7 +52,7 @@ Current scope is the first local protocol and validation CLI baseline:
 ## Non-Goals
 
 - MCP server support
-- Package publishing
+- Package publishing beyond local tarball smoke
 - Hosted deployment setup
 - Agent-specific prompt dialects beyond the neutral packet renderer
 - External service provisioning
@@ -78,10 +79,12 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Implement runtime/schema validation CLI | Done | No |
 | P1 | Implement local CLI review-request packet generator | Done | No |
 | P1 | Add Codex-ready and Claude-ready render templates | Done | No |
+| P1 | Define package target and release-readiness smoke | In progress | No |
 
 ## Known Gaps
 
-- The git-state packet generator is merged but not packaged or released yet.
+- Package target and release-readiness smoke are planned as an npm tarball
+  install smoke; registry publishing remains deferred.
 - Direct `generate review-request --format markdown` remains deferred; Markdown
   rendering is available through `open-relay render review-request`.
 - Package publishing, deployment, and release smoke evidence are not present

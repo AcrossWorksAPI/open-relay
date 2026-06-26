@@ -7,9 +7,10 @@ Last updated: 2026-06-26
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
 merged JSON-only git-state generator, and merged Markdown renderer form the
-current CLI baseline. The approved first runtime direction is a
-TypeScript CLI on Node.js with npm; MCP server support is deferred until the
-CLI is useful.
+current CLI baseline. Package/release smoke planning is active so the CLI can
+prove installability before any live/publish claim. The approved first runtime
+direction is a TypeScript CLI on Node.js with npm; MCP server support is
+deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -47,8 +48,10 @@ CLI is useful.
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
+| `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md` | Active | Design for npm package target and tarball install smoke before publishing. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
+| `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -60,8 +63,8 @@ CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Package publishing target unknown | Medium | Keep `private: true` until owner selects npm/package release policy. |
-| Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
+| Package publishing target not implemented | Medium | Plan npm as first package target, keep `private: true`, and defer registry publish until release authority and version are decided. |
+| Release smoke evidence absent | Medium | Add tarball install smoke before any live claim. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Direct Markdown generation deferred | Low | `open-relay render review-request` is merged; `generate review-request --format markdown` remains a candidate follow-up. |
@@ -70,12 +73,13 @@ CLI is useful.
 
 ## Next Recommended Work
 
-1. Define package/release target and live-readiness smoke criteria.
-2. Consider `generate review-request --format markdown` now that the renderer
+1. Open the package/release smoke planning PR for Claude/GitHub review.
+2. Implement npm pack/install smoke after planning review is green.
+3. Consider `generate review-request --format markdown` now that the renderer
    is merged.
-3. Revisit permanent packet storage location after stdout and explicit
+4. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-4. Decide whether private redaction rule files are needed before package
+5. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed
@@ -84,4 +88,4 @@ CLI is useful.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
 - Redaction rules from day one.
-- Package/release target and live-readiness criteria.
+- npm publish owner/organization and first released semver version.
