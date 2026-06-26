@@ -70,6 +70,9 @@ jobs:
       - name: Run runtime checks
         run: npm run check
 
+      - name: Run package smoke
+        run: npm run smoke:pack
+
       - name: Check roadmap parser-safe values
         shell: bash
         run: |

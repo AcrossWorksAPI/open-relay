@@ -10,12 +10,12 @@ protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
 review handoffs. The first runtime direction is approved as a TypeScript CLI on
 Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. Release/versioning
-convention is still `Unknown; needs owner decision`. The active slice implements
-a neutral `review-request` JSON-to-Markdown renderer that can serve Codex,
-Claude, or another reviewer without introducing agent-specific prompt dialects
-yet. Package/release smoke planning is now active with npm as the first package
-target and local tarball install smoke as the next release-readiness gate.
-Direct `generate review-request --format markdown`, npm registry publishing,
+convention is still `Unknown; needs owner decision`. The neutral
+`review-request` JSON-to-Markdown renderer is merged for Codex, Claude, or
+another reviewer without introducing agent-specific prompt dialects yet. The
+active slice implements npm package metadata, an allowlisted package packlist,
+and a local tarball install smoke as the next release-readiness gate. Direct
+`generate review-request --format markdown`, npm registry publishing,
 persistent packet storage, and private redaction rules remain deferred.
 
 ## Active Work
@@ -32,9 +32,10 @@ persistent packet storage, and private redaction rules remain deferred.
 | Git-state generator implementation | Done | PR #14 merged argument parsing, typo/unknown/duplicate flag rejection, sanitized git/write errors and output messages, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
 | Render-template planning | Done | PR #16 merged the renderer-first design and implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`. |
 | Render-template implementation | Done | PR #17 merged the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, strict parser tests, escaping tests, and render behavior tests. |
-| Package/release smoke planning | In progress | Design and implementation plan choose npm as the first package target and define `npm run smoke:pack` as the local tarball install smoke before any publish/live claim. |
-| Product implementation | In progress | Validation, JSON-only packet generation, and Markdown rendering are merged; package smoke is planned next; direct generator Markdown output, agent-specific prompt dialects, registry publishing, and private redaction rules remain unbuilt. |
-| Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, and `npm run check` are local; GitHub Actions `Governance Checks` includes runtime checks. |
+| Package/release smoke planning | Done | PR #19 merged the npm package target, packlist, tarball install smoke, CI guardrail, and release-readiness closeout plan. |
+| Package/release smoke implementation | In progress | Branch adds `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
+| Product implementation | In progress | Validation, JSON-only packet generation, Markdown rendering, and package install smoke are implemented; direct generator Markdown output, agent-specific prompt dialects, registry publishing, and private redaction rules remain unbuilt. |
+| Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
 ## Latest Smoke And Verification Evidence
@@ -62,13 +63,15 @@ persistent packet storage, and private redaction rules remain deferred.
 | 2026-06-26 | PR #16 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/16`; merge commit `5b03b8d`; `Governance Checks` passed and Claude re-review reported no remaining findings. |
 | 2026-06-26 | Render-template implementation branch checks | Passed | `npm run check` passed with 48 tests, `git diff --check` passed, stdout render smoke passed, output-file render smoke passed, and invalid-JSON render leak smoke did not print `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
 | 2026-06-26 | PR #17 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/17`; merge commit `c62ea27`; `Governance Checks` passed, Claude re-review reported no remaining findings, merged-main `npm run check` passed with 48 tests, `git diff --check` passed, stdout/output-file render smokes passed, and invalid-JSON render leak smoke passed. |
-| 2026-06-26 | Package/release smoke planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md`; implementation source `docs/superpowers/plans/2026-06-26-package-release-smoke.md`; local `npm run check` and `git diff --check` passed before PR. |
+| 2026-06-26 | Package/release smoke planning branch | Merged | Design source `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md`; implementation source `docs/superpowers/plans/2026-06-26-package-release-smoke.md`; local `npm run check` and `git diff --check` passed before PR. |
 | 2026-06-26 | Claude review for PR #19 | Findings addressed | Tightened the planned package `files` allowlist from all `dist/` to `dist/src/` plus `dist/schemas/` so compiled tests are excluded, and added `npm pack --json` tarball-content assertions to fail on `dist/tests/`, source tests, planning docs, GitHub config, or Codex config. |
+| 2026-06-26 | PR #19 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/19`; package/release smoke planning merged to `main`. |
+| 2026-06-26 | Package/release smoke implementation branch checks | Passed | `npm run check` passed with 48 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, verified installed `open-relay` help/validate/render/generate behavior, asserted the package packlist excludes tests/planning/GitHub/Codex config, and confirmed invalid JSON errors do not leak `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
 
 ## Next Step
 
-Open the package/release smoke planning PR, then implement npm pack/install
-smoke after planning review is green.
+Open the package/release smoke implementation PR, wait for GitHub CI, then
+request Claude review.
 
 ## Owner Decisions Needed
 

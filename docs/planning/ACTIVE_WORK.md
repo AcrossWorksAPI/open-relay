@@ -7,8 +7,9 @@ Last updated: 2026-06-26
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
 merged JSON-only git-state generator, and merged Markdown renderer form the
-current CLI baseline. Package/release smoke planning is active so the CLI can
-prove installability before any live/publish claim. The approved first runtime
+current CLI baseline. Package/release smoke implementation is active so the CLI
+can prove installability before any live/publish claim; the implementation
+branch adds the local tarball smoke and CI guardrail. The approved first runtime
 direction is a TypeScript CLI on Node.js with npm; MCP server support is
 deferred until the CLI is useful.
 
@@ -24,6 +25,7 @@ deferred until the CLI is useful.
 | `CONTRIBUTING.md` | Active | Contribution workflow and review expectations. |
 | `package.json` | Active | npm package metadata and build/test/check scripts. |
 | `package-lock.json` | Active | Locked npm dependency graph. |
+| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball and installed CLI. |
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
 | `src/index.ts` | Active | Runtime exports. |
@@ -41,7 +43,7 @@ deferred until the CLI is useful.
 | `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
-| `.github/workflows/ci.yml` | Active | Governance and TypeScript runtime CI workflow. |
+| `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
@@ -63,8 +65,8 @@ deferred until the CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Package publishing target not implemented | Medium | Plan npm as first package target, keep `private: true`, and defer registry publish until release authority and version are decided. |
-| Release smoke evidence absent | Medium | Add tarball install smoke before any live claim. |
+| Package publishing target not implemented | Medium | npm is the first package target, `private: true` is retained, and registry publish is deferred until release authority and version are decided. |
+| Release smoke not merged | Medium | Local tarball install smoke now exists on the implementation branch; GitHub CI and PR review remain before merge. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Direct Markdown generation deferred | Low | `open-relay render review-request` is merged; `generate review-request --format markdown` remains a candidate follow-up. |
@@ -73,13 +75,13 @@ deferred until the CLI is useful.
 
 ## Next Recommended Work
 
-1. Open the package/release smoke planning PR for Claude/GitHub review.
-2. Implement npm pack/install smoke after planning review is green.
-3. Consider `generate review-request --format markdown` now that the renderer
+1. Open the package/release smoke implementation PR for GitHub CI and Claude
+   review.
+2. After package smoke merges, consider `generate review-request --format markdown` now that the renderer
    is merged.
-4. Revisit permanent packet storage location after stdout and explicit
+3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-5. Decide whether private redaction rule files are needed before package
+4. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed

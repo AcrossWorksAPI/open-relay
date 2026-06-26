@@ -16,6 +16,7 @@ or old plan files as inactive until this registry and current code agree.
 | `CONTRIBUTING.md` | Contribution workflow and review expectations | Active |
 | `package.json` | npm package metadata and runtime scripts | Active |
 | `package-lock.json` | Locked npm dependency graph | Active |
+| `scripts/smoke-pack.js` | Package tarball install smoke | Active |
 | `tsconfig.json` | TypeScript compiler configuration | Active |
 | `schemas/review-request.schema.json` | Formal review-request packet schema | Active |
 | `src/index.ts` | Runtime exports | Active |
@@ -33,7 +34,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/redaction.test.ts` | Remote URL redaction tests | Active |
 | `tests/renderReviewRequest.test.ts` | Review-request Markdown renderer tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
-| `.github/workflows/ci.yml` | Governance and runtime CI guardrail | Active |
+| `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
@@ -58,7 +59,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | In progress | Codex | Planning npm package target, packlist, tarball install smoke, CI guardrail, and release-readiness closeout. |
+| `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | In progress | Codex | Implementing npm package metadata, packlist, tarball install smoke, CI guardrail, and release-readiness closeout. |
 
 ## Implemented Or Historical Plans
 
