@@ -8,9 +8,11 @@ Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
 merged JSON-only git-state generator, merged Markdown renderer, and merged
 package smoke form the current CLI baseline. The CLI can now prove
-installability from a local npm tarball before any live/publish claim. The
-approved first runtime direction is a TypeScript CLI on Node.js with npm; MCP
-server support is deferred until the CLI is useful.
+installability from a local npm tarball before any live/publish claim. Direct
+Markdown generation planning is active so a local user can generate a
+review-ready Markdown packet in one command. The approved first runtime
+direction is a TypeScript CLI on Node.js with npm; MCP server support is
+deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -50,9 +52,11 @@ server support is deferred until the CLI is useful.
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
 | `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md` | Active | Design for npm package target and tarball install smoke before publishing. |
+| `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md` | Active | Design for `generate review-request --format markdown`. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
+| `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Active | Implementation plan for direct Markdown output from the generator. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -68,19 +72,21 @@ server support is deferred until the CLI is useful.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Direct Markdown generation deferred | Low | `open-relay render review-request` is merged; `generate review-request --format markdown` remains a candidate follow-up. |
+| Direct Markdown generation not implemented | Low | Planning is active for `generate review-request --format markdown`; existing `render review-request` remains available. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Consider `generate review-request --format markdown` now that the renderer
-   is merged.
-2. Plan a higher-level handoff command that generates, validates, and renders a
+1. Open the direct Markdown generation planning PR for GitHub CI and Claude
+   review.
+2. Implement `generate review-request --format markdown` after planning review
+   is green.
+3. Plan a higher-level handoff command that generates, validates, and renders a
    review packet in one local workflow.
-3. Revisit permanent packet storage location after stdout and explicit
+4. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-4. Decide whether private redaction rule files are needed before package
+5. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed

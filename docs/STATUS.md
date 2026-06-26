@@ -34,7 +34,8 @@ persistent packet storage, and private redaction rules remain deferred.
 | Render-template implementation | Done | PR #17 merged the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, strict parser tests, escaping tests, and render behavior tests. |
 | Package/release smoke planning | Done | PR #19 merged the npm package target, packlist, tarball install smoke, CI guardrail, and release-readiness closeout plan. |
 | Package/release smoke implementation | Done | PR #20 merged `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
-| Product implementation | In progress | Validation, JSON-only packet generation, Markdown rendering, and package install smoke are implemented; direct generator Markdown output, agent-specific prompt dialects, registry publishing, and private redaction rules remain unbuilt. |
+| Direct Markdown generation planning | In progress | Design and implementation plan add `generate review-request --format markdown` while keeping JSON as the default and reusing the existing renderer. |
+| Product implementation | In progress | Validation, JSON-only packet generation, Markdown rendering, and package install smoke are implemented; direct generator Markdown output is planned next; agent-specific prompt dialects, registry publishing, and private redaction rules remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -68,12 +69,12 @@ persistent packet storage, and private redaction rules remain deferred.
 | 2026-06-26 | PR #19 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/19`; package/release smoke planning merged to `main`. |
 | 2026-06-26 | Package/release smoke implementation branch checks | Passed | `npm run check` passed with 48 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, verified installed `open-relay` help/validate/render/generate behavior, asserted the package packlist excludes tests/planning/GitHub/Codex config, and confirmed invalid JSON errors do not leak `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
 | 2026-06-26 | PR #20 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/20`; merge commit `21c67cb`; `Governance Checks` passed, Claude review reported no remaining findings, and package/release smoke implementation merged without registry publish or live release claim. |
+| 2026-06-26 | Direct Markdown generation planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md`; implementation source `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR. |
 
 ## Next Step
 
-Plan the next relay workflow slice: likely `generate review-request --format
-markdown` or a higher-level handoff command that generates and renders one
-review packet in a single local workflow.
+Open the direct Markdown generation planning PR, wait for CI and Claude review,
+then implement `generate review-request --format markdown`.
 
 ## Owner Decisions Needed
 
