@@ -1179,6 +1179,7 @@ test("rejects generate review-request with missing flags", () => {
 
 test("generates a schema-valid review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
   const outputPath = join(directory, "relay.json");
 
   try {
@@ -1196,7 +1197,7 @@ test("generates a schema-valid review-request packet to a file", () => {
     const head = runGit(directory, "rev-parse", "HEAD").trim();
 
     const result = spawnSync(process.execPath, [
-      cliPath,
+      absoluteCliPath,
       "generate",
       "review-request",
       "--base", base,
@@ -1215,7 +1216,7 @@ test("generates a schema-valid review-request packet to a file", () => {
     assert.equal(result.stderr, "");
 
     const validateResult = spawnSync(process.execPath, [
-      join(process.cwd(), cliPath),
+      absoluteCliPath,
       "validate",
       outputPath
     ], {
@@ -1229,15 +1230,22 @@ test("generates a schema-valid review-request packet to a file", () => {
 });
 
 function runGit(cwd: string, ...args: string[]): string {
-  return spawnSync("git", args, {
+  return execFileSync("git", args, {
     cwd,
     encoding: "utf8",
     env: {
       ...process.env,
       GIT_CONFIG_NOSYSTEM: "1"
     }
-  }).stdout;
+  });
 }
+```
+
+Update the existing child-process import in `tests/cli.test.ts` to include
+`execFileSync`:
+
+```typescript
+import { execFileSync, spawnSync } from "node:child_process";
 ```
 
 Update the existing filesystem import in `tests/cli.test.ts` to include
