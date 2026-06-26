@@ -69,7 +69,7 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
         process.stderr.write("Could not write review-request packet.\n");
         return 1;
       }
-      process.stdout.write(`Wrote review-request packet to ${parsed.options.output}\n`);
+      process.stdout.write("Wrote review-request packet.\n");
     } else {
       process.stdout.write(json);
     }

@@ -200,7 +200,7 @@ test("rejects unwritable output paths without echoing path values", () => {
 test("generates a schema-valid review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
   const absoluteCliPath = join(process.cwd(), cliPath);
-  const outputPath = join(directory, "relay.json");
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.json");
 
   try {
     runGit(directory, "init", "--initial-branch", "main");
@@ -233,6 +233,7 @@ test("generates a schema-valid review-request packet to a file", () => {
 
     assert.equal(result.status, 0);
     assert.match(result.stdout, /Wrote review-request packet/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
     assert.equal(result.stderr, "");
 
     const validateResult = spawnSync(process.execPath, [
