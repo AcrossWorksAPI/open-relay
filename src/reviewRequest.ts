@@ -75,15 +75,6 @@ export function buildReviewRequestPacket(
     });
   }
 
-  redactions.push({
-    field: "diff_content",
-    reason: "Diff content is not embedded in review-request packets."
-  });
-  redactions.push({
-    field: "command_output",
-    reason: "Command output is summarized by caller-provided verification evidence instead of embedded."
-  });
-
   const provenance: Provenance[] = [
     {
       type: "commit",

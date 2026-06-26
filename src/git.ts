@@ -31,9 +31,11 @@ export function collectGitContext(options: CollectGitContextOptions): GitContext
   const root = git(options.cwd, ["rev-parse", "--show-toplevel"]).trim();
   const baseCommit = git(root, ["rev-parse", "--verify", options.baseRef]).trim();
   const headCommit = git(root, ["rev-parse", "--verify", options.headRef]).trim();
+  // V1 records and generates the exact endpoint diff. Three-dot PR semantics are deferred.
   const diffRange = `${baseCommit}..${headCommit}`;
   const changedFiles = parseNameStatus(git(root, [
     "diff",
+    "-z",
     "--name-status",
     "--find-renames",
     diffRange
@@ -60,24 +62,32 @@ export function collectGitContext(options: CollectGitContextOptions): GitContext
 }
 
 function parseNameStatus(raw: string): ChangedFile[] {
-  return raw
-    .split("\n")
-    .filter((line) => line.length > 0)
-    .map((line) => {
-      const parts = line.split("\t");
-      const statusCode = parts[0];
-      const status = mapStatus(statusCode);
-      const path = status === "renamed" ? parts[2] : parts[1];
-      const previousPath = status === "renamed" ? parts[1] : undefined;
+  const parts = raw.split("\0").filter((part) => part.length > 0);
+  const files: ChangedFile[] = [];
 
-      return {
-        path,
-        status,
-        role: roleForStatus(status),
-        review_priority: priorityForPath(path),
-        ...(previousPath ? { evidence: `Renamed from ${previousPath}` } : {})
-      };
+  for (let index = 0; index < parts.length;) {
+    const statusCode = parts[index];
+    const status = mapStatus(statusCode);
+    index += 1;
+
+    const previousPath = status === "renamed" ? parts[index] : undefined;
+    if (status === "renamed") {
+      index += 1;
+    }
+
+    const path = parts[index];
+    index += 1;
+
+    files.push({
+      path,
+      status,
+      role: roleForStatus(status),
+      review_priority: priorityForPath(path),
+      ...(previousPath ? { evidence: `Renamed from ${previousPath}` } : {})
     });
+  }
+
+  return files;
 }
 
 function mapStatus(statusCode: string): ChangedFile["status"] {

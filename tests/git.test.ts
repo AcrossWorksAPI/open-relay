@@ -119,6 +119,32 @@ test("throws when the diff has no changed files", () => {
   }
 });
 
+test("keeps non-ascii paths from nul-delimited name-status output", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    writeFileSync(join(repo, "cafe-accent-\u00e9.txt"), "accent\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "add accented path");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false
+    });
+
+    assert.equal(context.changedFiles[0]?.path, "cafe-accent-\u00e9.txt");
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
 function createRepo(): string {
   const repo = mkdtempSync(join(tmpdir(), "open-relay-git-"));
   git(repo, "init", "--initial-branch", "main");
