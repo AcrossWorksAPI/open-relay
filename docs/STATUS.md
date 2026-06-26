@@ -19,7 +19,7 @@ Node.js with npm. Release/versioning convention is still
 | Product brief | Done | Local-first handoff/review protocol and CLI-first MVP are captured. |
 | Open-source hardening | Done | Security, contribution, conduct, issue/PR templates, Dependabot, and first CI workflow are in place. |
 | Review-request packet spec | Done | Protocol doc plus synthetic Markdown/JSON examples define the smallest useful review packet. |
-| Runtime/schema CLI planning | In progress | TypeScript CLI-first direction is approved; implementation plan is in review. |
+| Runtime/schema CLI planning | Done | PR #9 merged the TypeScript CLI-first design and implementation plan. |
 | Product implementation | Deferred | No product source or runtime config exists yet. |
 | Verification setup | Done | `git diff --check` is local; GitHub Actions `Governance Checks` is required on `main`. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -35,12 +35,13 @@ Node.js with npm. Release/versioning convention is still
 | 2026-06-26 | Issue #8 owner decision | Approved | TypeScript CLI first, CLI-only MVP, JSON Schema next, MCP deferred. |
 | 2026-06-26 | Runtime/schema planning branch checks | Passed | `git diff --check`, trailing-whitespace scan, required-file check, roadmap parser check, placeholder scan, secret-like scan, JSON parse, and example parity check. |
 | 2026-06-26 | Claude plan review for PR #9 | Low findings addressed | Review verified schema/example parity and task sequencing; follow-up commit tightens timestamp validation and fixes source-plan attribution. |
+| 2026-06-26 | PR #9 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/9`; merge commit `5c87d46`; issue #8 auto-closed. |
 
 ## Next Step
 
-Review and merge the runtime/schema CLI planning PR, then implement the
-TypeScript package scaffold, formal JSON Schema, validation command, tests, and
-runtime CI.
+Implement the TypeScript package scaffold, formal JSON Schema, validation
+command, tests, and runtime CI from
+`docs/superpowers/plans/2026-06-26-runtime-schema-cli.md`.
 
 ## Owner Decisions Needed
 

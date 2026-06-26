@@ -45,12 +45,11 @@ the CLI is useful.
 
 ## Next Recommended Work
 
-1. Merge the runtime/schema CLI planning PR after governance checks pass.
-2. Implement the TypeScript package scaffold from the active plan.
-3. Convert the accepted packet shape into `schemas/review-request.schema.json`.
-4. Add `open-relay validate <packet.json>` behavior and runtime CI.
-5. Draft the generator plan for local git-state review-request packets.
-6. Draft Codex and Claude render templates from the reviewed packet example.
+1. Implement the TypeScript package scaffold from the active plan.
+2. Convert the accepted packet shape into `schemas/review-request.schema.json`.
+3. Add `open-relay validate <packet.json>` behavior and runtime CI.
+4. Draft the generator plan for local git-state review-request packets.
+5. Draft Codex and Claude render templates from the reviewed packet example.
 
 ## Current Owner Decisions Needed
 
