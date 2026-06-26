@@ -34,6 +34,8 @@ deferred until the CLI is useful.
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
+| `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
+| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
@@ -45,19 +47,20 @@ deferred until the CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Packet generator not implemented | High | Next product slice should generate review-request packets from local git state. |
+| Packet generator not implemented | High | Generator design and implementation plan are active; implementation should follow after review. |
 | Package publishing target unknown | Medium | Keep `private: true` until owner selects npm/package release policy. |
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
 | Runtime CI limited to validation slice | Low | CI runs build and tests for the current CLI; broaden checks as generator behavior is added. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Runtime redaction behavior undefined | Medium | Protocol doc defines redaction notes; generator behavior remains planned. |
+| Private redaction rule files undefined | Medium | Generator plan uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Draft the generator plan for local git-state review-request packets.
-2. Decide packet storage location: repo-local, global user directory, or both.
-3. Define first-pass redaction behavior for generated packets.
-4. Implement generator command after the plan is reviewed.
+1. Review the git-state generator design and implementation plan.
+2. Implement `open-relay generate review-request` after plan review.
+3. Verify generated packets validate against `schemas/review-request.schema.json`.
+4. Revisit permanent packet storage location after stdout and explicit
+   `--output` behavior is proven.
 5. Draft Codex and Claude render templates from the reviewed packet example.
 
 ## Current Owner Decisions Needed
