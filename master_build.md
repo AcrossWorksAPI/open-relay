@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript schema-validation CLI baseline | Current branch docs baseline |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, and TypeScript schema-validation CLI baseline | PR #11 merge commit `6f6f25e` |
 
 ## Scope
 
@@ -73,7 +73,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Define the smallest useful relay packet | Done | No |
 | P0 | Choose first implementation runtime | Done | No |
 | P0 | Write initial relay packet schema and packet-type docs | Done | No |
-| P0 | Implement runtime/schema validation CLI | In progress | No |
+| P0 | Implement runtime/schema validation CLI | Done | No |
 | P1 | Implement local CLI review-request packet generator | Candidate | Yes |
 | P1 | Add Codex-ready and Claude-ready render templates | Candidate | Yes |
 
@@ -84,4 +84,4 @@ Current scope is the first local protocol and validation CLI baseline:
 - Package publishing, deployment, and release smoke evidence are not present
   yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
-- No live version, deployment, package, or runtime smoke evidence exists yet.
+- No live version, deployment, or package release smoke evidence exists yet.

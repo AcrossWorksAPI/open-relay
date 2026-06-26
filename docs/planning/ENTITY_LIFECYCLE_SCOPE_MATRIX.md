@@ -12,12 +12,12 @@ Allowed cell values: `Shipped`, `In progress`, `Planned`, `Deferred`,
 | Roadmap governance docs | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | Planned | Planned | N/A | N/A | Planned | Docs created in this baseline; git history becomes evidence after commit. |
 | Local Codex roadmap skill | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | N/A | Planned | N/A | N/A | Planned | Project-local skill at `.codex/skills/project-roadmap-system/SKILL.md`. |
 | Relay packet | Planned | Shipped | Planned | Planned | Planned | N/A | Shipped | Planned | Planned | Deferred | N/A | Shipped | Review-request docs and examples are shipped; packet creation remains planned. |
-| Relay packet schema | In progress | In progress | Planned | Planned | Planned | N/A | In progress | Planned | Planned | N/A | N/A | In progress | Formal JSON Schema and CLI validation are implemented in PR #11; mark shipped after merge. |
+| Relay packet schema | Shipped | Shipped | Planned | Planned | Planned | N/A | Shipped | Planned | Planned | N/A | N/A | Shipped | Formal JSON Schema and CLI validation merged in PR #11; future schema versions need version-aware validation. |
 | Render template | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Initial review-request Markdown rendering order is documented; template tooling remains planned. |
 | Local repository context collector | Planned | Planned | Planned | N/A | N/A | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Must avoid leaking secrets or raw sensitive data. |
 | Review loop | Future candidate | Future candidate | Future candidate | Future candidate | Future candidate | N/A | Future candidate | Future candidate | Future candidate | Deferred | N/A | Future candidate | Implementation handoff, review request, review response, resume project. |
 | Manager/library/assignment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown; needs owner decision if multi-user or hosted scope appears. |
-| Runtime/deployment surfaces | In progress | In progress | In progress | N/A | N/A | N/A | In progress | Planned | Planned | N/A | N/A | In progress | TypeScript package, CLI source, tests, runtime CI, and local validation smoke exist in PR #11; package publishing and release smoke remain planned. |
+| Runtime/deployment surfaces | Shipped | Shipped | Shipped | N/A | N/A | N/A | Shipped | Planned | Planned | N/A | N/A | Shipped | TypeScript package, CLI source, tests, runtime CI, and local validation smoke merged in PR #11; package publishing and release smoke remain planned. |
 
 ## Assignment And Scope Matrix
 

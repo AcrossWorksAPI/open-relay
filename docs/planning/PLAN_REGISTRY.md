@@ -42,7 +42,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | In progress | Codex | Implements TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, and roadmap updates. Move to implemented after the runtime PR merges. |
+| - | - | - | No active implementation plans after PR #11 merge. |
 
 ## Implemented Or Historical Plans
 
@@ -52,6 +52,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-open-relay-brief-and-remote.md` | Done | Captured Open Relay brief, updated roadmap/status, configured GitHub remote, and prepared branch for PR. |
 | `docs/superpowers/plans/2026-06-26-open-source-hardening.md` | Done | Added security, contribution, conduct, templates, Dependabot, CI, and required branch-protection check. |
 | `docs/superpowers/plans/2026-06-26-review-request-packet-spec.md` | Done | Defined the smallest useful `review-request` packet, examples, review assumptions, and protocol shape. |
+| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Done | Implemented TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, review fixes, and roadmap closeout. |
 
 ## Superseded Or Dormant Plans
 

@@ -5,10 +5,10 @@ Last updated: 2026-06-26
 ## Current Direction
 
 Establish Open Relay as a local-first handoff and review protocol before product
-implementation. The reviewed `review-request` packet is now the source shape
-for the schema and CLI validation slice. The approved first runtime direction is
-a TypeScript CLI on Node.js with npm; MCP server support is deferred until the
-CLI is useful.
+implementation. The reviewed `review-request` packet and merged validation CLI
+are now the source shape for the generator slice. The approved first runtime
+direction is a TypeScript CLI on Node.js with npm; MCP server support is
+deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -34,7 +34,7 @@ CLI is useful.
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
-| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Active | Implementation plan for package scaffold, schema validation, CLI command, tests, and CI. |
+| `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Historical | Implemented package scaffold, schema validation, CLI command, tests, and CI. |
 | `docs/product/PROJECT_BRIEF.md` | Active | Owner-supplied product brief. |
 | `docs/STATUS.md` | Active | Owner-readable current status. |
 | `docs/planning/ROADMAP.md` | Active | Parseable roadmap. |
@@ -54,11 +54,10 @@ CLI is useful.
 
 ## Next Recommended Work
 
-1. Open the runtime/schema validation CLI PR and wait for CI.
-2. Request Claude review for schema parity, CLI error behavior, dependency
-   minimality, and roadmap accuracy.
-3. Resolve review findings, merge, pull, and prune.
-4. Draft the generator plan for local git-state review-request packets.
+1. Draft the generator plan for local git-state review-request packets.
+2. Decide packet storage location: repo-local, global user directory, or both.
+3. Define first-pass redaction behavior for generated packets.
+4. Implement generator command after the plan is reviewed.
 5. Draft Codex and Claude render templates from the reviewed packet example.
 
 ## Current Owner Decisions Needed
