@@ -10,10 +10,10 @@ merged JSON-only git-state generator, merged Markdown renderer, and merged
 package smoke form the current CLI baseline. The CLI can now prove
 installability from a local npm tarball before any live/publish claim. Direct
 Markdown generation is merged so a local user can generate a review-ready
-Markdown packet in one command. Local handoff workflow planning is active to
-make the review-request path clearer as a workflow command. The approved first runtime
-direction is a TypeScript CLI on Node.js with npm; MCP server support is
-deferred until the CLI is useful.
+Markdown packet in one command. Local handoff workflow implementation is
+stacked behind the planning PR to make the review-request path clearer as a
+workflow command. The approved first runtime direction is a TypeScript CLI on
+Node.js with npm; MCP server support is deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -37,7 +37,7 @@ deferred until the CLI is useful.
 | `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/schema.ts` | Active | Reusable packet validation module. |
-| `src/cli.ts` | Active | Local CLI entrypoint, `validate`, and draft `generate review-request` command. |
+| `src/cli.ts` | Active | Local CLI entrypoint for `validate`, `generate review-request`, `render review-request`, and stacked `handoff review-request` behavior. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
 | `tests/args.test.ts` | Active | Generator argument parser tests. |
@@ -75,14 +75,15 @@ deferred until the CLI is useful.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Higher-level handoff workflow not implemented | Low | Planning is active for `handoff review-request`, a Markdown-first local workflow command. |
+| Higher-level handoff workflow not merged | Low | Implementation is stacked behind the planning PR for `handoff review-request`, a Markdown-first local workflow command. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the local handoff workflow planning PR for GitHub CI and Claude review.
-2. Implement `handoff review-request` after planning review is green.
+1. Merge the local handoff workflow planning PR after Claude review.
+2. Retarget or rebase the stacked `handoff review-request` implementation PR
+   onto `main`, then request Claude implementation review.
 3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
 4. Decide whether private redaction rule files are needed before package

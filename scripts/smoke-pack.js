@@ -105,6 +105,25 @@ try {
   assert.match(markdown, /^# Review Request Relay Packet/);
   assert.match(markdown, /## Next Action/);
 
+  const handoffMarkdown = join(workspace, "handoff.md");
+  runCli(cli, [
+    "handoff",
+    "review-request",
+    "--base", base,
+    "--head", head,
+    "--goal", "Smoke package handoff",
+    "--summary", "Verifies installed CLI can create a Markdown handoff.",
+    "--behavioral-intent", "Prove package tarball supports the handoff workflow.",
+    "--output", handoffMarkdown
+  ], {
+    cwd: gitRepo,
+    contains: "Wrote review-request Markdown."
+  });
+
+  const handoff = readFileSync(handoffMarkdown, "utf8");
+  assert.match(handoff, /^# Review Request Relay Packet/);
+  assert.match(handoff, /## Next Action/);
+
   const badJson = join(workspace, "bad.json");
   writeFileSync(badJson, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
   const badResult = spawnSync(cli, ["render", "review-request", badJson], { encoding: "utf8" });

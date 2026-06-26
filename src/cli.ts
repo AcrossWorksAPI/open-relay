@@ -13,8 +13,12 @@ const usage = `Open Relay
 Usage:
   open-relay validate <packet.json>
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
+  open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
   open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay --help
+
+Notes:
+  handoff review-request creates local review handoff Markdown; it does not send it anywhere.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -31,6 +35,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "generate" && args[1] === "review-request") {
     return generateReviewRequestCommand(args.slice(2));
+  }
+
+  if (args[0] === "handoff" && args[1] === "review-request") {
+    return handoffReviewRequestCommand(args.slice(2));
   }
 
   if (args[0] === "render" && args[1] === "review-request") {
@@ -122,6 +130,20 @@ function parseRenderReviewRequestArgs(args: string[]): RenderReviewRequestArgs {
   }
 
   return { ok: true, packetPath, ...(output ? { output } : {}) };
+}
+
+async function handoffReviewRequestCommand(args: string[]): Promise<number> {
+  if (hasFlag(args, "--format")) {
+    process.stderr.write("--format is not supported for handoff review-request; use generate review-request --format instead.\n\n");
+    process.stderr.write(usage);
+    return 2;
+  }
+
+  return generateReviewRequestCommand([...args, "--format", "markdown"]);
+}
+
+function hasFlag(args: string[], flag: string): boolean {
+  return args.some((arg) => arg === flag || arg.startsWith(`${flag}=`));
 }
 
 async function generateReviewRequestCommand(args: string[]): Promise<number> {
