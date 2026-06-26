@@ -1131,11 +1131,16 @@ git commit -m "docs: close runtime schema cli slice"
 
 - [x] Open PR #11 with `Relates to #8` in the body because issue #8 was already closed by the planning PR.
 - [x] Wait for `Open Relay CI / Governance Checks`.
-- [ ] Ask Claude to review after CI passes, focusing on:
+- [x] Ask Claude to review after CI passes, focusing on:
   - schema parity with `docs/protocol/review-request-packet.md`
   - CLI error behavior
   - dependency minimality
   - lifecycle and roadmap closeout accuracy
+- [x] Address Claude review findings F1-F4:
+  - invalid JSON parser-message leakage
+  - premature `Shipped` lifecycle matrix cells
+  - package `main`/`types` entrypoints
+  - Node typings aligned to Node 22
 - [ ] Merge only after CI passes and review findings are resolved.
 - [ ] Pull and prune local `main` after merge.
 

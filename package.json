@@ -2,7 +2,7 @@
   "name": "@acrossworks/open-relay",
   "version": "0.0.0",
   "description": "Local-first AI handoff and review protocol CLI",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "directories": {
     "doc": "docs",
     "example": "examples"
@@ -32,7 +32,8 @@
     "ajv": "^8.20.0"
   },
   "devDependencies": {
-    "@types/node": "^26.0.1",
+    "@types/node": "^22.20.0",
     "typescript": "^6.0.3"
-  }
+  },
+  "types": "dist/src/index.d.ts"
 }

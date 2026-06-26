@@ -34,7 +34,7 @@ test("validates the example packet", () => {
 test("rejects invalid JSON without printing file contents", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-"));
   const packetPath = join(directory, "bad.json");
-  writeFileSync(packetPath, "{ not json and this content should not echo }", "utf8");
+  writeFileSync(packetPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
 
   const result = spawnSync(process.execPath, [cliPath, "validate", packetPath], {
     encoding: "utf8"
@@ -42,7 +42,7 @@ test("rejects invalid JSON without printing file contents", () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Invalid JSON/);
-  assert.doesNotMatch(result.stderr, /this content should not echo/);
+  assert.doesNotMatch(result.stderr, /SECRET/);
 });
 
 test("rejects schema-invalid packets", () => {
@@ -57,4 +57,20 @@ test("rejects schema-invalid packets", () => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Invalid review-request packet/);
   assert.match(result.stderr, /must have required property/);
+});
+
+test("exports the validator from the package entrypoint", () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "-e",
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1);"
+    ],
+    {
+      encoding: "utf8"
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stderr, "");
 });

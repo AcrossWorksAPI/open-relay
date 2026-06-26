@@ -46,7 +46,7 @@ async function validateCommand(path: string | undefined): Promise<number> {
     return 1;
   } catch (error: unknown) {
     const message = error instanceof SyntaxError
-      ? `Invalid JSON in ${path}: ${error.message}`
+      ? `Invalid JSON in ${path}`
       : `Could not validate ${path}: ${error instanceof Error ? error.message : String(error)}`;
 
     process.stderr.write(`${message}\n`);
