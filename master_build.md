@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, and package/release smoke implementation in progress | PR #19 merge commit `709e841`; package target implementation source `docs/superpowers/plans/2026-06-26-package-release-smoke.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, and merged package/release smoke implementation | PR #20 merge commit `21c67cb`; package target implementation source `docs/superpowers/plans/2026-06-26-package-release-smoke.md` |
 
 ## Scope
 
@@ -42,7 +42,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - runtime/schema validation CLI implementation
 - git-state generator design, implementation plan, and merged JSON-only CLI implementation
 - render review-request design, implementation plan, merged implementation, tests, and example snapshot
-- package/release smoke design, implementation plan, and implementation branch
+- package/release smoke design, implementation plan, merged implementation, and CI guardrail
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -79,15 +79,15 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Implement runtime/schema validation CLI | Done | No |
 | P1 | Implement local CLI review-request packet generator | Done | No |
 | P1 | Add Codex-ready and Claude-ready render templates | Done | No |
-| P1 | Define package target and release-readiness smoke | In progress | No |
+| P1 | Define package target and release-readiness smoke | Done | No |
 
 ## Known Gaps
 
-- Package target and release-readiness smoke are implemented on the active
-  branch as an npm tarball install smoke; registry publishing remains deferred.
+- Package target and release-readiness smoke are implemented as an npm tarball
+  install smoke; registry publishing remains deferred.
 - Direct `generate review-request --format markdown` remains deferred; Markdown
   rendering is available through `open-relay render review-request`.
 - Package publishing and deployment evidence are not present yet; local package
-  smoke evidence exists on the active branch.
+  smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
 - No live version, deployment, or registry package evidence exists yet.

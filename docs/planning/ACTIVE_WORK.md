@@ -6,12 +6,11 @@ Last updated: 2026-06-26
 
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
-merged JSON-only git-state generator, and merged Markdown renderer form the
-current CLI baseline. Package/release smoke implementation is active so the CLI
-can prove installability before any live/publish claim; the implementation
-branch adds the local tarball smoke and CI guardrail. The approved first runtime
-direction is a TypeScript CLI on Node.js with npm; MCP server support is
-deferred until the CLI is useful.
+merged JSON-only git-state generator, merged Markdown renderer, and merged
+package smoke form the current CLI baseline. The CLI can now prove
+installability from a local npm tarball before any live/publish claim. The
+approved first runtime direction is a TypeScript CLI on Node.js with npm; MCP
+server support is deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -66,7 +65,7 @@ deferred until the CLI is useful.
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
 | Package publishing target not implemented | Medium | npm is the first package target, `private: true` is retained, and registry publish is deferred until release authority and version are decided. |
-| Release smoke not merged | Medium | Local tarball install smoke now exists on the implementation branch; GitHub CI and PR review remain before merge. |
+| Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Direct Markdown generation deferred | Low | `open-relay render review-request` is merged; `generate review-request --format markdown` remains a candidate follow-up. |
@@ -75,10 +74,10 @@ deferred until the CLI is useful.
 
 ## Next Recommended Work
 
-1. Open the package/release smoke implementation PR for GitHub CI and Claude
-   review.
-2. After package smoke merges, consider `generate review-request --format markdown` now that the renderer
+1. Consider `generate review-request --format markdown` now that the renderer
    is merged.
+2. Plan a higher-level handoff command that generates, validates, and renders a
+   review packet in one local workflow.
 3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
 4. Decide whether private redaction rule files are needed before package

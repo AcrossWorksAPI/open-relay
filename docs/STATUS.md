@@ -12,9 +12,9 @@ Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. Release/versioning
 convention is still `Unknown; needs owner decision`. The neutral
 `review-request` JSON-to-Markdown renderer is merged for Codex, Claude, or
-another reviewer without introducing agent-specific prompt dialects yet. The
-active slice implements npm package metadata, an allowlisted package packlist,
-and a local tarball install smoke as the next release-readiness gate. Direct
+another reviewer without introducing agent-specific prompt dialects yet. npm
+package metadata, an allowlisted package packlist, and local tarball install
+smoke are merged as the release-readiness gate before publishing. Direct
 `generate review-request --format markdown`, npm registry publishing,
 persistent packet storage, and private redaction rules remain deferred.
 
@@ -33,7 +33,7 @@ persistent packet storage, and private redaction rules remain deferred.
 | Render-template planning | Done | PR #16 merged the renderer-first design and implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`. |
 | Render-template implementation | Done | PR #17 merged the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, strict parser tests, escaping tests, and render behavior tests. |
 | Package/release smoke planning | Done | PR #19 merged the npm package target, packlist, tarball install smoke, CI guardrail, and release-readiness closeout plan. |
-| Package/release smoke implementation | In progress | Branch adds `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
+| Package/release smoke implementation | Done | PR #20 merged `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
 | Product implementation | In progress | Validation, JSON-only packet generation, Markdown rendering, and package install smoke are implemented; direct generator Markdown output, agent-specific prompt dialects, registry publishing, and private redaction rules remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -67,11 +67,13 @@ persistent packet storage, and private redaction rules remain deferred.
 | 2026-06-26 | Claude review for PR #19 | Findings addressed | Tightened the planned package `files` allowlist from all `dist/` to `dist/src/` plus `dist/schemas/` so compiled tests are excluded, and added `npm pack --json` tarball-content assertions to fail on `dist/tests/`, source tests, planning docs, GitHub config, or Codex config. |
 | 2026-06-26 | PR #19 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/19`; package/release smoke planning merged to `main`. |
 | 2026-06-26 | Package/release smoke implementation branch checks | Passed | `npm run check` passed with 48 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, verified installed `open-relay` help/validate/render/generate behavior, asserted the package packlist excludes tests/planning/GitHub/Codex config, and confirmed invalid JSON errors do not leak `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
+| 2026-06-26 | PR #20 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/20`; merge commit `21c67cb`; `Governance Checks` passed, Claude review reported no remaining findings, and package/release smoke implementation merged without registry publish or live release claim. |
 
 ## Next Step
 
-Open the package/release smoke implementation PR, wait for GitHub CI, then
-request Claude review.
+Plan the next relay workflow slice: likely `generate review-request --format
+markdown` or a higher-level handoff command that generates and renders one
+review packet in a single local workflow.
 
 ## Owner Decisions Needed
 
