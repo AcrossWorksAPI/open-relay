@@ -5,7 +5,7 @@ Last updated: 2026-06-26
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, and merged direct Markdown generation
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, and local handoff workflow planning in progress
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -33,6 +33,7 @@ captured is not alert delivered.
 | Package/release smoke implementation | Done | 2026-06-26 | Merge commit `21c67cb` on `main` | PR #20: `https://github.com/AcrossWorksAPI/open-relay/pull/20` | N/A, local package smoke only; no registry publish | `npm run check` passed with 48 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, verified installed `open-relay` help/validate/render/generate behavior, asserted the package packlist excludes tests/planning/GitHub/Codex config, and confirmed invalid JSON errors do not leak `SECRET_TOKEN_SHOULD_NOT_APPEAR`; `Governance Checks` passed on PR #20; Claude review reported no remaining findings | Revert merge commit `21c67cb` if package install smoke or packlist behavior is rejected. |
 | Direct Markdown generation planning | Done | 2026-06-26 | Merge commit `36f95dc` on `main` | PR #22: `https://github.com/AcrossWorksAPI/open-relay/pull/22` | N/A, docs/planning slice only | Design source `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md`; implementation source `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR; `Governance Checks` passed and Claude plan review reported no substantive findings | Revert merge commit `36f95dc` if direct generator Markdown output is rejected. |
 | Direct Markdown generation implementation | Done | 2026-06-26 | Merge commit `80501da` on `main` | PR #23: `https://github.com/AcrossWorksAPI/open-relay/pull/23` | N/A, local CLI only; no registry publish | `npm run check` passed with 55 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, and verified installed CLI direct Markdown generation; `git diff --check` passed; `Governance Checks` passed on PR #23; Claude review reported no findings | Revert merge commit `80501da` if direct Markdown generation behavior is rejected. |
+| Local handoff workflow planning | In progress | 2026-06-26 | Planning branch `codex/handoff-review-request-planning` | PR #25: `https://github.com/AcrossWorksAPI/open-relay/pull/25` | N/A, docs/planning slice only | Design source `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-handoff-review-request.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR; `Governance Checks` passed; Claude review fixes added local-only help wording, `--format=...` rejection coverage, and narrower lifecycle wording | Revert the planning branch if the handoff command shape is rejected. |
 
 ## Rollback Notes
 
@@ -54,5 +55,7 @@ captured is not alert delivered.
 - Direct Markdown generation planning and implementation can be reverted
   independently because they do not change packet schema, package publishing,
   or storage behavior.
+- Local handoff workflow planning can be reverted independently because it does
+  not change runtime behavior until an implementation PR merges.
 - Product rollback strategy is `Unknown; needs owner decision` because no
   package target, release channel, or persistent data model exists yet.
