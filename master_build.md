@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, and direct Markdown generation planning in progress | PR #20 merge commit `21c67cb`; direct Markdown generation planning source `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, and direct Markdown generation implementation in progress | PR #22 merge commit `36f95dc`; direct Markdown generation source `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` |
 
 ## Scope
 
@@ -43,7 +43,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - git-state generator design, implementation plan, and merged JSON-only CLI implementation
 - render review-request design, implementation plan, merged implementation, tests, and example snapshot
 - package/release smoke design, implementation plan, merged implementation, and CI guardrail
-- direct Markdown generation design and implementation plan
+- direct Markdown generation design, implementation plan, and implementation branch
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -87,8 +87,9 @@ Current scope is the first local protocol and validation CLI baseline:
 
 - Package target and release-readiness smoke are implemented as an npm tarball
   install smoke; registry publishing remains deferred.
-- Direct `generate review-request --format markdown` is planned; Markdown
-  rendering remains available through `open-relay render review-request`.
+- Direct `generate review-request --format markdown` is implemented on the
+  active branch; Markdown rendering remains available through
+  `open-relay render review-request`.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.

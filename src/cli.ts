@@ -12,7 +12,7 @@ const usage = `Open Relay
 
 Usage:
   open-relay validate <packet.json>
-  open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <packet.json>]
+  open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
   open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay --help
 `;
@@ -149,18 +149,26 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
       return 1;
     }
 
-    const json = `${JSON.stringify(packet, null, 2)}\n`;
+    const output = parsed.options.format === "markdown"
+      ? renderReviewRequestMarkdown(packet)
+      : `${JSON.stringify(packet, null, 2)}\n`;
+    const successMessage = parsed.options.format === "markdown"
+      ? "Wrote review-request Markdown.\n"
+      : "Wrote review-request packet.\n";
+    const writeErrorMessage = parsed.options.format === "markdown"
+      ? "Could not write review-request Markdown.\n"
+      : "Could not write review-request packet.\n";
 
     if (parsed.options.output) {
       try {
-        await writeFile(parsed.options.output, json, "utf8");
+        await writeFile(parsed.options.output, output, "utf8");
       } catch {
-        process.stderr.write("Could not write review-request packet.\n");
+        process.stderr.write(writeErrorMessage);
         return 1;
       }
-      process.stdout.write("Wrote review-request packet.\n");
+      process.stdout.write(successMessage);
     } else {
-      process.stdout.write(json);
+      process.stdout.write(output);
     }
 
     return 0;

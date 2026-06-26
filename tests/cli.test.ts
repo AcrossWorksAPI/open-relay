@@ -259,6 +259,156 @@ test("generates a schema-valid review-request packet to a file", () => {
   }
 });
 
+test("generates explicit json format to stdout", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Generate JSON packet",
+      "--summary", "Creates JSON from git state.",
+      "--behavioral-intent", "Keep current generator behavior explicit.",
+      "--format", "json"
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    const packet = JSON.parse(result.stdout);
+    assert.equal(packet.packet_type, "review-request");
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generates review-request markdown to stdout", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Generate Markdown packet",
+      "--summary", "Creates rendered Markdown from git state.",
+      "--behavioral-intent", "Reduce the two-step review handoff.",
+      "--format", "markdown"
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /^# Review Request Relay Packet/);
+    assert.match(result.stdout, /## Next Action/);
+    assert.doesNotMatch(result.stdout, /^\{/);
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generates review-request markdown to a file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Generate Markdown packet",
+      "--summary", "Creates rendered Markdown from git state.",
+      "--behavioral-intent", "Reduce the two-step review handoff.",
+      "--format", "markdown",
+      "--output", outputPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Wrote review-request Markdown/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stderr, "");
+    assert.match(readFileSync(outputPath, "utf8"), /^# Review Request Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("rejects generate review-request with invalid format", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "review-request",
+    "--base", "origin/main",
+    "--head", "HEAD",
+    "--goal", "Generate packet",
+    "--summary", "Creates a packet from git state.",
+    "--behavioral-intent", "Reduce manual handoff assembly.",
+    "--format", "html"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Invalid format: html/);
+  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects unwritable markdown output paths without echoing path values", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR", "relay.md");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Generate Markdown packet",
+      "--summary", "Creates rendered Markdown from git state.",
+      "--behavioral-intent", "Reduce the two-step review handoff.",
+      "--format", "markdown",
+      "--output", outputPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Could not write review-request Markdown/);
+    assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("renders a review-request packet to stdout", () => {
   const result = spawnSync(
     process.execPath,
@@ -403,6 +553,21 @@ test("exports the validator and renderer from the package entrypoint", () => {
   assert.equal(result.status, 0);
   assert.equal(result.stderr, "");
 });
+
+function createChangedGitRepo(directory: string): { base: string; head: string } {
+  runGit(directory, "init", "--initial-branch", "main");
+  runGit(directory, "config", "user.email", "test@example.com");
+  runGit(directory, "config", "user.name", "Open Relay Test");
+  writeFileSync(join(directory, "README.md"), "# Repo\n", "utf8");
+  runGit(directory, "add", "README.md");
+  runGit(directory, "commit", "-m", "initial");
+  const base = runGit(directory, "rev-parse", "HEAD").trim();
+  writeFileSync(join(directory, "README.md"), "# Repo\n\nChanged.\n", "utf8");
+  runGit(directory, "add", "README.md");
+  runGit(directory, "commit", "-m", "change readme");
+  const head = runGit(directory, "rev-parse", "HEAD").trim();
+  return { base, head };
+}
 
 function runGit(cwd: string, ...args: string[]): string {
   return execFileSync("git", args, {

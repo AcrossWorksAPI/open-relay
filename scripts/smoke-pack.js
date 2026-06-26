@@ -7,6 +7,7 @@ const {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync
 } = require("node:fs");
@@ -83,6 +84,26 @@ try {
 
   runCli(cli, ["validate", generatedPacket], { contains: "valid review-request packet" });
   runCli(cli, ["render", "review-request", generatedPacket], { contains: "## Next Action" });
+
+  const generatedMarkdown = join(workspace, "generated.md");
+  runCli(cli, [
+    "generate",
+    "review-request",
+    "--base", base,
+    "--head", head,
+    "--goal", "Smoke package install",
+    "--summary", "Verifies installed CLI can generate Markdown directly.",
+    "--behavioral-intent", "Prove package tarball supports direct Markdown generation.",
+    "--format", "markdown",
+    "--output", generatedMarkdown
+  ], {
+    cwd: gitRepo,
+    contains: "Wrote review-request Markdown."
+  });
+
+  const markdown = readFileSync(generatedMarkdown, "utf8");
+  assert.match(markdown, /^# Review Request Relay Packet/);
+  assert.match(markdown, /## Next Action/);
 
   const badJson = join(workspace, "bad.json");
   writeFileSync(badJson, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
