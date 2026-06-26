@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, and git-state generator implementation in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, and git-state generator CLI MVP merged
 Last updated: 2026-06-26
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, and in-progress git-state generator draft PR
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, and merged JSON-only git-state generator CLI MVP
 
 ## Project Purpose
 
@@ -23,7 +23,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
 | Unversioned | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| Unversioned | Review-request packet CLI MVP | In progress | High | Candidate | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
+| Unversioned | Review-request packet CLI MVP | Done | High | No | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
 | Unversioned | Codex and Claude render templates | Candidate | Medium | Candidate | Review-request packet CLI MVP | - |
 
 ## Candidate Scope
@@ -31,7 +31,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
 | Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI is merged | - |
-| Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | Git-state generator plan is reviewed | - |
+| Templates | Codex/Claude review prompt templates | After JSON generator MVP | Candidate | Git-state generator implementation is merged | - |
 | Security | Private redaction rule files | Before packets include sensitive data beyond git metadata | Candidate | Fixed generator redaction defaults are insufficient | - |
 | Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI is merged | - |
 

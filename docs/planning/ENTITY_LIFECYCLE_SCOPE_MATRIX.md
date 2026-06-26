@@ -11,13 +11,13 @@ Allowed cell values: `Shipped`, `In progress`, `Planned`, `Deferred`,
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Roadmap governance docs | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | Planned | Planned | N/A | N/A | Planned | Docs created in this baseline; git history becomes evidence after commit. |
 | Local Codex roadmap skill | Shipped | Shipped | Shipped | Planned | N/A | N/A | Shipped | N/A | Planned | N/A | N/A | Planned | Project-local skill at `.codex/skills/project-roadmap-system/SKILL.md`. |
-| Relay packet | In progress | Shipped | Planned | Planned | Planned | N/A | Shipped | Planned | In progress | Deferred | N/A | Shipped | Review-request docs, examples, and validation are shipped; packet creation is implemented on draft PR #14 but not merged. |
+| Relay packet | Shipped | Shipped | Planned | Planned | Planned | N/A | Shipped | Planned | Shipped | Deferred | N/A | Shipped | Review-request docs, examples, validation, and JSON-only packet generation are merged; Markdown rendering remains planned. |
 | Relay packet schema | Shipped | Shipped | Planned | Planned | Planned | N/A | Shipped | Planned | Planned | N/A | N/A | Shipped | Formal JSON Schema and CLI validation merged in PR #11; future schema versions need version-aware validation. |
 | Render template | Planned | Planned | Planned | Planned | Planned | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Initial review-request Markdown rendering order is documented; template tooling remains planned. |
-| Local repository context collector | In progress | In progress | Planned | N/A | N/A | N/A | In progress | In progress | In progress | N/A | N/A | In progress | Draft PR #14 collects base/head commits, diff range, changed files, safe remote metadata, and fail-closed redaction defaults. |
+| Local repository context collector | Shipped | Shipped | Planned | N/A | N/A | N/A | Shipped | Shipped | Shipped | N/A | N/A | Shipped | Merged generator collects base/head commits, diff range, changed files, safe remote metadata, and fail-closed redaction defaults. |
 | Review loop | Future candidate | Future candidate | Future candidate | Future candidate | Future candidate | N/A | Future candidate | Future candidate | Future candidate | Deferred | N/A | Future candidate | Implementation handoff, review request, review response, resume project. |
 | Manager/library/assignment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown; needs owner decision if multi-user or hosted scope appears. |
-| Runtime/deployment surfaces | Shipped | Shipped | Shipped | N/A | N/A | N/A | Shipped | Planned | Planned | N/A | N/A | Shipped | TypeScript package, CLI source, tests, runtime CI, and local validation smoke merged in PR #11; package publishing and release smoke remain planned. |
+| Runtime/deployment surfaces | Shipped | Shipped | Shipped | N/A | N/A | N/A | Shipped | Planned | Shipped | N/A | N/A | Shipped | TypeScript package, CLI source, validation/generator tests, runtime CI, and local CLI smoke are merged; package publishing and release smoke remain planned. |
 
 ## Assignment And Scope Matrix
 

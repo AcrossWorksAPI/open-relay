@@ -5,7 +5,7 @@ Last updated: 2026-06-26
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, and in-progress git-state generator draft PR
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, and merged JSON-only git-state generator CLI MVP
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -25,8 +25,8 @@ captured is not alert delivered.
 | Smallest useful relay packet | Done | 2026-06-26 | Merge commit `3a23ba1` on `main` | PR #5: `https://github.com/AcrossWorksAPI/open-relay/pull/5` | N/A, docs/protocol slice | `Governance Checks` passed on PR #5; Claude re-review reported no remaining findings | Revert merge commit `3a23ba1` if the reviewed packet shape is rejected. |
 | Runtime and schema CLI planning | Done | 2026-06-26 | Merge commit `5c87d46` on `main` | PR #9: `https://github.com/AcrossWorksAPI/open-relay/pull/9` | N/A, docs/planning slice | Local governance checks passed; `Governance Checks` passed on PR #9; Claude plan review received via owner handoff with low findings addressed | Revert merge commit `5c87d46` if the TypeScript CLI-first direction changes. |
 | Runtime/schema validation CLI implementation | Done | 2026-06-26 | Merge commit `6f6f25e` on `main` | PR #11: `https://github.com/AcrossWorksAPI/open-relay/pull/11` | N/A, local CLI baseline only | `npm ci`, `npm run check` with 8 tests, `git diff --check`, `node dist/src/cli.js validate examples/review-request/relay.json`, package entrypoint smoke, and invalid-JSON leak smoke passed locally on 2026-06-26; `Governance Checks` passed on PR #11; Claude re-review reported no remaining findings | Revert merge commit `6f6f25e` if the validator or CLI direction is rejected. |
-| Git-state generator planning | In progress | 2026-06-26 | Branch `codex/git-state-generator-planning` | PR #13: `https://github.com/AcrossWorksAPI/open-relay/pull/13` | N/A, docs/planning slice only | `npm run check`, `git diff --check`, placeholder scan, and secret-pattern scan passed locally on 2026-06-26; `Governance Checks` passed on PR #13; Claude plan review findings addressed for redaction semantics, typed snippets, explicit diff semantics, and NUL-delimited name-status handling | Revert the planning PR if the generator command shape or redaction defaults are rejected. |
-| Git-state generator implementation | In progress | 2026-06-26 | Branch `codex/git-state-generator-implementation` | Draft PR #14: `https://github.com/AcrossWorksAPI/open-relay/pull/14` | N/A, local CLI draft only | `npm ci`, `npm run check` with 31 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, sanitized success output, NUL-delimited name-status parsing, precise remote-redaction reasons, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed on draft PR #14 | Retarget/rebase after PR #13; revert the implementation PR if generated packet behavior or redaction defaults are rejected. |
+| Git-state generator planning | Done | 2026-06-26 | Merge commit `cd1462c` on `main` | PR #13: `https://github.com/AcrossWorksAPI/open-relay/pull/13` | N/A, docs/planning slice only | `npm run check`, `git diff --check`, placeholder scan, and secret-pattern scan passed locally on 2026-06-26; `Governance Checks` passed on PR #13; Claude plan review findings addressed for redaction semantics, typed snippets, explicit diff semantics, and NUL-delimited name-status handling | Revert merge commit `cd1462c` if the generator command shape or redaction defaults are rejected. |
+| Git-state generator implementation | Done | 2026-06-26 | Merge commit `fd0960c` on `main` | PR #14: `https://github.com/AcrossWorksAPI/open-relay/pull/14` | N/A, local CLI MVP only | `npm ci`, `npm run check` with 31 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, sanitized success output, NUL-delimited name-status parsing, precise remote-redaction reasons, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed on PR #14; final merged-main smoke and packet leak scan passed | Revert merge commit `fd0960c` if generated packet behavior or redaction defaults are rejected. |
 
 ## Rollback Notes
 
@@ -35,7 +35,7 @@ captured is not alert delivered.
   data model depends on them yet.
 - Runtime schema validation can be reverted independently while packet
   generation and release behavior remain unbuilt.
-- Git-state generator implementation is stacked on PR #13 and can be closed or
-  rebased before merge if the planning review changes the command shape.
+- Git-state generator implementation can be reverted independently from future
+  template or release slices because it has no persistent data model.
 - Product rollback strategy is `Unknown; needs owner decision` because no
   package target, release channel, or persistent data model exists yet.
