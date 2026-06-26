@@ -1129,8 +1129,8 @@ git commit -m "docs: close runtime schema cli slice"
 
 ## PR And Review Flow
 
-- [ ] Open a pull request with `Closes #8` in the body.
-- [ ] Wait for `Open Relay CI / Governance Checks`.
+- [x] Open PR #11 with `Relates to #8` in the body because issue #8 was already closed by the planning PR.
+- [x] Wait for `Open Relay CI / Governance Checks`.
 - [ ] Ask Claude to review after CI passes, focusing on:
   - schema parity with `docs/protocol/review-request-packet.md`
   - CLI error behavior

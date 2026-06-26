@@ -38,13 +38,12 @@ decision`.
 | 2026-06-26 | Runtime/schema planning branch checks | Passed | `git diff --check`, trailing-whitespace scan, required-file check, roadmap parser check, placeholder scan, secret-like scan, JSON parse, and example parity check. |
 | 2026-06-26 | Claude plan review for PR #9 | Low findings addressed | Review verified schema/example parity and task sequencing; follow-up commit tightens timestamp validation and fixes source-plan attribution. |
 | 2026-06-26 | PR #9 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/9`; merge commit `5c87d46`; issue #8 auto-closed. |
-| 2026-06-26 | Runtime/schema validation branch checks | Passed | `npm ci`, `npm run check`, `git diff --check`, and `node dist/src/cli.js validate examples/review-request/relay.json` passed locally. |
+| 2026-06-26 | Runtime/schema validation branch checks | Passed | PR #11: `https://github.com/AcrossWorksAPI/open-relay/pull/11`; `npm ci`, `npm run check`, `git diff --check`, and `node dist/src/cli.js validate examples/review-request/relay.json` passed locally. |
 
 ## Next Step
 
-Open the runtime/schema validation CLI PR, wait for CI, request Claude review,
-then move into the local git-state packet generator slice after findings are
-resolved.
+Request Claude review on PR #11, resolve findings, merge after review, then
+move into the local git-state packet generator slice.
 
 ## Owner Decisions Needed
 
