@@ -127,6 +127,12 @@ without reimplementing presentation logic.
   `redactions` honestly with neutral empty-state text.
 - Render `sensitive_data` when present. If absent, say no sensitive-data note
   was provided.
+- Normalize line breaks in inline and bullet-list values so packet strings
+  cannot accidentally create new Markdown bullets, headings, or table rows.
+- Keep the rendered `examples/review-request/relay.json` output byte-for-byte
+  aligned with the committed `examples/review-request/relay.md`, or update the
+  example through the same implementation PR when an intentional format change
+  is made.
 
 ## Security And Privacy
 
@@ -137,6 +143,14 @@ JSON parser excerpts, packet contents, secret-shaped values, or output paths.
 The renderer may render sensitive-looking values if they are already present in
 the packet because the packet is the source of truth. The CLI's responsibility
 is to avoid leaking additional values in error paths.
+
+Free-text packet fields such as `goal`, `change_summary.summary`, and
+`next_action` are prompt-injection surfaces because the rendered Markdown is
+intended for an AI reviewer. For this first renderer they remain packet-authored
+content, but the implementation must record that risk in tests or docs and must
+normalize accidental line-break injection in inline and list contexts. Fenced or
+quoted free-text rendering is a future hardening option if real packets show
+that packet-authored instructions are too ambiguous.
 
 ## Lifecycle And Scope Coverage
 
@@ -154,10 +168,14 @@ is to avoid leaking additional values in error paths.
 ## Testing Strategy
 
 - Unit-test `renderReviewRequestMarkdown` against the example packet.
+- Snapshot-test the example packet render against
+  `examples/review-request/relay.md` so the committed Markdown example cannot
+  drift from the renderer.
 - Assert the 11 section headings appear in protocol order.
 - Assert changed files, verification, risks, provenance, redactions, sensitive
   data, and next action render from packet fields.
-- Assert table cells escape pipes and line breaks.
+- Assert table cells escape pipes and line breaks, and inline/list fields
+  normalize line breaks.
 - CLI-test stdout rendering from `examples/review-request/relay.json`.
 - CLI-test `--output` file rendering and sanitized success output.
 - CLI-test invalid JSON and schema-invalid packet failures.

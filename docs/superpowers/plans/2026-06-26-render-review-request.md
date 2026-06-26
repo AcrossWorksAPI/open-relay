@@ -15,8 +15,10 @@
 - Create `src/renderReviewRequest.ts`: pure Markdown rendering helpers and exported `renderReviewRequestMarkdown(packet)` function.
 - Modify `src/index.ts`: export the renderer for programmatic package consumers.
 - Modify `src/cli.ts`: add `render review-request <packet.json> [--output <relay.md>]` routing, strict argument parsing, packet file reading, validation, rendering, and output handling.
+- Modify `examples/review-request/relay.md`: keep the committed Markdown example aligned with the renderer output for `examples/review-request/relay.json`.
 - Modify `tests/cli.test.ts`: add CLI tests for help, stdout render, output-file render, invalid JSON leak behavior, schema-invalid packet behavior, output write failure, and package export.
-- Create `tests/renderReviewRequest.test.ts`: unit tests for Markdown order, content, empty states, and table escaping.
+- Create `tests/renderReviewRequest.test.ts`: unit tests for Markdown order, content, empty states, example snapshot parity, table escaping, and inline text normalization.
+- Use `examples/review-request/relay.md` as the renderer snapshot fixture for `examples/review-request/relay.json`; if implementation intentionally changes the format, update the example in the same PR.
 - Modify docs after implementation closeout: `docs/STATUS.md`, `docs/planning/ROADMAP.md`, `docs/planning/ACTIVE_WORK.md`, `docs/planning/PLAN_REGISTRY.md`, `docs/planning/VERSION_LEDGER.md`, and `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`.
 
 ## Task 1: Renderer Unit Tests
@@ -37,6 +39,11 @@ import type { ReviewRequestPacket } from "../src/reviewRequest";
 const examplePacket = JSON.parse(
   readFileSync("examples/review-request/relay.json", "utf8")
 ) as ReviewRequestPacket;
+const exampleMarkdown = readFileSync("examples/review-request/relay.md", "utf8");
+
+test("renders the committed example markdown", () => {
+  assert.equal(renderReviewRequestMarkdown(examplePacket), exampleMarkdown);
+});
 
 test("renders review-request markdown in protocol order", () => {
   const markdown = renderReviewRequestMarkdown(examplePacket);
@@ -81,9 +88,10 @@ test("escapes markdown table cells", () => {
       review_priority: "high"
     }],
     verification: [{
+      kind: "command",
       command: "npm | test",
       result: "passed",
-      notes: "Line one\nLine two"
+      evidence: "Line one\nLine two"
     }]
   };
 
@@ -91,6 +99,31 @@ test("escapes markdown table cells", () => {
 
   assert.match(markdown, /\| `docs\/a\\\|b\.md` \| modified \| Line one Line two \| high \|/);
   assert.match(markdown, /\| `npm \\\| test` \| passed \| Line one Line two \|/);
+});
+
+test("normalizes inline and bullet-list line breaks", () => {
+  const packet: ReviewRequestPacket = {
+    ...examplePacket,
+    repository: {
+      ...examplePacket.repository,
+      reviewer_access: "Reviewer has access.\n- Injected bullet"
+    },
+    provenance: [{
+      type: "user_note",
+      reference: "owner-note",
+      supports: "Line one\n## Injected heading"
+    }],
+    redactions: [{
+      field: "repository.local_path",
+      reason: "Line one\n- Injected bullet"
+    }]
+  };
+
+  const markdown = renderReviewRequestMarkdown(packet);
+
+  assert.match(markdown, /Reviewer access: Reviewer has access\. - Injected bullet/);
+  assert.doesNotMatch(markdown, /^## Injected heading/m);
+  assert.doesNotMatch(markdown, /^- Injected bullet/m);
 });
 
 test("renders neutral empty states", () => {
@@ -121,7 +154,7 @@ test("renders neutral empty states", () => {
 Run:
 
 ```bash
-npm test -- --test-name-pattern="renders review-request markdown|escapes markdown table cells|renders neutral empty states"
+npm test -- --test-name-pattern="renders the committed example markdown|renders review-request markdown|escapes markdown table cells|normalizes inline and bullet-list line breaks|renders neutral empty states"
 ```
 
 Expected: build fails because `src/renderReviewRequest.ts` does not exist.
@@ -156,32 +189,32 @@ export function renderReviewRequestMarkdown(packet: ReviewRequestPacket): string
     "",
     "## Review Request",
     "",
-    `- Audience: ${packet.requested_review.audience}`,
+    `- Audience: ${inlineText(packet.requested_review.audience)}`,
     `- Focus: ${formatList(packet.requested_review.focus)}`,
-    `- Requested output: ${packet.requested_review.requested_output}`,
+    `- Requested output: ${inlineText(packet.requested_review.requested_output)}`,
     "",
     "## Goal",
     "",
-    packet.goal,
+    blockText(packet.goal),
     "",
     "## Repository Context",
     "",
-    `- Repository: \`${packet.repository.name}\``,
-    ...(packet.repository.remote_url ? [`- Remote: \`${packet.repository.remote_url}\``] : []),
-    `- Local path: ${packet.repository.local_path ? `\`${packet.repository.local_path}\`` : "redacted"}`,
-    `- Base branch: \`${packet.repository.base_branch}\``,
-    `- Working branch: \`${packet.repository.working_branch}\``,
-    `- Base commit: \`${packet.repository.base_commit}\``,
-    `- Head commit: \`${packet.repository.head_commit}\``,
-    `- Diff range: \`${packet.repository.diff_range}\``,
-    ...(packet.repository.pull_request_url ? [`- Pull request: \`${packet.repository.pull_request_url}\``] : []),
-    `- Reviewer access: ${packet.repository.reviewer_access}`,
+    `- Repository: \`${inlineText(packet.repository.name)}\``,
+    ...(packet.repository.remote_url ? [`- Remote: \`${inlineText(packet.repository.remote_url)}\``] : []),
+    `- Local path: ${packet.repository.local_path ? `\`${inlineText(packet.repository.local_path)}\`` : "redacted"}`,
+    `- Base branch: \`${inlineText(packet.repository.base_branch)}\``,
+    `- Working branch: \`${inlineText(packet.repository.working_branch)}\``,
+    `- Base commit: \`${inlineText(packet.repository.base_commit)}\``,
+    `- Head commit: \`${inlineText(packet.repository.head_commit)}\``,
+    `- Diff range: \`${inlineText(packet.repository.diff_range)}\``,
+    ...(packet.repository.pull_request_url ? [`- Pull request: \`${inlineText(packet.repository.pull_request_url)}\``] : []),
+    `- Reviewer access: ${inlineText(packet.repository.reviewer_access)}`,
     "",
     "## Change Summary",
     "",
-    packet.change_summary.summary,
+    blockText(packet.change_summary.summary),
     "",
-    `- Behavioral intent: ${packet.change_summary.behavioral_intent}`,
+    `- Behavioral intent: ${inlineText(packet.change_summary.behavioral_intent)}`,
     `- Total files changed: ${packet.change_summary.total_files_changed}`,
     `- Excluded scope: ${formatList(packet.change_summary.excluded_scope, "none listed")}`,
     "",
@@ -238,10 +271,10 @@ function renderVerification(packet: ReviewRequestPacket): string {
   }
 
   return [
-    "| Command or evidence | Result | Notes |",
+    "| Command or evidence | Result | Evidence |",
     "| --- | --- | --- |",
     ...packet.verification.map((item) =>
-      `| \`${escapeTableCell(item.command)}\` | ${escapeTableCell(item.result)} | ${escapeTableCell(item.notes)} |`
+      `| \`${escapeTableCell(item.command)}\` | ${escapeTableCell(item.result)} | ${escapeTableCell(item.evidence)} |`
     )
   ].join("\n");
 }
@@ -266,7 +299,7 @@ function renderProvenance(packet: ReviewRequestPacket): string {
   }
 
   return packet.provenance
-    .map((item) => `- ${labelForProvenanceType(item.type)}: \`${item.reference}\` - ${item.supports}`)
+    .map((item) => `- ${labelForProvenanceType(item.type)}: \`${inlineText(item.reference)}\` - ${inlineText(item.supports)}`)
     .join("\n");
 }
 
@@ -276,7 +309,7 @@ function renderRedactions(packet: ReviewRequestPacket): string {
   }
 
   return packet.redactions
-    .map((item) => `- \`${item.field}\`: ${item.reason}`)
+    .map((item) => `- \`${inlineText(item.field)}\`: ${inlineText(item.reason)}`)
     .join("\n");
 }
 
@@ -286,16 +319,24 @@ function renderSensitiveData(packet: ReviewRequestPacket): string {
   }
 
   return packet.sensitive_data.excluded
-    ? packet.sensitive_data.notes
-    : `Sensitive-data exclusion not asserted. ${packet.sensitive_data.notes}`;
+    ? blockText(packet.sensitive_data.notes)
+    : `Sensitive-data exclusion not asserted. ${inlineText(packet.sensitive_data.notes)}`;
 }
 
 function formatList(values: string[], emptyText = "none"): string {
-  return values.length > 0 ? values.join(", ") : emptyText;
+  return values.length > 0 ? values.map(inlineText).join(", ") : emptyText;
 }
 
 function escapeTableCell(value: string): string {
-  return value.replace(/\r?\n/g, " ").replace(/\|/g, "\\|");
+  return inlineText(value).replace(/\|/g, "\\|");
+}
+
+function inlineText(value: string): string {
+  return value.replace(/\r?\n/g, " ");
+}
+
+function blockText(value: string): string {
+  return value.trim();
 }
 
 function labelForProvenanceType(type: ReviewRequestPacket["provenance"][number]["type"]): string {
@@ -306,20 +347,32 @@ function labelForProvenanceType(type: ReviewRequestPacket["provenance"][number][
 }
 ```
 
-- [ ] **Step 2: Run renderer tests**
+- [ ] **Step 2: Build and regenerate the committed Markdown example**
 
 Run:
 
 ```bash
-npm test -- --test-name-pattern="renders review-request markdown|escapes markdown table cells|renders neutral empty states"
+npm run build
+node -e "const fs = require('node:fs'); const { renderReviewRequestMarkdown } = require('./dist/src/renderReviewRequest'); const packet = JSON.parse(fs.readFileSync('examples/review-request/relay.json', 'utf8')); fs.writeFileSync('examples/review-request/relay.md', renderReviewRequestMarkdown(packet), 'utf8');"
+```
+
+Expected: `examples/review-request/relay.md` contains deterministic renderer
+output for `examples/review-request/relay.json`.
+
+- [ ] **Step 3: Run renderer tests**
+
+Run:
+
+```bash
+npm test -- --test-name-pattern="renders the committed example markdown|renders review-request markdown|escapes markdown table cells|normalizes inline and bullet-list line breaks|renders neutral empty states"
 ```
 
 Expected: tests pass.
 
-- [ ] **Step 3: Commit renderer module**
+- [ ] **Step 4: Commit renderer module**
 
 ```bash
-git add src/renderReviewRequest.ts tests/renderReviewRequest.test.ts
+git add src/renderReviewRequest.ts tests/renderReviewRequest.test.ts examples/review-request/relay.md
 git commit -m "feat: render review-request markdown"
 ```
 
