@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, and local handoff workflow implementation in progress | PR #23 merge commit `80501da`; local handoff source `docs/superpowers/plans/2026-06-26-handoff-review-request.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, and merged local handoff workflow | PR #26 merge commit `c95f409`; local handoff source `docs/superpowers/plans/2026-06-26-handoff-review-request.md` |
 
 ## Scope
 
@@ -44,7 +44,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - render review-request design, implementation plan, merged implementation, tests, and example snapshot
 - package/release smoke design, implementation plan, merged implementation, and CI guardrail
 - direct Markdown generation design, implementation plan, merged implementation, and package smoke coverage
-- local handoff workflow design, implementation plan, and stacked implementation branch
+- local handoff workflow design, implementation plan, merged implementation, and package smoke coverage
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -83,7 +83,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Add Codex-ready and Claude-ready render templates | Done | No |
 | P1 | Define package target and release-readiness smoke | Done | No |
 | P1 | Generate review-request Markdown directly | Done | No |
-| P1 | Add local review-request handoff workflow | In progress | No |
+| P1 | Add local review-request handoff workflow | Done | No |
 
 ## Known Gaps
 
@@ -92,9 +92,8 @@ Current scope is the first local protocol and validation CLI baseline:
 - Direct `generate review-request --format markdown` is implemented; Markdown
   rendering remains available through
   `open-relay render review-request`.
-- Local `handoff review-request` is implemented on a stacked branch as a
-  Markdown-first convenience command; external agent invocation remains
-  deferred.
+- Local `handoff review-request` is merged as a Markdown-first convenience
+  command; external agent invocation remains deferred.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
