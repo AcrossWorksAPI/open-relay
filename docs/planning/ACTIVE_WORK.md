@@ -6,10 +6,9 @@ Last updated: 2026-06-26
 
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet and merged validation CLI
-are now the source shape for the generator slice. Draft PR #14 implements the
-first JSON-only git-state generator behind the still-open planning PR #13. The
-approved first runtime direction is a TypeScript CLI on Node.js with npm; MCP
-server support is deferred until the CLI is useful.
+are now joined by the merged JSON-only git-state generator. The approved first
+runtime direction is a TypeScript CLI on Node.js with npm; MCP server support is
+deferred until the CLI is useful.
 
 ## Current Implementation Source
 
@@ -56,22 +55,22 @@ server support is deferred until the CLI is useful.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Generator implementation not merged | High | Draft PR #14 is green and stacked behind planning PR #13; do not request Claude implementation review until PR #13 is accepted. |
 | Package publishing target unknown | Medium | Keep `private: true` until owner selects npm/package release policy. |
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
-| Runtime CI now covers generator draft | Low | CI runs build and tests for validation plus generator behavior on draft PR #14. |
+| Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Markdown rendering and prompt templates deferred | Medium | Generator writes JSON only; Codex/Claude render templates remain candidate follow-up work. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Review the git-state generator design and implementation plan in PR #13.
-2. Retarget/rebase draft implementation PR #14 after PR #13 is accepted.
-3. Ask Claude to review PR #14 after CI is green on the retargeted PR.
-4. Revisit permanent packet storage location after stdout and explicit
+1. Draft Codex and Claude render templates from the reviewed packet example and
+   merged JSON generator.
+2. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-5. Draft Codex and Claude render templates from the reviewed packet example.
+3. Define package/release target and live-readiness smoke criteria.
+4. Decide whether private redaction rule files are needed before package
+   publishing.
 
 ## Current Owner Decisions Needed
 

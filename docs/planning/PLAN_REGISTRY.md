@@ -52,7 +52,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Codex | Plan for local git-state review-request packet generation, redaction defaults, CLI wiring, tests, and closeout; draft implementation PR #14 is open and green. |
+| - | - | - | No active execution plans. |
 
 ## Implemented Or Historical Plans
 
@@ -63,6 +63,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-open-source-hardening.md` | Done | Added security, contribution, conduct, templates, Dependabot, CI, and required branch-protection check. |
 | `docs/superpowers/plans/2026-06-26-review-request-packet-spec.md` | Done | Defined the smallest useful `review-request` packet, examples, review assumptions, and protocol shape. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Done | Implemented TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, review fixes, and roadmap closeout. |
+| `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Done | Planned and implemented local git-state review-request packet generation, redaction defaults, CLI wiring, tests, review fixes, and merge closeout through PR #14. |
 
 ## Superseded Or Dormant Plans
 
