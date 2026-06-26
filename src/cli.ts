@@ -63,7 +63,12 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
     const json = `${JSON.stringify(packet, null, 2)}\n`;
 
     if (parsed.options.output) {
-      await writeFile(parsed.options.output, json, "utf8");
+      try {
+        await writeFile(parsed.options.output, json, "utf8");
+      } catch {
+        process.stderr.write("Could not write review-request packet.\n");
+        return 1;
+      }
       process.stdout.write(`Wrote review-request packet to ${parsed.options.output}\n`);
     } else {
       process.stdout.write(json);

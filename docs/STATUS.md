@@ -22,7 +22,7 @@ Release/versioning convention is still `Unknown; needs owner decision`.
 | Runtime/schema CLI planning | Done | PR #9 merged the TypeScript CLI-first design and implementation plan. |
 | Runtime/schema validation CLI | Done | PR #11 merged TypeScript package config, JSON Schema, reusable validator, `open-relay validate`, tests, and runtime CI. |
 | Git-state generator planning | In progress | Design and implementation plan define JSON-first packet generation, explicit output/stdout storage, and fail-closed redaction defaults; PR #13 is open and green pending review. |
-| Git-state generator implementation | In progress | Draft PR #14 adds argument parsing, typo/unknown/duplicate flag rejection, sanitized git errors, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
+| Git-state generator implementation | In progress | Draft PR #14 adds argument parsing, typo/unknown/duplicate flag rejection, sanitized git/write errors, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
 | Product implementation | In progress | The validation slice is merged; packet generation from live git state is implemented on draft PR #14 but not merged. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, and `npm run check` are local; GitHub Actions `Governance Checks` includes runtime checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -43,7 +43,7 @@ Release/versioning convention is still `Unknown; needs owner decision`.
 | 2026-06-26 | Claude review for PR #11 | Findings addressed | Commit `9c9083b` fixed invalid-JSON parser-message leakage, package entrypoints, Node 22 typings, and lifecycle matrix status wording. |
 | 2026-06-26 | PR #11 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/11`; merge commit `6f6f25e`; `Governance Checks` passed and Claude re-review reported no remaining findings. |
 | 2026-06-26 | Git-state generator planning branch checks | Passed | PR #13: `https://github.com/AcrossWorksAPI/open-relay/pull/13`; `npm run check`, `git diff --check`, placeholder scan, and secret-pattern scan passed locally; `Governance Checks` passed. |
-| 2026-06-26 | Git-state generator implementation draft checks | Passed | Draft PR #14: `https://github.com/AcrossWorksAPI/open-relay/pull/14`; local `npm ci`, `npm run check` with 28 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref leak regression, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed on the draft PR. |
+| 2026-06-26 | Git-state generator implementation draft checks | Passed | Draft PR #14: `https://github.com/AcrossWorksAPI/open-relay/pull/14`; local `npm ci`, `npm run check` with 29 tests, `git diff --check`, generated packet smoke to `/private/tmp/open-relay-review-request.json`, generated packet validation, unknown/duplicate flag rejection, invalid-ref and output-path leak regressions, and local-path/secret-pattern smoke scan passed; `Governance Checks` passed on the draft PR. |
 
 ## Next Step
 

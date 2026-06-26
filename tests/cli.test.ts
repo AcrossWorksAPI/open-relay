@@ -155,6 +155,48 @@ test("rejects invalid git refs without echoing ref values", () => {
   }
 });
 
+test("rejects unwritable output paths without echoing path values", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR", "relay.json");
+
+  try {
+    runGit(directory, "init", "--initial-branch", "main");
+    runGit(directory, "config", "user.email", "test@example.com");
+    runGit(directory, "config", "user.name", "Open Relay Test");
+    writeFileSync(join(directory, "README.md"), "# Repo\n", "utf8");
+    runGit(directory, "add", "README.md");
+    runGit(directory, "commit", "-m", "initial");
+    const base = runGit(directory, "rev-parse", "HEAD").trim();
+    writeFileSync(join(directory, "README.md"), "# Repo\n\nChanged.\n", "utf8");
+    runGit(directory, "add", "README.md");
+    runGit(directory, "commit", "-m", "change readme");
+    const head = runGit(directory, "rev-parse", "HEAD").trim();
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Generate packet",
+      "--summary", "Creates a packet from git state.",
+      "--behavioral-intent", "Reduce manual handoff assembly.",
+      "--output", outputPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Could not write review-request packet/);
+    assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.doesNotMatch(result.stdout, /\{.*packet_version/s);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("generates a schema-valid review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
   const absoluteCliPath = join(process.cwd(), cliPath);
