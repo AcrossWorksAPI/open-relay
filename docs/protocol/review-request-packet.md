@@ -258,7 +258,7 @@ This first packet does not:
 - Replace a pull request.
 - Store long-term memory.
 - Define every future packet type.
-- Choose TypeScript or Python.
+- Implement the TypeScript CLI runtime.
 - Define package publishing or release flow.
 - Include private redaction rule syntax beyond the required redaction notes.
 

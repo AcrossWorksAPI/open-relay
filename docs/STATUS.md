@@ -7,8 +7,9 @@ Last updated: 2026-06-26
 Open Relay has a project foundation governance baseline merged to `main`.
 Product purpose and target users are captured from the owner brief. The first
 protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
-review handoffs. Runtime, package manager, and release/versioning convention are
-still `Unknown; needs owner decision`.
+review handoffs. The first runtime direction is approved as a TypeScript CLI on
+Node.js with npm. Release/versioning convention is still
+`Unknown; needs owner decision`.
 
 ## Active Work
 
@@ -18,7 +19,8 @@ still `Unknown; needs owner decision`.
 | Product brief | Done | Local-first handoff/review protocol and CLI-first MVP are captured. |
 | Open-source hardening | Done | Security, contribution, conduct, issue/PR templates, Dependabot, and first CI workflow are in place. |
 | Review-request packet spec | Done | Protocol doc plus synthetic Markdown/JSON examples define the smallest useful review packet. |
-| Product implementation | Deferred | No product source or owner-approved first implementation slice exists yet. |
+| Runtime/schema CLI planning | In progress | TypeScript CLI-first direction is approved; implementation plan is in review. |
+| Product implementation | Deferred | No product source or runtime config exists yet. |
 | Verification setup | Done | `git diff --check` is local; GitHub Actions `Governance Checks` is required on `main`. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -30,18 +32,21 @@ still `Unknown; needs owner decision`.
 | 2026-06-26 | PR #1 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/1` |
 | 2026-06-26 | PR #2 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/2`; `Governance Checks` passed and is required on `main`. |
 | 2026-06-26 | PR #5 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/5`; merge commit `3a23ba1`; Claude re-review reported no remaining findings. |
+| 2026-06-26 | Issue #8 owner decision | Approved | TypeScript CLI first, CLI-only MVP, JSON Schema next, MCP deferred. |
+| 2026-06-26 | Runtime/schema planning branch checks | Passed | `git diff --check`, trailing-whitespace scan, required-file check, roadmap parser check, placeholder scan, secret-like scan, JSON parse, and example parity check. |
 
 ## Next Step
 
-Choose the first implementation runtime, then convert the reviewed
-`review-request` packet shape into a formal JSON Schema and CLI implementation
-plan.
+Review and merge the runtime/schema CLI planning PR, then implement the
+TypeScript package scaffold, formal JSON Schema, validation command, tests, and
+runtime CI.
 
 ## Owner Decisions Needed
 
-- Should the first implementation be TypeScript or Python?
-- Should Open Relay start as CLI only, or CLI plus MCP server?
 - Should packet storage live inside each repo, a global user directory, or both?
 - How opinionated should Open Relay be about Codex and Claude specifically?
 - Should private redaction rules exist from day one?
-- What test/build/smoke commands should count as required verification?
+- What package and release target should be used when the CLI is ready to
+  publish?
+- Which additional test/build/smoke commands should count as required
+  verification after the runtime slice ships?

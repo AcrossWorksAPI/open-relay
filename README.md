@@ -18,7 +18,10 @@ CLI for creating, validating, transforming, and consuming those handoffs.
 The first version should be a local CLI plus Markdown/JSON packet schema, not a
 SaaS app.
 
-The first planning question is:
+The first runtime direction is a TypeScript CLI on Node.js, managed by npm. MCP
+server support is deferred until the local CLI and packet contract are useful.
+
+The first protocol question was:
 
 > What is the smallest useful relay packet?
 
@@ -41,7 +44,17 @@ The first protocol slice is the `review-request` packet:
 
 This packet is intentionally narrow. It defines the minimum context needed to
 ask a second reviewer to inspect completed repository work before Open Relay
-chooses a runtime or implements the CLI.
+implements the CLI.
+
+## Runtime Plan
+
+- Runtime/schema CLI design:
+  `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md`
+- Runtime/schema CLI implementation plan:
+  `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md`
+
+The first code slice should validate `review-request` JSON packets against a
+formal schema before generating packets from live git state.
 
 ## Non-Goals For MVP
 

@@ -45,7 +45,9 @@ for creating, validating, transforming, and consuming those handoffs.
 ## MVP
 
 The first version should be a local CLI and Markdown/JSON schema, not a SaaS
-app.
+app. The approved first runtime direction is TypeScript on Node.js with npm,
+CLI-only for the MVP. MCP server support is deferred until the CLI and packet
+contract are useful.
 
 MVP features:
 
@@ -83,13 +85,13 @@ The first planning question is:
 
 ## Open Questions
 
-- Should the first implementation be TypeScript or Python?
-- Should Open Relay start as a CLI only, or CLI plus MCP server?
 - Should packet storage live inside each repo, in a global user directory, or
   both?
 - How opinionated should it be about Codex and Claude specifically?
 - Should the schema support private redaction rules from day one?
-- What is the smallest useful packet type to build first?
+- What package and release target should the first CLI use when it is ready to
+  publish?
+- Which packet type should follow the reviewed `review-request` packet?
 
 ## Success Criteria
 

@@ -71,7 +71,7 @@ planning-doc updates that record the hardening slice.
 
 | Severity | Risk | Handling |
 | --- | --- | --- |
-| medium | CI is governance-only until runtime is chosen. | Runtime-specific tests will be added after TypeScript or Python is selected. |
+| medium | CI is governance-only until runtime implementation exists. | Runtime-specific tests will be added after the TypeScript package scaffold lands. |
 | low | Contribution docs may evolve as maintainers learn the workflow. | Keep docs lightweight and update through PRs. |
 
 ## Provenance
