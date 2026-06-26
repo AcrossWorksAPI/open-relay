@@ -160,8 +160,8 @@
   "risks": [
     {
       "severity": "medium",
-      "description": "CI is governance-only until runtime is chosen.",
-      "handling": "Runtime-specific tests will be added after TypeScript or Python is selected."
+      "description": "CI is governance-only until runtime implementation exists.",
+      "handling": "Runtime-specific tests will be added after the TypeScript package scaffold lands."
     },
     {
       "severity": "low",

@@ -17,7 +17,7 @@ Allowed cell values: `Shipped`, `Planned`, `Deferred`, `Future candidate`,
 | Local repository context collector | Planned | Planned | Planned | N/A | N/A | N/A | Planned | Planned | Planned | N/A | N/A | Planned | Must avoid leaking secrets or raw sensitive data. |
 | Review loop | Future candidate | Future candidate | Future candidate | Future candidate | Future candidate | N/A | Future candidate | Future candidate | Future candidate | Deferred | N/A | Future candidate | Implementation handoff, review request, review response, resume project. |
 | Manager/library/assignment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown; needs owner decision if multi-user or hosted scope appears. |
-| Runtime/deployment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Runtime/package target is not selected yet. |
+| Runtime/deployment surfaces | Planned | Planned | Planned | N/A | N/A | N/A | Planned | Planned | Planned | N/A | N/A | Planned | TypeScript CLI runtime is selected; package, source, tests, release, and smoke evidence remain planned. |
 
 ## Assignment And Scope Matrix
 

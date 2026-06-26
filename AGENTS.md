@@ -11,10 +11,14 @@ owner instructions when they exist.
   governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
-- Runtime, framework, deployment target, and test stack: Unknown; needs owner
-  decision.
+- Runtime target: TypeScript on Node.js for the first CLI implementation.
+- Package manager: npm.
+- Deployment target: local CLI, no hosted MVP.
+- Test stack: not present yet; planned as TypeScript compiler plus Node's
+  built-in test runner.
 - Non-goals for this baseline: product features, deployment setup, external
-  service provisioning, framework migration, and speculative architecture.
+  service provisioning, MCP server support, package publishing, and speculative
+  architecture.
 
 ## Required Starting Point
 
