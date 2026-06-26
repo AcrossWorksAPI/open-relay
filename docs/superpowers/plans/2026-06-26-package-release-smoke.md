@@ -39,7 +39,8 @@ Change `package.json` to include:
     "node": ">=22"
   },
   "files": [
-    "dist/",
+    "dist/src/",
+    "dist/schemas/",
     "schemas/",
     "examples/",
     "README.md",
@@ -70,12 +71,13 @@ Run:
 
 ```bash
 npm run build
-npm pack --dry-run
+npm pack --dry-run --json
 ```
 
-Expected: build passes and `npm pack --dry-run` lists `dist/`, `schemas/`,
-`examples/`, and public docs, without `.git`, `.github`, `.codex`, `tests/`,
-or `docs/planning/`.
+Expected: build passes and `npm pack --dry-run --json` lists `dist/src/`,
+`dist/schemas/`, `schemas/`, `examples/`, and public docs, without `.git`,
+`.github`, `.codex`, source `tests/`, compiled `dist/tests/`, or
+`docs/planning/`.
 
 - [ ] **Step 3: Commit metadata changes**
 
@@ -113,19 +115,25 @@ try {
 
   mkdirp(packDir);
   execFileSync("npm", ["run", "build"], { cwd: root, stdio: "inherit" });
-  execFileSync("npm", ["pack", "--pack-destination", packDir], { cwd: root, stdio: "inherit" });
+  const packOutput = execFileSync("npm", ["pack", "--json", "--pack-destination", packDir], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "inherit"]
+  });
+  const [packManifest] = JSON.parse(packOutput);
+  assertPackageContents(packManifest);
 
-  const tarball = require("node:fs")
-    .readdirSync(packDir)
-    .find((name) => name.endsWith(".tgz"));
-  assert.ok(tarball, "npm pack did not create a tarball");
+  const tarballPath = packManifest.filename.includes("/")
+    ? packManifest.filename
+    : join(packDir, packManifest.filename);
+  assert.ok(existsSync(tarballPath), "npm pack did not create a tarball");
 
   mkdirp(installDir);
   mkdirp(fixtureDir);
   cpSync(join(root, "examples"), join(fixtureDir, "examples"), { recursive: true });
 
   execFileSync("npm", ["init", "-y"], { cwd: installDir, stdio: "ignore" });
-  execFileSync("npm", ["install", join(packDir, tarball)], { cwd: installDir, stdio: "inherit" });
+  execFileSync("npm", ["install", tarballPath], { cwd: installDir, stdio: "inherit" });
 
   const cli = join(installDir, "node_modules", ".bin", process.platform === "win32" ? "open-relay.cmd" : "open-relay");
   assert.ok(existsSync(cli), "installed CLI binary is missing");
@@ -177,6 +185,28 @@ try {
 
 function mkdirp(path) {
   require("node:fs").mkdirSync(path, { recursive: true });
+}
+
+function assertPackageContents(packManifest) {
+  const paths = packManifest.files.map((file) => file.path);
+
+  assert.ok(paths.includes("dist/src/cli.js"), "tarball is missing dist/src/cli.js");
+  assert.ok(paths.includes("dist/src/index.js"), "tarball is missing dist/src/index.js");
+  assert.ok(
+    paths.includes("dist/schemas/review-request.schema.json"),
+    "tarball is missing dist/schemas/review-request.schema.json"
+  );
+  assert.ok(paths.includes("schemas/review-request.schema.json"), "tarball is missing public schema");
+  assert.ok(paths.includes("README.md"), "tarball is missing README.md");
+  assert.ok(paths.includes("LICENSE"), "tarball is missing LICENSE");
+
+  for (const path of paths) {
+    assert.ok(!path.startsWith("dist/tests/"), `tarball includes compiled tests: ${path}`);
+    assert.ok(!path.startsWith("tests/"), `tarball includes source tests: ${path}`);
+    assert.ok(!path.startsWith("docs/planning/"), `tarball includes planning docs: ${path}`);
+    assert.ok(!path.startsWith(".github/"), `tarball includes GitHub config: ${path}`);
+    assert.ok(!path.startsWith(".codex/"), `tarball includes Codex config: ${path}`);
+  }
 }
 
 function runCli(cli, args, options) {

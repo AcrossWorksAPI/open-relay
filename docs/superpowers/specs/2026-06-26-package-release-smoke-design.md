@@ -61,12 +61,15 @@ not just the source checkout.
   - keywords
   - Node engine range
   - publish access policy placeholder
-- Add an explicit packlist using `files` in `package.json`.
+- Add an explicit packlist using `files` in `package.json` that includes
+  runtime build output but excludes compiled test output.
 - Add `prepack` so package output is built before packing.
 - Add `npm run smoke:pack`.
 - Add a Node smoke script under `scripts/` that:
   - creates an isolated temp workspace,
-  - runs `npm pack --pack-destination`,
+  - runs `npm pack --json --pack-destination`,
+  - asserts the tarball contents include runtime files and exclude private or
+    test files,
   - installs the produced tarball into a clean temp project,
   - runs the installed CLI against copied example fixtures,
   - creates a temporary git repository for `generate review-request`,
@@ -90,7 +93,8 @@ not just the source checkout.
 
 The package should include only runtime files and useful public docs:
 
-- `dist/`
+- `dist/src/`
+- `dist/schemas/`
 - `schemas/`
 - `examples/`
 - `README.md`
@@ -99,9 +103,9 @@ The package should include only runtime files and useful public docs:
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 
-It should exclude source tests, planning docs, `.github`, `.codex`, local
-scratch files, and generated temp artifacts unless a future release decision
-intentionally includes them.
+It should exclude source tests, compiled tests such as `dist/tests/`, planning
+docs, `.github`, `.codex`, local scratch files, and generated temp artifacts
+unless a future release decision intentionally includes them.
 
 ## Live-Readiness Criteria
 
@@ -110,7 +114,10 @@ Open Relay can be called release-ready, but not necessarily live, only when:
 1. `npm ci` passes from a clean checkout.
 2. `npm run check` passes.
 3. `npm run smoke:pack` passes locally and in GitHub Actions.
-4. `npm pack --dry-run` or equivalent pack output contains only expected files.
+4. `npm pack --dry-run --json` or equivalent pack output contains only expected
+   files, including `dist/src/cli.js` and
+   `dist/schemas/review-request.schema.json`, and excluding `dist/tests/` and
+   private planning docs.
 5. The installed tarball CLI can validate, render, and generate a packet.
 6. Invalid JSON and write/generate failures remain sanitized.
 7. The release version, changelog, tag, and npm publish authority are explicitly
@@ -146,7 +153,7 @@ temporary files, or local paths.
 
 - Unit coverage stays in existing TypeScript tests.
 - Add package smoke coverage through a Node script because it needs filesystem,
-  child process, npm, and git orchestration.
+  child process, npm, git orchestration, and packlist assertions.
 - CI runs `npm run smoke:pack` after `npm run check`.
 - The smoke script asserts the installed CLI, not `dist/src/cli.js` from the
   checkout, so it catches missing `bin`, `files`, `prepack`, and runtime
