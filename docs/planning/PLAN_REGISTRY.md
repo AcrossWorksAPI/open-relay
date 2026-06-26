@@ -44,11 +44,13 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-26-package-release-smoke-design.md` | Package target and release smoke design | Active |
 | `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md` | Direct Markdown generation design | Active |
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Local handoff workflow design | Active |
+| `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Repo-local packet storage design | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Package target and release smoke implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Direct Markdown generation implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Local handoff workflow implementation plan | Active |
+| `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | Repo-local packet storage implementation plan | Active |
 | `docs/product/PROJECT_BRIEF.md` | Product thesis, MVP, users, and open questions | Active |
 | `master_build.md` | Executive build entrypoint | Active |
 | `docs/STATUS.md` | Owner-readable status | Active |
@@ -63,7 +65,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans after PR #26 local handoff workflow merge. |
+| `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | In progress | Codex | Planning `save review-request`, repo-local bundle storage, CLI tests, package smoke update, and closeout. |
 
 ## Implemented Or Historical Plans
 

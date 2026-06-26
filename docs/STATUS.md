@@ -19,7 +19,8 @@ Markdown generation is merged so the generator can emit review-ready Markdown
 without a separate render step. Local `handoff review-request` is merged as a
 Markdown-first workflow command that composes the existing generator and
 renderer path. npm registry publishing, persistent packet storage, external
-agent invocation, and private redaction rules remain deferred.
+agent invocation, and private redaction rules remain deferred. Repo-local
+packet storage planning is active as the next local workflow slice.
 
 ## Active Work
 
@@ -41,7 +42,8 @@ agent invocation, and private redaction rules remain deferred.
 | Direct Markdown generation implementation | Done | PR #23 merged `--format json|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
 | Local handoff workflow planning | Done | PR #25 merged the design and implementation plan for `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
 | Local handoff workflow implementation | Done | PR #26 merged `handoff review-request`, local-only help text, CLI regressions, parity with direct Markdown generation, sanitized write-error behavior, and installed-package smoke coverage. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, and local handoff workflow are merged; agent-specific prompt dialects, registry publishing, private redaction rules, and external orchestration remain unbuilt. |
+| Repo-local packet storage planning | In progress | Design and implementation plan add explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, and local handoff workflow are merged; repo-local packet storage is planned next; agent-specific prompt dialects, registry publishing, private redaction rules, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -82,13 +84,13 @@ agent invocation, and private redaction rules remain deferred.
 | 2026-06-26 | PR #25 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/25`; merge commit `c36dd76`; design source `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-handoff-review-request.md`; `Governance Checks` passed after review fixes. |
 | 2026-06-26 | Claude review fixes for PR #25 | Passed | Added visible local-only help wording, tightened planned `--format` rejection to include `--format=...`, narrowed lifecycle wording to local request creation, and re-ran `npm run check`, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-26 | PR #26 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/26`; merge commit `c95f409`; `Governance Checks` passed, Claude review reported no findings, merged-main `npm run check` passed with 61 tests, `npm run smoke:pack` verified installed CLI `handoff review-request`, and `git diff --check` passed. |
+| 2026-06-26 | Repo-local packet storage planning branch | In progress | Design source `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md`; implementation source `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally; Claude PR #28 review finding F1 addressed by requiring manifest-last completion semantics and best-effort partial-bundle cleanup. |
 
 ## Next Step
 
-Plan the next local relay workflow slice after the merged `handoff
-review-request` command. Candidate gates remain packet storage, private
-redaction rule files, agent-specific prompt dialects, npm publish readiness,
-and external orchestration boundaries.
+Update PR #28 with the Claude review fix, wait for CI/re-review, then merge the
+planning gate and implement `save review-request` if the storage shape is
+approved.
 
 ## Owner Decisions Needed
 
