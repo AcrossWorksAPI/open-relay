@@ -115,7 +115,7 @@ The generator fills these packet fields:
 | `change_summary.behavioral_intent` | `--behavioral-intent` |
 | `change_summary.excluded_scope` | repeated `--excluded-scope` or default |
 | `change_summary.total_files_changed` | changed-file count |
-| `changed_files` | `git diff --name-status --find-renames <base>..<head>` |
+| `changed_files` | `git diff -z --name-status --find-renames <base>..<head>` |
 | `verification` | repeated `--verification`; empty array when none supplied |
 | `risks` | repeated `--risk`; default risk noting generator output needs human review |
 | `provenance` | base/head commits, PR URL when supplied |
@@ -128,8 +128,13 @@ The generator fills these packet fields:
 The generator should use:
 
 ```bash
-git diff --name-status --find-renames <base_commit>..<head_commit>
+git diff -z --name-status --find-renames <base_commit>..<head_commit>
 ```
+
+The v1 generator deliberately uses the two-dot endpoint diff recorded in
+`repository.diff_range`. This makes the packet reproducible from the exact
+base/head commits supplied by the caller. Three-dot merge-base PR semantics are
+deferred until the CLI has an explicit `--diff-mode` or PR-provider integration.
 
 Status mapping:
 

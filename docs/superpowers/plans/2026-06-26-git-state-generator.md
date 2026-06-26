@@ -95,6 +95,10 @@ Optional:
 --include-local-path
 ```
 
+Argument values that begin with `--` are intentionally unsupported in the first
+parser. Users should rephrase those values until a later slice adds
+`--flag=value` or `--` separator support.
+
 Defaults:
 
 ```typescript
@@ -575,6 +579,32 @@ test("throws when the diff has no changed files", () => {
   }
 });
 
+test("keeps non-ascii paths from nul-delimited name-status output", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    writeFileSync(join(repo, "cafe-accent-\u00e9.txt"), "accent\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "add accented path");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false
+    });
+
+    assert.equal(context.changedFiles[0]?.path, "cafe-accent-\u00e9.txt");
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
 function createRepo(): string {
   const repo = mkdtempSync(join(tmpdir(), "open-relay-git-"));
   git(repo, "init");
@@ -648,9 +678,11 @@ export function collectGitContext(options: CollectGitContextOptions): GitContext
   const root = git(options.cwd, ["rev-parse", "--show-toplevel"]).trim();
   const baseCommit = git(root, ["rev-parse", "--verify", options.baseRef]).trim();
   const headCommit = git(root, ["rev-parse", "--verify", options.headRef]).trim();
+  // V1 records and generates the exact endpoint diff. Three-dot PR semantics are deferred.
   const diffRange = `${baseCommit}..${headCommit}`;
   const changedFiles = parseNameStatus(git(root, [
     "diff",
+    "-z",
     "--name-status",
     "--find-renames",
     diffRange
@@ -677,24 +709,32 @@ export function collectGitContext(options: CollectGitContextOptions): GitContext
 }
 
 function parseNameStatus(raw: string): ChangedFile[] {
-  return raw
-    .split("\n")
-    .filter((line) => line.length > 0)
-    .map((line) => {
-      const parts = line.split("\t");
-      const statusCode = parts[0];
-      const status = mapStatus(statusCode);
-      const path = status === "renamed" ? parts[2] : parts[1];
-      const previousPath = status === "renamed" ? parts[1] : undefined;
+  const parts = raw.split("\0").filter((part) => part.length > 0);
+  const files: ChangedFile[] = [];
 
-      return {
-        path,
-        status,
-        role: roleForStatus(status),
-        review_priority: priorityForPath(path),
-        ...(previousPath ? { evidence: `Renamed from ${previousPath}` } : {})
-      };
+  for (let index = 0; index < parts.length;) {
+    const statusCode = parts[index];
+    const status = mapStatus(statusCode);
+    index += 1;
+
+    const previousPath = status === "renamed" ? parts[index] : undefined;
+    if (status === "renamed") {
+      index += 1;
+    }
+
+    const path = parts[index];
+    index += 1;
+
+    files.push({
+      path,
+      status,
+      role: roleForStatus(status),
+      review_priority: priorityForPath(path),
+      ...(previousPath ? { evidence: `Renamed from ${previousPath}` } : {})
     });
+  }
+
+  return files;
 }
 
 function mapStatus(statusCode: string): ChangedFile["status"] {
@@ -833,12 +873,10 @@ import { sanitizeRemoteUrl } from "../src/redaction";
 
 test("keeps safe GitHub HTTPS and SSH remotes", () => {
   assert.deepEqual(sanitizeRemoteUrl("https://github.com/AcrossWorksAPI/open-relay.git"), {
-    value: "https://github.com/AcrossWorksAPI/open-relay.git",
-    redaction: undefined
+    value: "https://github.com/AcrossWorksAPI/open-relay.git"
   });
   assert.deepEqual(sanitizeRemoteUrl("git@github.com:AcrossWorksAPI/open-relay.git"), {
-    value: "git@github.com:AcrossWorksAPI/open-relay.git",
-    redaction: undefined
+    value: "git@github.com:AcrossWorksAPI/open-relay.git"
   });
 });
 
@@ -848,7 +886,17 @@ test("strips credentialed HTTPS remotes", () => {
   assert.equal(result.value, undefined);
   assert.deepEqual(result.redaction, {
     field: "repository.remote_url",
-    reason: "Remote URL contained credentials or an unsupported format."
+    reason: "Remote URL contained credentials."
+  });
+});
+
+test("omits unsupported remote hosts", () => {
+  const result = sanitizeRemoteUrl("https://gitlab.com/org/repo.git");
+
+  assert.equal(result.value, undefined);
+  assert.deepEqual(result.redaction, {
+    field: "repository.remote_url",
+    reason: "Remote URL host or format is not allowlisted."
   });
 });
 
@@ -993,6 +1041,15 @@ export function sanitizeRemoteUrl(remoteUrl: string | undefined): SanitizedRemot
     return {};
   }
 
+  if (hasUrlCredentials(remoteUrl)) {
+    return {
+      redaction: {
+        field: "repository.remote_url",
+        reason: "Remote URL contained credentials."
+      }
+    };
+  }
+
   if (/^https:\/\/github\.com\/[^/\s]+\/[^/\s]+(?:\.git)?$/.test(remoteUrl)) {
     return { value: remoteUrl };
   }
@@ -1004,9 +1061,18 @@ export function sanitizeRemoteUrl(remoteUrl: string | undefined): SanitizedRemot
   return {
     redaction: {
       field: "repository.remote_url",
-      reason: "Remote URL contained credentials or an unsupported format."
+      reason: "Remote URL host or format is not allowlisted."
     }
   };
+}
+
+function hasUrlCredentials(remoteUrl: string): boolean {
+  try {
+    const parsed = new URL(remoteUrl);
+    return parsed.username.length > 0 || parsed.password.length > 0;
+  } catch {
+    return false;
+  }
 }
 ```
 
@@ -1025,7 +1091,51 @@ export type BuildReviewRequestPacketInput = {
   createdAt?: string;
 };
 
-export function buildReviewRequestPacket(input: BuildReviewRequestPacketInput): Record<string, unknown> {
+export type ReviewRequestPacket = {
+  packet_version: "0.1";
+  packet_type: "review-request";
+  created_at: string;
+  goal: string;
+  requested_review: {
+    audience: string;
+    focus: string[];
+    requested_output: string;
+  };
+  repository: {
+    name: string;
+    remote_url?: string;
+    local_path?: string;
+    base_branch: string;
+    working_branch: string;
+    base_commit: string;
+    head_commit: string;
+    diff_range: string;
+    pull_request_url?: string;
+    reviewer_access: string;
+  };
+  change_summary: {
+    summary: string;
+    behavioral_intent: string;
+    excluded_scope: string[];
+    total_files_changed: number;
+  };
+  changed_files: GitContext["changedFiles"];
+  verification: GenerateReviewRequestOptions["verification"];
+  risks: GenerateReviewRequestOptions["risks"];
+  provenance: Array<{
+    type: "commit" | "pull_request";
+    reference: string;
+    supports: string;
+  }>;
+  redactions: Redaction[];
+  sensitive_data: {
+    excluded: true;
+    notes: string;
+  };
+  next_action: string;
+};
+
+export function buildReviewRequestPacket(input: BuildReviewRequestPacketInput): ReviewRequestPacket {
   const remote = sanitizeRemoteUrl(input.git.remoteUrl);
   const redactions: Redaction[] = [];
 
@@ -1040,16 +1150,7 @@ export function buildReviewRequestPacket(input: BuildReviewRequestPacketInput): 
     });
   }
 
-  redactions.push({
-    field: "diff_content",
-    reason: "Diff content is not embedded in review-request packets."
-  });
-  redactions.push({
-    field: "command_output",
-    reason: "Command output is summarized by caller-provided verification evidence instead of embedded."
-  });
-
-  const repository: Record<string, unknown> = {
+  const repository: ReviewRequestPacket["repository"] = {
     name: input.git.repositoryName,
     ...(remote.value ? { remote_url: remote.value } : {}),
     ...(input.git.localPath ? { local_path: input.git.localPath } : {}),
@@ -1118,7 +1219,7 @@ Modify `src/index.ts`:
 ```typescript
 export { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 export { collectGitContext, type GitContext, type ChangedFile } from "./git";
-export { buildReviewRequestPacket } from "./reviewRequest";
+export { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
 export { validatePacket, validatePacketFile, type ValidationResult } from "./schema";
 
 export const version = "0.0.0";
