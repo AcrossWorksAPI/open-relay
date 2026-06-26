@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, and render-template implementation in progress | PR #16 merge commit `5b03b8d`; implementation branch `codex/render-review-request-implementation`; package/release target remains undecided |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, and merged review-request Markdown renderer | PR #17 merge commit `c62ea27`; package/release target remains undecided |
 
 ## Scope
 
@@ -41,7 +41,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - TypeScript CLI-first runtime decision
 - runtime/schema validation CLI implementation
 - git-state generator design, implementation plan, and merged JSON-only CLI implementation
-- render review-request design, implementation plan, and implementation branch
+- render review-request design, implementation plan, merged implementation, tests, and example snapshot
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -77,13 +77,13 @@ Current scope is the first local protocol and validation CLI baseline:
 | P0 | Write initial relay packet schema and packet-type docs | Done | No |
 | P0 | Implement runtime/schema validation CLI | Done | No |
 | P1 | Implement local CLI review-request packet generator | Done | No |
-| P1 | Add Codex-ready and Claude-ready render templates | In progress | No |
+| P1 | Add Codex-ready and Claude-ready render templates | Done | No |
 
 ## Known Gaps
 
 - The git-state packet generator is merged but not packaged or released yet.
-- Markdown rendering is implemented on the active branch but not merged until
-  the render-template implementation PR lands.
+- Direct `generate review-request --format markdown` remains deferred; Markdown
+  rendering is available through `open-relay render review-request`.
 - Package publishing, deployment, and release smoke evidence are not present
   yet.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
