@@ -12,8 +12,11 @@ installability from a local npm tarball before any live/publish claim. Direct
 Markdown generation is merged so a local user can generate a review-ready
 Markdown packet in one command. Local `handoff review-request` is merged to
 make the review-request path clearer as a workflow command. Repo-local packet
-storage implementation is active to make saved handoff packets durable without
-adding global storage, hosted sync, or external orchestration. The approved
+storage is merged to make saved handoff packets durable without adding global
+storage, hosted sync, or external orchestration. The next planning direction is
+to restore the product brief's review-loop scope: protocol extensibility,
+boundary/transport, richer packet evidence, review-response,
+implementation-handoff, resume-project, and agent-ready prompts. The approved
 first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
@@ -59,6 +62,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-26-direct-markdown-generation-design.md` | Active | Design for `generate review-request --format markdown`. |
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
+| `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
@@ -80,24 +84,28 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Repo-local packet storage not merged | Medium | Implementation branch adds explicit `.open-relay/review-requests` bundle storage through `save review-request`; merge remains gated by CI and review. |
+| Review loop not implemented | High | Roadmap re-anchor restores review-response, implementation-handoff, resume-project, and protocol envelope slices as planned work. |
+| Protocol extensibility missing | High | Current validator supports only `review-request` 0.1; envelope design is active before any new packet type. |
+| Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the repo-local packet storage implementation PR for GitHub CI and
-   Claude review.
-2. Decide whether private redaction rule files are needed before package
+1. Open the protocol envelope and roadmap re-anchor PR for GitHub CI and Claude
+   review.
+2. Implement relay protocol envelope and multi-type validation before any new
+   packet type.
+3. Decide the first packet transport boundary.
+4. Decide whether private redaction rule files are needed before package
    publishing.
-3. Plan the first agent-specific prompt dialect or wrapper only if the neutral
-   Markdown handoff proves insufficient.
-4. Define npm publish owner, first semver version, changelog, and tag workflow.
+5. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
 
 - Global packet storage in addition to repo-local storage.
+- First packet transport boundary.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
 - Redaction rules from day one.
