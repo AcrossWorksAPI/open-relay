@@ -61,7 +61,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | In progress | Codex | Implementing `generate review-request --format markdown`, parser/CLI tests, package smoke update, and closeout. |
+| - | - | - | No active implementation plans after PR #23 direct Markdown generation merge. |
 
 ## Implemented Or Historical Plans
 
@@ -75,6 +75,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Done | Planned and implemented local git-state review-request packet generation, redaction defaults, CLI wiring, tests, review fixes, and merge closeout through PR #14. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Done | Planned and implemented review-request Markdown rendering, CLI route, parser tests, package export, snapshot-bound example Markdown, review fixes, and merge closeout through PR #17. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Done | Planned and implemented npm package metadata, packlist, tarball install smoke, CI guardrail, review fixes, and merge closeout through PR #20. |
+| `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Done | Planned and implemented `generate review-request --format markdown`, parser/CLI tests, package smoke update, review, and merge closeout through PR #23. |
 
 ## Superseded Or Dormant Plans
 
