@@ -78,6 +78,26 @@ test("rejects generate review-request with missing flags", () => {
   assert.doesNotMatch(result.stderr, /\{.*packet_version/s);
 });
 
+test("rejects generate review-request with unknown flags", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "review-request",
+    "--base", "origin/main",
+    "--head", "HEAD",
+    "--goal", "Generate packet",
+    "--summary", "Creates a packet from git state.",
+    "--behavioral-intent", "Reduce manual handoff assembly.",
+    "--behavioural-intent", "Typo"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unknown flag: --behavioural-intent/);
+  assert.doesNotMatch(result.stdout, /\{.*packet_version/s);
+});
+
 test("generates a schema-valid review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
   const absoluteCliPath = join(process.cwd(), cliPath);

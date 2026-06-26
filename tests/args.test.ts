@@ -89,6 +89,25 @@ test("rejects missing required generator flags", () => {
   assert.match(result.message, /--behavioral-intent/);
 });
 
+test("rejects unknown generator flags", () => {
+  const result = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--behavioural-intent", "Typo"
+  ]);
+
+  assert.equal(result.ok, false);
+  if (result.ok) {
+    throw new Error("expected parse failure");
+  }
+
+  assert.match(result.message, /Unknown flag/);
+  assert.match(result.message, /--behavioural-intent/);
+});
+
 test("rejects malformed verification and risk entries", () => {
   const malformedVerification = parseGenerateReviewRequestArgs([
     "--base", "main",

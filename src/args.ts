@@ -52,6 +52,22 @@ const allowedVerificationResults = new Set([
   "unknown"
 ]);
 const allowedRiskSeverities = new Set(["high", "medium", "low", "info"]);
+const allowedValueFlags = new Set([
+  "--base",
+  "--head",
+  "--goal",
+  "--summary",
+  "--behavioral-intent",
+  "--output",
+  "--audience",
+  "--focus",
+  "--requested-output",
+  "--reviewer-access",
+  "--pr-url",
+  "--verification",
+  "--risk",
+  "--excluded-scope"
+]);
 
 const defaultRequestedOutput =
   "Findings first with file/line references where possible; say clearly if there are no findings.";
@@ -73,6 +89,10 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
 
     if (!token.startsWith("--")) {
       return { ok: false, message: `Unexpected argument: ${token}` };
+    }
+
+    if (!allowedValueFlags.has(token)) {
+      return { ok: false, message: `Unknown flag: ${token}` };
     }
 
     const value = args[index + 1];
