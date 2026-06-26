@@ -58,6 +58,18 @@ jobs:
             fi
           done
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: npm
+
+      - name: Install runtime dependencies
+        run: npm ci
+
+      - name: Run runtime checks
+        run: npm run check
+
       - name: Check roadmap parser-safe values
         shell: bash
         run: |
