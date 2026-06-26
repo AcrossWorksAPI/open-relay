@@ -341,7 +341,7 @@ assert.match(handoff, /## Next Action/);
 During implementation, record:
 
 ```markdown
-| Unversioned | Local handoff workflow | In progress | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
+| Unversioned | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
 ```
 
 Keep storage, agent-specific templates, app orchestration, external delivery,

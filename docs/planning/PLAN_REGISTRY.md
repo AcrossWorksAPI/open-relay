@@ -63,7 +63,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | In progress | Codex | Planning `handoff review-request`, CLI tests, package smoke update, and closeout. |
+| - | - | - | No active implementation plans after PR #26 local handoff workflow merge. |
 
 ## Implemented Or Historical Plans
 
@@ -78,6 +78,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Done | Planned and implemented review-request Markdown rendering, CLI route, parser tests, package export, snapshot-bound example Markdown, review fixes, and merge closeout through PR #17. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Done | Planned and implemented npm package metadata, packlist, tarball install smoke, CI guardrail, review fixes, and merge closeout through PR #20. |
 | `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Done | Planned and implemented `generate review-request --format markdown`, parser/CLI tests, package smoke update, review, and merge closeout through PR #23. |
+| `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Done | Planned and implemented `handoff review-request`, local-only help text, parser/CLI tests, package smoke update, review, and merge closeout through PR #26. |
 
 ## Superseded Or Dormant Plans
 
