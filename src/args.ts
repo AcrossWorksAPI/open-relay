@@ -68,6 +68,12 @@ const allowedValueFlags = new Set([
   "--risk",
   "--excluded-scope"
 ]);
+const repeatableValueFlags = new Set([
+  "--focus",
+  "--verification",
+  "--risk",
+  "--excluded-scope"
+]);
 
 const defaultRequestedOutput =
   "Findings first with file/line references where possible; say clearly if there are no findings.";
@@ -102,6 +108,10 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
 
     index += 1;
     const existing = values.get(token) ?? [];
+    if (existing.length > 0 && !repeatableValueFlags.has(token)) {
+      return { ok: false, message: `Duplicate flag: ${token}` };
+    }
+
     existing.push(value);
     values.set(token, existing);
   }

@@ -108,6 +108,25 @@ test("rejects unknown generator flags", () => {
   assert.match(result.message, /--behavioural-intent/);
 });
 
+test("rejects duplicate singleton generator flags", () => {
+  const result = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "First goal",
+    "--goal", "Second goal",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent"
+  ]);
+
+  assert.equal(result.ok, false);
+  if (result.ok) {
+    throw new Error("expected parse failure");
+  }
+
+  assert.match(result.message, /Duplicate flag/);
+  assert.match(result.message, /--goal/);
+});
+
 test("rejects malformed verification and risk entries", () => {
   const malformedVerification = parseGenerateReviewRequestArgs([
     "--base", "main",

@@ -98,6 +98,26 @@ test("rejects generate review-request with unknown flags", () => {
   assert.doesNotMatch(result.stdout, /\{.*packet_version/s);
 });
 
+test("rejects generate review-request with duplicate singleton flags", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "review-request",
+    "--base", "origin/main",
+    "--head", "HEAD",
+    "--goal", "First goal",
+    "--goal", "Second goal",
+    "--summary", "Creates a packet from git state.",
+    "--behavioral-intent", "Reduce manual handoff assembly."
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Duplicate flag: --goal/);
+  assert.doesNotMatch(result.stdout, /\{.*packet_version/s);
+});
+
 test("generates a schema-valid review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
   const absoluteCliPath = join(process.cwd(), cliPath);
