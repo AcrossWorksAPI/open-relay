@@ -43,6 +43,7 @@ test("prints handoff review-request in help", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay handoff review-request/);
+  assert.match(result.stdout, /Creates local review handoff Markdown; does not send it anywhere/);
 });
 
 test("handoff review-request writes markdown to stdout", () => {
@@ -95,6 +96,13 @@ In `src/cli.ts`, add this usage line:
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
 ```
 
+Add this local-only help note so the workflow name does not imply external
+delivery:
+
+```ts
+  handoff review-request creates local review handoff Markdown; it does not send it anywhere.
+```
+
 Add this route after the existing `generate` route:
 
 ```ts
@@ -107,13 +115,17 @@ Add this helper:
 
 ```ts
 async function handoffReviewRequestCommand(args: string[]): Promise<number> {
-  if (args.includes("--format")) {
+  if (hasFlag(args, "--format")) {
     process.stderr.write("--format is not supported for handoff review-request; use generate review-request --format instead.\n\n");
     process.stderr.write(usage);
     return 2;
   }
 
   return generateReviewRequestCommand([...args, "--format", "markdown"]);
+}
+
+function hasFlag(args: string[], flag: string): boolean {
+  return args.some((arg) => arg === flag || arg.startsWith(`${flag}=`));
 }
 ```
 
@@ -171,23 +183,25 @@ test("handoff review-request writes markdown to a file", () => {
 });
 
 test("handoff review-request rejects explicit format", () => {
-  const result = spawnSync(process.execPath, [
-    cliPath,
-    "handoff",
-    "review-request",
-    "--base", "origin/main",
-    "--head", "HEAD",
-    "--goal", "Create handoff packet",
-    "--summary", "Creates a Markdown handoff from git state.",
-    "--behavioral-intent", "Make the review handoff command obvious.",
-    "--format", "json"
-  ], {
-    encoding: "utf8"
-  });
+  for (const formatFlag of [["--format", "json"], ["--format=markdown"]]) {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "handoff",
+      "review-request",
+      "--base", "origin/main",
+      "--head", "HEAD",
+      "--goal", "Create handoff packet",
+      "--summary", "Creates a Markdown handoff from git state.",
+      "--behavioral-intent", "Make the review handoff command obvious.",
+      ...formatFlag
+    ], {
+      encoding: "utf8"
+    });
 
-  assert.equal(result.status, 2);
-  assert.match(result.stderr, /--format is not supported for handoff review-request/);
-  assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /--format is not supported for handoff review-request/);
+    assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+  }
 });
 
 test("handoff review-request rejects unwritable output paths without echoing path values", () => {

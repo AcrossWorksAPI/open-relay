@@ -78,6 +78,7 @@ storage, external agent invocation, and private redaction rules remain deferred.
 | 2026-06-26 | Direct Markdown generation implementation branch checks | Passed | `npm run check` passed with 55 tests; `npm run smoke:pack` built, packed, installed the tarball into a clean temp project, and verified installed CLI direct Markdown generation; `git diff --check` passed. |
 | 2026-06-26 | PR #23 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/23`; merge commit `80501da`; `Governance Checks` passed, Claude review reported no findings, and direct Markdown generation merged without agent-specific templates, storage, publish, or live-release claims. |
 | 2026-06-26 | Local handoff workflow planning branch | In progress | PR #25: `https://github.com/AcrossWorksAPI/open-relay/pull/25`; design source `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md`; implementation source `docs/superpowers/plans/2026-06-26-handoff-review-request.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally before PR; `Governance Checks` passed. |
+| 2026-06-26 | Claude review fixes for PR #25 | Passed | Added visible local-only help wording, tightened planned `--format` rejection to include `--format=...`, narrowed lifecycle wording to local request creation, and re-ran `npm run check`, `npm run smoke:pack`, and `git diff --check`. |
 
 ## Next Step
 

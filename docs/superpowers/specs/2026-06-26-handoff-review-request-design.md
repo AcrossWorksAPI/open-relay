@@ -147,11 +147,13 @@ external service. It creates a local handoff packet only.
 ## Testing Strategy
 
 - CLI help includes `open-relay handoff review-request`.
+- CLI help states that `handoff review-request` creates local review handoff
+  Markdown and does not send it anywhere.
 - `handoff review-request` writes Markdown to stdout.
 - `handoff review-request --output relay.md` writes Markdown and prints the
   sanitized success message.
-- `handoff review-request --format markdown` exits `2` with the handoff-specific
-  format error.
+- `handoff review-request --format markdown` and `--format=markdown` exit `2`
+  with the handoff-specific format error.
 - Missing required flags reuse existing generator parse errors.
 - Output write failure does not echo sensitive output paths.
 - Handoff Markdown output matches `generate review-request --format markdown`
