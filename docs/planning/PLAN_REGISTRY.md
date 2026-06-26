@@ -56,7 +56,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-26-render-review-request.md` | In progress | Codex | Renderer-first implementation is active on `codex/render-review-request-implementation`; merge closeout follows after CI and Claude review. |
+| - | - | - | No active execution plans. |
 
 ## Implemented Or Historical Plans
 
@@ -68,6 +68,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-review-request-packet-spec.md` | Done | Defined the smallest useful `review-request` packet, examples, review assumptions, and protocol shape. |
 | `docs/superpowers/plans/2026-06-26-runtime-schema-cli.md` | Done | Implemented TypeScript package scaffold, formal schema validation, CLI validate command, runtime CI, review fixes, and roadmap closeout. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Done | Planned and implemented local git-state review-request packet generation, redaction defaults, CLI wiring, tests, review fixes, and merge closeout through PR #14. |
+| `docs/superpowers/plans/2026-06-26-render-review-request.md` | Done | Planned and implemented review-request Markdown rendering, CLI route, parser tests, package export, snapshot-bound example Markdown, review fixes, and merge closeout through PR #17. |
 
 ## Superseded Or Dormant Plans
 

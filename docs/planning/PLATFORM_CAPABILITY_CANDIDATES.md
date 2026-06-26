@@ -9,7 +9,7 @@ include sensitive repo data.
 | ID | Category | Candidate | Applicability | Status | Trigger | First evidence needed | Source plan |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | PC-001 | Protocol | Minimal relay packet schema | Applicable | Candidate | TypeScript CLI direction is approved | JSON schema validates a sample review-request packet | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| PC-002 | Templates | Codex and Claude render templates | Applicable | Candidate | Packet fields stabilize | Rendered prompts include goal, diff summary, tests, risks, and requested action | - |
+| PC-002 | Templates | Agent-specific prompt dialects | Applicable | Candidate | Neutral Markdown renderer is insufficient for real review workflow | Optional Codex/Claude dialects add value beyond packet-authored audience/focus fields | - |
 | PC-003 | Security | Local redaction rules for secrets and sensitive paths | Applicable | Candidate | Packets include diffs, logs, notes, or env metadata | Redaction smoke with seeded secret-like values | - |
 | PC-004 | Provenance | Source links for claims, files, commands, and diffs | Applicable | Candidate | Packet generator summarizes repo state | Packet claims link back to files, commands, diffs, or user notes | - |
 | PC-005 | Supply chain | Dependency hygiene and update workflow | Future candidate | Candidate | Runtime/dependencies are added | Lockfile, audit policy, update cadence | - |

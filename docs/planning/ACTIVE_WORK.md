@@ -6,8 +6,8 @@ Last updated: 2026-06-26
 
 Establish Open Relay as a local-first handoff and review protocol before product
 implementation. The reviewed `review-request` packet, merged validation CLI,
-and merged JSON-only git-state generator are now joined by the active
-render-template implementation slice. The approved first runtime direction is a
+merged JSON-only git-state generator, and merged Markdown renderer form the
+current CLI baseline. The approved first runtime direction is a
 TypeScript CLI on Node.js with npm; MCP server support is deferred until the
 CLI is useful.
 
@@ -64,19 +64,18 @@ CLI is useful.
 | Release smoke evidence absent | Medium | Do not mark live until package/release smoke criteria are defined and proven. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Markdown rendering not merged yet | Medium | Renderer implementation is active on branch; generator still writes JSON only until the implementation PR merges. |
+| Direct Markdown generation deferred | Low | `open-relay render review-request` is merged; `generate review-request --format markdown` remains a candidate follow-up. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Open the render-template implementation PR for Claude/GitHub review.
-2. Merge the implementation once CI and Claude review are clean, then run
-   closeout to mark the slice Done.
+1. Define package/release target and live-readiness smoke criteria.
+2. Consider `generate review-request --format markdown` now that the renderer
+   is merged.
 3. Revisit permanent packet storage location after stdout and explicit
    `--output` behavior is proven.
-4. Define package/release target and live-readiness smoke criteria.
-5. Decide whether private redaction rule files are needed before package
+4. Decide whether private redaction rule files are needed before package
    publishing.
 
 ## Current Owner Decisions Needed

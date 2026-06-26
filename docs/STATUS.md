@@ -13,7 +13,9 @@ git-state review-request generator is merged to `main`. Release/versioning
 convention is still `Unknown; needs owner decision`. The active slice implements
 a neutral `review-request` JSON-to-Markdown renderer that can serve Codex,
 Claude, or another reviewer without introducing agent-specific prompt dialects
-yet.
+yet. Direct `generate review-request --format markdown`, package publishing,
+release smoke, persistent packet storage, and private redaction rules remain
+deferred.
 
 ## Active Work
 
@@ -28,8 +30,8 @@ yet.
 | Git-state generator planning | Done | PR #13 merged the JSON-first packet generation design, explicit output/stdout storage choice, and fail-closed redaction defaults. |
 | Git-state generator implementation | Done | PR #14 merged argument parsing, typo/unknown/duplicate flag rejection, sanitized git/write errors and output messages, git context collection, redaction, packet assembly, and the `generate review-request` CLI route. |
 | Render-template planning | Done | PR #16 merged the renderer-first design and implementation plan for `open-relay render review-request <packet.json> [--output <relay.md>]`. |
-| Render-template implementation | In progress | Active branch adds the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, and render behavior tests. |
-| Product implementation | In progress | Validation and JSON-only packet generation are merged; Markdown rendering is implemented on the active branch; direct generator Markdown output, agent-specific prompt dialects, package publishing, and release smoke remain unbuilt. |
+| Render-template implementation | Done | PR #17 merged the pure Markdown renderer, CLI route, package export, regenerated example Markdown snapshot, strict parser tests, escaping tests, and render behavior tests. |
+| Product implementation | In progress | Validation, JSON-only packet generation, and Markdown rendering are merged; direct generator Markdown output, agent-specific prompt dialects, package publishing, and release smoke remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, and `npm run check` are local; GitHub Actions `Governance Checks` includes runtime checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -57,11 +59,14 @@ yet.
 | 2026-06-26 | Claude review for PR #16 | Findings addressed | Corrected the plan's verification-field model from `notes` to schema-valid `evidence`, added example Markdown snapshot parity, added inline/list newline-normalization requirements, and recorded prompt-injection risk for packet-authored free text; `npm run check`, `git diff --check`, and targeted stale-field scan passed locally. |
 | 2026-06-26 | PR #16 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/16`; merge commit `5b03b8d`; `Governance Checks` passed and Claude re-review reported no remaining findings. |
 | 2026-06-26 | Render-template implementation branch checks | Passed | `npm run check` passed with 48 tests, `git diff --check` passed, stdout render smoke passed, output-file render smoke passed, and invalid-JSON render leak smoke did not print `SECRET_TOKEN_SHOULD_NOT_APPEAR`. |
+| 2026-06-26 | PR #17 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/17`; merge commit `c62ea27`; `Governance Checks` passed, Claude re-review reported no remaining findings, merged-main `npm run check` passed with 48 tests, `git diff --check` passed, stdout/output-file render smokes passed, and invalid-JSON render leak smoke passed. |
 
 ## Next Step
 
-Open the render-template implementation PR, request Claude review after GitHub
-CI is green, then merge and run closeout once review findings are resolved.
+Choose the next slice: package/release target and live-readiness smoke,
+`generate review-request --format markdown`, or private redaction rule files.
+The strongest next slice is package/release target and smoke criteria because
+validation, JSON generation, and Markdown rendering are now merged.
 
 ## Owner Decisions Needed
 
