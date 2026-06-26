@@ -165,12 +165,33 @@ function optionalGit(cwd: string, args: string[]): string | undefined {
 }
 
 function git(cwd: string, args: string[]): string {
-  return execFileSync("git", args, {
-    cwd,
-    encoding: "utf8",
-    env: {
-      ...process.env,
-      GIT_CONFIG_NOSYSTEM: "1"
-    }
-  });
+  try {
+    return execFileSync("git", args, {
+      cwd,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        GIT_CONFIG_NOSYSTEM: "1"
+      },
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+  } catch {
+    throw new Error(gitFailureMessage(args));
+  }
+}
+
+function gitFailureMessage(args: string[]): string {
+  if (args[0] === "rev-parse" && args[1] === "--show-toplevel") {
+    return "Could not find a git repository.";
+  }
+
+  if (args[0] === "rev-parse" && args[1] === "--verify") {
+    return "Could not resolve git ref.";
+  }
+
+  if (args[0] === "diff") {
+    return "Could not read git diff.";
+  }
+
+  return "Git command failed.";
 }
