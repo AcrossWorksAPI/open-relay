@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, and runtime/schema validation CLI implementation
+Status: Product brief, governance baseline, review-request protocol baseline, and runtime/schema validation CLI baseline
 Last updated: 2026-06-26
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript CLI-first runtime branch
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, and TypeScript schema-validation CLI baseline
 
 ## Project Purpose
 
@@ -22,7 +22,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Baseline | Open-source hardening and first CI | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
 | Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
-| Unversioned | Runtime schema validation CLI | In progress | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
+| Unversioned | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
 | Unversioned | Review-request packet CLI MVP | Planned | High | Candidate | Runtime schema validation CLI | - |
 | Unversioned | Codex and Claude render templates | Candidate | Medium | Candidate | Review-request packet CLI MVP | - |
 
@@ -30,10 +30,10 @@ Markdown/JSON relay packet schema, not a SaaS app.
 
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
-| Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI PR merges | - |
+| Runtime | Package and release target | Before public package publishing | Candidate | Runtime schema validation CLI is merged | - |
 | Templates | Codex/Claude review prompt templates | Alongside CLI MVP | Candidate | JSON Schema and generator plan are drafted | - |
 | Security | Local redaction and provenance rules | Before packets include sensitive data | Candidate | Packet schema includes repo diffs, logs, or notes | - |
-| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI PR merges | - |
+| Release | Branch, PR, package, and smoke workflow | Before live claims | Candidate | Runtime schema validation CLI is merged | - |
 
 ## Update Rules
 

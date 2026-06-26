@@ -1141,8 +1141,8 @@ git commit -m "docs: close runtime schema cli slice"
   - premature `Shipped` lifecycle matrix cells
   - package `main`/`types` entrypoints
   - Node typings aligned to Node 22
-- [ ] Merge only after CI passes and review findings are resolved.
-- [ ] Pull and prune local `main` after merge.
+- [x] Merge only after CI passes and review findings are resolved.
+- [x] Pull and prune local `main` after merge.
 
 ## Self-Review Notes
 
