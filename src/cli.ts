@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 import { readFile, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
-import { parseGenerateReviewRequestArgs } from "./args";
+import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
 import { renderReviewRequestMarkdown } from "./renderReviewRequest";
 import { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
 import { validatePacket, validatePacketFile } from "./schema";
+import { saveReviewRequestBundle } from "./storage";
 
 const usage = `Open Relay
 
@@ -14,6 +16,7 @@ Usage:
   open-relay validate <packet.json>
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
+  open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--storage-dir <path>]
   open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay --help
 
@@ -39,6 +42,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "handoff" && args[1] === "review-request") {
     return handoffReviewRequestCommand(args.slice(2));
+  }
+
+  if (args[0] === "save" && args[1] === "review-request") {
+    return saveReviewRequestCommand(args.slice(2));
   }
 
   if (args[0] === "render" && args[1] === "review-request") {
@@ -142,8 +149,91 @@ async function handoffReviewRequestCommand(args: string[]): Promise<number> {
   return generateReviewRequestCommand([...args, "--format", "markdown"]);
 }
 
+async function saveReviewRequestCommand(args: string[]): Promise<number> {
+  if (hasFlag(args, "--format")) {
+    process.stderr.write("--format is not supported for save review-request; saved bundles include JSON and Markdown.\n\n");
+    process.stderr.write(usage);
+    return 2;
+  }
+
+  if (hasFlag(args, "--output")) {
+    process.stderr.write("--output is not supported for save review-request; use --storage-dir to choose a storage root.\n\n");
+    process.stderr.write(usage);
+    return 2;
+  }
+
+  const storageParse = parseStorageDir(args);
+  if (!storageParse.ok) {
+    process.stderr.write(`${storageParse.message}\n\n${usage}`);
+    return 2;
+  }
+
+  const parsed = parseGenerateReviewRequestArgs(storageParse.generatorArgs);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  try {
+    const built = buildValidatedReviewRequestPacket(parsed.options);
+
+    if (!built.ok) {
+      process.stderr.write("Generated review-request packet failed validation.\n");
+      for (const error of built.errors) {
+        process.stderr.write(`- ${error}\n`);
+      }
+      return 1;
+    }
+
+    const saved = await saveReviewRequestBundle({
+      storageRoot: storageParse.storageDir ?? join(process.cwd(), ".open-relay", "review-requests"),
+      packet: built.packet
+    });
+
+    process.stdout.write(`Saved review-request packet: ${saved.storageId}\n`);
+    return 0;
+  } catch {
+    process.stderr.write("Could not save review-request packet.\n");
+    return 1;
+  }
+}
+
 function hasFlag(args: string[], flag: string): boolean {
   return args.some((arg) => arg === flag || arg.startsWith(`${flag}=`));
+}
+
+type SaveReviewRequestArgs =
+  | { ok: true; storageDir?: string; generatorArgs: string[] }
+  | { ok: false; message: string };
+
+function parseStorageDir(args: string[]): SaveReviewRequestArgs {
+  const generatorArgs: string[] = [];
+  let storageDir: string | undefined;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+
+    if (arg === "--storage-dir") {
+      if (storageDir) {
+        return { ok: false, message: "Duplicate flag: --storage-dir" };
+      }
+      const value = args[index + 1];
+      if (!value || value.startsWith("--")) {
+        return { ok: false, message: "Missing value for --storage-dir" };
+      }
+      storageDir = value;
+      index += 1;
+      continue;
+    }
+
+    generatorArgs.push(arg);
+  }
+
+  return {
+    ok: true,
+    ...(storageDir ? { storageDir } : {}),
+    generatorArgs
+  };
 }
 
 async function generateReviewRequestCommand(args: string[]): Promise<number> {
@@ -154,23 +244,17 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
   }
 
   try {
-    const git = collectGitContext({
-      cwd: process.cwd(),
-      baseRef: parsed.options.base,
-      headRef: parsed.options.head,
-      includeLocalPath: parsed.options.includeLocalPath
-    });
-    const packet = buildReviewRequestPacket({ options: parsed.options, git });
-    const result = validatePacket(packet);
+    const built = buildValidatedReviewRequestPacket(parsed.options);
 
-    if (!result.valid) {
+    if (!built.ok) {
       process.stderr.write("Generated review-request packet failed validation.\n");
-      for (const error of result.errors) {
+      for (const error of built.errors) {
         process.stderr.write(`- ${error}\n`);
       }
       return 1;
     }
 
+    const packet = built.packet;
     const output = parsed.options.format === "markdown"
       ? renderReviewRequestMarkdown(packet)
       : `${JSON.stringify(packet, null, 2)}\n`;
@@ -199,6 +283,29 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
     process.stderr.write(`Could not generate review-request packet: ${message}\n`);
     return 1;
   }
+}
+
+type BuiltReviewRequestPacket =
+  | { ok: true; packet: ReviewRequestPacket }
+  | { ok: false; errors: string[] };
+
+function buildValidatedReviewRequestPacket(
+  options: GenerateReviewRequestOptions
+): BuiltReviewRequestPacket {
+  const git = collectGitContext({
+    cwd: process.cwd(),
+    baseRef: options.base,
+    headRef: options.head,
+    includeLocalPath: options.includeLocalPath
+  });
+  const packet = buildReviewRequestPacket({ options, git });
+  const result = validatePacket(packet);
+
+  if (!result.valid) {
+    return { ok: false, errors: result.errors };
+  }
+
+  return { ok: true, packet };
 }
 
 async function validateCommand(path: string | undefined): Promise<number> {

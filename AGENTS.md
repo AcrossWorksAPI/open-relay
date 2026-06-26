@@ -9,7 +9,8 @@ owner instructions when they exist.
 - Current known scope: local-first AI handoff/review protocol, TypeScript CLI
   validation, review-request packet generation, Markdown/JSON relay packet
   schema, Markdown rendering, direct Markdown generation, local handoff workflow
-  command, package-readiness smoke, and Across Works roadmap governance.
+  command, repo-local packet storage, package-readiness smoke, and Across Works
+  roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
@@ -21,9 +22,13 @@ owner instructions when they exist.
   `open-relay render review-request`.
 - Handoff behavior: `open-relay handoff review-request` creates local
   review-request Markdown by composing the existing generator and renderer path.
+- Storage behavior: `open-relay save review-request` creates ignored
+  repo-local `.open-relay/review-requests/<storage_id>/` bundles containing
+  validated JSON, rendered Markdown, and a manifest.
 - Non-goals for the current runtime slice: MCP server support, package
   registry publishing, hosted deployment, external agent invocation,
-  persistent packet storage, and agent-specific prompt templates.
+  global packet storage, storage list/read/delete/archive commands, retention
+  policies, hosted sync, and agent-specific prompt templates.
 
 ## Required Starting Point
 

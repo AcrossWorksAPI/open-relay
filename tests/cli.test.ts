@@ -45,6 +45,15 @@ test("prints handoff review-request in help", () => {
   assert.match(result.stdout, /creates local review handoff Markdown; it does not send it anywhere/i);
 });
 
+test("prints save review-request in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay save review-request/);
+});
+
 test("validates the example packet", () => {
   const result = spawnSync(
     process.execPath,
@@ -521,6 +530,100 @@ test("handoff review-request matches direct markdown generation", () => {
     assert.equal(handoff.status, 0);
     assert.equal(generated.status, 0);
     assert.equal(stripCreatedAt(handoff.stdout), stripCreatedAt(generated.stdout));
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("saves review-request bundle to repo-local storage", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "save",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Save handoff packet",
+      "--summary", "Saves JSON and Markdown to repo-local storage.",
+      "--behavioral-intent", "Make packets durable without external services."
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Saved review-request packet: /);
+    assert.doesNotMatch(result.stdout, /open-relay-cli-git/);
+    assert.equal(result.stderr, "");
+
+    const storageId = result.stdout.trim().replace("Saved review-request packet: ", "");
+    const bundleDir = join(directory, ".open-relay", "review-requests", storageId);
+    assert.match(readFileSync(join(bundleDir, "relay.md"), "utf8"), /^# Review Request Relay Packet/);
+    assert.equal(JSON.parse(readFileSync(join(bundleDir, "relay.json"), "utf8")).packet_type, "review-request");
+    assert.equal(JSON.parse(readFileSync(join(bundleDir, "manifest.json"), "utf8")).storage_id, storageId);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("save review-request rejects format and output flags", () => {
+  for (const args of [
+    ["--format", "markdown"],
+    ["--format=json"],
+    ["--output", "relay.json"]
+  ]) {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "save",
+      "review-request",
+      "--base", "origin/main",
+      "--head", "HEAD",
+      "--goal", "Save packet",
+      "--summary", "Saves a packet.",
+      "--behavioral-intent", "Make packets durable.",
+      ...args
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 2);
+    assert.doesNotMatch(result.stdout, /Saved review-request packet/);
+  }
+});
+
+test("save review-request rejects unwritable storage without echoing path values", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const storageDir = join(directory, "SECRET_STORAGE_SHOULD_NOT_APPEAR", "review-requests");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    writeFileSync(join(directory, "SECRET_STORAGE_SHOULD_NOT_APPEAR"), "not a directory", "utf8");
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "save",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Save packet",
+      "--summary", "Saves a packet.",
+      "--behavioral-intent", "Make packets durable.",
+      "--storage-dir", storageDir
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Could not save review-request packet/);
+    assert.doesNotMatch(result.stderr, /SECRET_STORAGE_SHOULD_NOT_APPEAR/);
+    assert.doesNotMatch(result.stdout, /SECRET_STORAGE_SHOULD_NOT_APPEAR/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
