@@ -70,6 +70,57 @@ test("escapes markdown table cells", () => {
   assert.match(markdown, /\| `npm \\\| test` \| passed \| Line one Line two \|/);
 });
 
+test("removes backticks from code-span values", () => {
+  const packet: ReviewRequestPacket = {
+    ...examplePacket,
+    repository: {
+      ...examplePacket.repository,
+      working_branch: "fix-`branch`"
+    },
+    changed_files: [{
+      path: "docs/`name`.md",
+      status: "modified",
+      role: "Backtick path",
+      review_priority: "medium"
+    }],
+    verification: [{
+      kind: "command",
+      command: "npm run `check`",
+      result: "passed",
+      evidence: "Backtick command"
+    }]
+  };
+
+  const markdown = renderReviewRequestMarkdown(packet);
+
+  assert.match(markdown, /- Working branch: `fix-branch`/);
+  assert.match(markdown, /\| `docs\/name\.md` \| modified \| Backtick path \| medium \|/);
+  assert.match(markdown, /\| `npm run check` \| passed \| Backtick command \|/);
+});
+
+test("renders provenance acronym labels", () => {
+  const packet: ReviewRequestPacket = {
+    ...examplePacket,
+    provenance: [
+      {
+        type: "ci_run",
+        reference: "https://example.test/actions/1",
+        supports: "CI passed."
+      },
+      {
+        type: "external_url",
+        reference: "https://example.test/context",
+        supports: "External context."
+      }
+    ]
+  };
+
+  const markdown = renderReviewRequestMarkdown(packet);
+
+  assert.match(markdown, /- CI Run: `https:\/\/example\.test\/actions\/1` - CI passed\./);
+  assert.match(markdown, /- External URL: `https:\/\/example\.test\/context` - External context\./);
+});
+
 test("normalizes inline and bullet-list line breaks", () => {
   const packet: ReviewRequestPacket = {
     ...examplePacket,

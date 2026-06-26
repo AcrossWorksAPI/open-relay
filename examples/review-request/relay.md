@@ -74,7 +74,7 @@ Adds community and safety documents, issue and PR templates, Dependabot configur
 ## Provenance
 
 - Pull Request: `https://github.com/example/open-relay/pull/2` - Review and merge context.
-- Ci Run: `https://github.com/example/open-relay/actions/runs/123456789` - CI passed.
+- CI Run: `https://github.com/example/open-relay/actions/runs/123456789` - CI passed.
 - User Note: `owner hardening request` - Open-source hardening was requested before product implementation.
 
 ## Redactions
