@@ -17,7 +17,7 @@ Allowed cell values: `Shipped`, `In progress`, `Planned`, `Deferred`,
 | Local repository context collector | Shipped | Shipped | Planned | N/A | N/A | N/A | Shipped | Shipped | Shipped | N/A | N/A | Shipped | Merged generator collects base/head commits, diff range, changed files, safe remote metadata, and fail-closed redaction defaults. |
 | Review loop | Future candidate | Future candidate | Future candidate | Future candidate | Future candidate | N/A | Future candidate | Future candidate | Future candidate | Deferred | N/A | Future candidate | Implementation handoff, review request, review response, resume project. |
 | Manager/library/assignment surfaces | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown | Unknown; needs owner decision if multi-user or hosted scope appears. |
-| Runtime/deployment surfaces | Shipped | Shipped | Shipped | N/A | N/A | N/A | Shipped | Planned | Shipped | N/A | N/A | In progress | TypeScript package, CLI source, validation/generator/render tests, runtime CI, and local CLI smoke are merged; npm package target and tarball install smoke are on the implementation branch; registry publishing remains planned. |
+| Runtime/deployment surfaces | Shipped | Shipped | Shipped | N/A | N/A | N/A | Shipped | Planned | Shipped | N/A | N/A | Shipped | TypeScript package, CLI source, validation/generator/render tests, runtime CI, package target, and local tarball install smoke are merged; registry publishing remains planned. |
 
 ## Assignment And Scope Matrix
 
