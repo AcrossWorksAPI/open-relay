@@ -123,8 +123,7 @@ TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Open the reviewer-produced `review-response` workflow implementation PR and
-   request Claude review after CI is green.
+1. Watch PR #39 CI, then request Claude review after CI is green.
 2. Decide whether private redaction rule files are needed before package
    publishing.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.

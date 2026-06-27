@@ -114,12 +114,11 @@ can create and send response packets without manual copy/paste.
 | 2026-06-27 | Review-response producer planning branch checks | Passed | PR #38: `https://github.com/AcrossWorksAPI/open-relay/pull/38`; branch `codex/review-response-producer-plan`: `npm run check` passed with 123 tests, `npm run smoke:pack` passed, and `git diff --check` passed before opening the planning PR. |
 | 2026-06-27 | Claude review fix for PR #38 | Passed | Folded in the draft-key allowlist finding so unknown or misspelled review draft fields are rejected instead of silently dropped; `npm run check` passed with 123 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #38 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/38`; merge commit `df1efbd`; Claude re-review reported the plan merge-ready after the draft-key allowlist fix, and merged-main `npm run check`, `npm run smoke:pack`, and `git diff --check` passed. |
-| 2026-06-28 | Reviewer-produced review-response implementation branch checks | Passed | Branch `codex/review-response-producer-implementation`; `npm run check` passed with 146 tests, `npm run smoke:pack` passed, `git diff --check` passed, generated JSON validated as `review-response/0.1`, Markdown output rendered `# Review Response Relay Packet`, and `respond github-pr --dry-run` emitted the exact marked packet comment without a live GitHub call. |
+| 2026-06-28 | Reviewer-produced review-response implementation branch checks | Passed | PR #39: `https://github.com/AcrossWorksAPI/open-relay/pull/39`; branch `codex/review-response-producer-implementation`; `npm run check` passed with 146 tests, `npm run smoke:pack` passed, `git diff --check` passed, generated JSON validated as `review-response/0.1`, Markdown output rendered `# Review Response Relay Packet`, and `respond github-pr --dry-run` emitted the exact marked packet comment without a live GitHub call. |
 
 ## Next Step
 
-Open the reviewer-produced `review-response` workflow implementation PR, run CI,
-and request Claude review.
+Run CI for PR #39, then request Claude review.
 
 ## Owner Decisions Needed
 
