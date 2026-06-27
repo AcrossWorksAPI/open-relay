@@ -111,7 +111,7 @@ create and send response packets without manual copy/paste.
 | 2026-06-27 | Claude review fixes for PR #36 | Passed | Added safe `gh auth status` first-run hint, scoped `send --update` to the authenticated `gh` user's matching packet comments, and made marker extraction CRLF-tolerant; `npm run check` passed with 123 tests and `git diff --check` passed. |
 | 2026-06-27 | PR #36 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/36`; merge commit `0f774e5`; `Governance Checks` passed, Claude review reported merge-ready, and review nits were addressed before merge. |
 | 2026-06-27 | PR #36 merged-main closeout | Passed | Fresh `main` verification after merge: `npm run check` passed with 123 tests, `npm run smoke:pack` passed, `git diff --check` passed, and the closeout placeholder scan found no unresolved marker terms. |
-| 2026-06-27 | Review-response producer planning branch checks | Passed | Branch `codex/review-response-producer-plan`: `npm run check` passed with 123 tests, `npm run smoke:pack` passed, and `git diff --check` passed before opening the planning PR. |
+| 2026-06-27 | Review-response producer planning branch checks | Passed | PR #38: `https://github.com/AcrossWorksAPI/open-relay/pull/38`; branch `codex/review-response-producer-plan`: `npm run check` passed with 123 tests, `npm run smoke:pack` passed, and `git diff --check` passed before opening the planning PR. |
 
 ## Next Step
 
