@@ -53,12 +53,19 @@ try {
   );
   assert.ok(existsSync(cli), "installed CLI binary is missing");
 
+  runCli(cli, ["--help"], { contains: "open-relay render <packet.json>" });
   runCli(cli, ["--help"], { contains: "open-relay render review-request" });
   runCli(cli, ["validate", join(fixtureDir, "examples", "review-request", "relay.json")], {
-    contains: "valid review-request packet"
+    contains: "valid packet"
   });
   runCli(cli, ["render", "review-request", join(fixtureDir, "examples", "review-request", "relay.json")], {
     contains: "# Review Request Relay Packet"
+  });
+  runCli(cli, ["validate", join(fixtureDir, "examples", "review-response", "relay.json")], {
+    contains: "valid packet"
+  });
+  runCli(cli, ["render", join(fixtureDir, "examples", "review-response", "relay.json")], {
+    contains: "# Review Response Relay Packet"
   });
 
   createGitFixture(gitRepo);
@@ -83,7 +90,8 @@ try {
     contains: "Wrote review-request packet."
   });
 
-  runCli(cli, ["validate", generatedPacket], { contains: "valid review-request packet" });
+  runCli(cli, ["validate", generatedPacket], { contains: "valid packet" });
+  runCli(cli, ["render", generatedPacket], { contains: "## Next Action" });
   runCli(cli, ["render", "review-request", generatedPacket], { contains: "## Next Action" });
 
   const generatedMarkdown = join(workspace, "generated.md");
@@ -147,7 +155,7 @@ try {
 
   const badJson = join(workspace, "bad.json");
   writeFileSync(badJson, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
-  const badResult = spawnSync(cli, ["render", "review-request", badJson], { encoding: "utf8" });
+  const badResult = spawnSync(cli, ["render", badJson], { encoding: "utf8" });
   assert.equal(badResult.status, 1);
   assert.match(badResult.stderr, /Invalid JSON/);
   assert.doesNotMatch(badResult.stderr, /SECRET_TOKEN_SHOULD_NOT_APPEAR/);
@@ -170,7 +178,12 @@ function assertPackageContents(packManifest) {
     paths.includes("dist/schemas/review-request.schema.json"),
     "tarball is missing dist/schemas/review-request.schema.json"
   );
+  assert.ok(
+    paths.includes("dist/schemas/review-response.schema.json"),
+    "tarball is missing dist/schemas/review-response.schema.json"
+  );
   assert.ok(paths.includes("schemas/review-request.schema.json"), "tarball is missing public schema");
+  assert.ok(paths.includes("schemas/review-response.schema.json"), "tarball is missing public review-response schema");
   assert.ok(paths.includes("README.md"), "tarball is missing README.md");
   assert.ok(paths.includes("LICENSE"), "tarball is missing LICENSE");
 

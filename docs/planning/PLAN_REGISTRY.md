@@ -19,28 +19,38 @@ or old plan files as inactive until this registry and current code agree.
 | `scripts/smoke-pack.js` | Package tarball install smoke | Active |
 | `tsconfig.json` | TypeScript compiler configuration | Active |
 | `schemas/review-request.schema.json` | Formal review-request packet schema | Active |
+| `schemas/review-response.schema.json` | Formal review-response packet schema | Active |
 | `src/index.ts` | Runtime exports | Active |
 | `src/args.ts` | Generator argument parser | Active |
 | `src/git.ts` | Local git context collector | Active |
 | `src/redaction.ts` | Remote URL redaction helper | Active |
+| `src/renderMarkdown.ts` | Shared Markdown escaping and formatting helpers | Active |
 | `src/renderReviewRequest.ts` | Review-request Markdown renderer | Active |
+| `src/renderReviewResponse.ts` | Review-response Markdown renderer | Active |
 | `src/renderPacket.ts` | Generic packet Markdown renderer dispatcher | Active |
 | `src/reviewRequest.ts` | Review-request packet builder | Active |
+| `src/reviewResponse.ts` | Review-response packet type | Active |
 | `src/schema.ts` | Packet validation module with type/version dispatch | Active |
 | `src/schemaRegistry.ts` | Packet schema registry and semantic checks | Active |
-| `src/cli.ts` | Local CLI entrypoint, validation, and generator routing | Active |
+| `src/storage.ts` | Repo-local review-request storage writer | Active |
+| `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, and save routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
 | `tests/args.test.ts` | Generator argument parser tests | Active |
 | `tests/git.test.ts` | Git context collector tests | Active |
 | `tests/redaction.test.ts` | Remote URL redaction tests | Active |
 | `tests/renderReviewRequest.test.ts` | Review-request Markdown renderer tests | Active |
+| `tests/renderReviewResponse.test.ts` | Review-response Markdown renderer tests | Active |
 | `tests/renderPacket.test.ts` | Generic packet renderer dispatcher tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
+| `tests/storage.test.ts` | Repo-local storage tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
+| `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
+| `examples/review-response/relay.md` | Human-readable synthetic review-response packet | Active |
+| `examples/review-response/relay.json` | Machine-readable synthetic review-response packet | Active |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Runtime/schema CLI design | Active |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Git-state review-request generator design | Active |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Review-request Markdown renderer design | Active |
@@ -50,6 +60,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Repo-local packet storage design | Active |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Relay protocol envelope and multi-type extensibility design | Active |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Review-response packet design | Active |
+| `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Review-response packet implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Relay protocol envelope implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
@@ -71,7 +82,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | In progress | Codex | Defines `review-response` 0.1 and the validation/rendering implementation boundary. |
+| `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | In progress | Codex | Implements `review-response` 0.1 validation, rendering, generic render, examples, protocol docs, package exports, smoke, and closeout. |
 
 ## Implemented Or Historical Plans
 
@@ -89,6 +100,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Done | Planned and implemented `handoff review-request`, local-only help text, parser/CLI tests, package smoke update, review, and merge closeout through PR #26. |
 | `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | Done | Planned and implemented `save review-request`, repo-local bundle storage, CLI/storage tests, cleanup coverage, package smoke update, review, and merge closeout through PR #29. |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Done | Planned and implemented packet type/version schema registry dispatch, renderer dispatch, package export, supported-combination errors, test-only second-type proof, review, and merge closeout through PR #31. |
+| `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Done | Defined `review-response` 0.1 as the first protocol-envelope consumer and merged through PR #33. |
 
 ## Superseded Or Dormant Plans
 
