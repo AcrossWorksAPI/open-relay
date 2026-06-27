@@ -25,7 +25,7 @@ Use a flat packet with:
 - `packet_version: "0.1"`;
 - a `response_to` object that pins the original `review-request` context;
 - an `outcome` enum for the review decision;
-- structured findings and review evidence;
+- structured findings, review scope, and top-level `verification` evidence;
 - a required `next_action` for the receiver.
 
 The first implementation should add validation and rendering only. It should
@@ -39,6 +39,7 @@ agent-specific templates.
 | Free-form Markdown review only | Easy for humans, but not machine-validatable and cannot safely drive later automation. |
 | Embed the entire original `review-request` packet | Self-contained, but duplicates large content, increases leak risk, and makes response packets drift from the request source. |
 | Reference the original request by repository, diff range, PR, and optional saved packet id | Chosen. Keeps the response compact while preserving reproducible context and storage linkage. |
+| Use `approved_with_findings` or `rejected` verdict values | Rejected for `0.1`. Non-blocking findings are already represented by `approved` plus `findings[].blocking: false`, while `blocked` more clearly represents an incomplete review than `rejected`. |
 
 ## Smallest Useful Packet
 
@@ -70,8 +71,9 @@ loop.
 | `confidence` | string | Yes | Reviewer confidence: `high`, `medium`, or `low`. |
 | `summary` | string | Yes | Concise review summary. |
 | `findings` | array | Yes | Structured issues, nits, risks, or observations; use an empty array when none exist. |
-| `reviewed_scope` | object | Yes | Files, commands, checks, and limitations covered by the review. |
-| `provenance` | array | No | External or source-linked evidence not already captured in findings or reviewed scope. |
+| `reviewed_scope` | object | Yes | Files and limitations covered by the review. |
+| `verification` | array | Yes | Commands, CI checks, manual checks, or external checks the reviewer considered. |
+| `provenance` | array | No | External or source-linked evidence not already captured in findings, reviewed scope, or verification. |
 | `redactions` | array | Yes | Sensitive details intentionally omitted or transformed; use an empty array when none exist. |
 | `sensitive_data` | object | No | Optional note about secret, token, private log, or customer data exclusion. |
 | `next_action` | string | Yes | What the receiver should do next. |
@@ -132,7 +134,6 @@ when deeper inspection is needed.
 | Key | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `files` | array | Yes | Files or doc sections reviewed; use an empty array when none were directly inspected. |
-| `checks` | array | Yes | Commands, CI checks, manual checks, or external checks the reviewer considered. |
 | `limitations` | array | Yes | Access gaps, assumptions, skipped areas, or reasons the review is partial. |
 
 ### `reviewed_scope.files[]`
@@ -142,7 +143,7 @@ when deeper inspection is needed.
 | `path` | string | Yes | Repo-relative file path or documented source label. |
 | `notes` | string | No | Short note about why it was reviewed. |
 
-### `reviewed_scope.checks[]`
+### `verification[]`
 
 | Key | Type | Required | Notes |
 | --- | --- | --- | --- |
@@ -150,6 +151,10 @@ when deeper inspection is needed.
 | `command` | string | Yes | Command, check name, or evidence label. |
 | `result` | string | Yes | `passed`, `failed`, `not_run`, or `unknown`. |
 | `evidence` | string | Yes | Short evidence note, URL, run ID, or reason. |
+
+`verification` intentionally reuses the existing `review-request`
+verification shape so request and response packets describe checks with one
+stable vocabulary.
 
 ### `provenance[]`
 
@@ -178,7 +183,8 @@ when deeper inspection is needed.
 
 - `approved`: no blocking findings; receiver may proceed if local policy allows.
 - `changes_requested`: at least one finding must have `blocking: true`.
-- `commentary`: advisory review with no approval decision.
+- `commentary`: advisory review with no approval decision; no finding should
+  have `blocking: true`.
 - `blocked`: reviewer could not complete the review; `reviewed_scope.limitations`
   must explain why.
 
@@ -230,16 +236,16 @@ findings, or `blocked` with no limitation.
         "notes": "Validator dispatch path reviewed."
       }
     ],
-    "checks": [
-      {
-        "kind": "command",
-        "command": "npm run check",
-        "result": "passed",
-        "evidence": "77 tests passed at PR head."
-      }
-    ],
     "limitations": []
   },
+  "verification": [
+    {
+      "kind": "command",
+      "command": "npm run check",
+      "result": "passed",
+      "evidence": "77 tests passed at PR head."
+    }
+  ],
   "provenance": [],
   "redactions": [],
   "sensitive_data": {
@@ -261,10 +267,11 @@ A human-readable `review-response` Markdown render should use this order:
 5. Summary
 6. Findings
 7. Reviewed scope
-8. Provenance
-9. Redactions
-10. Sensitive data
-11. Next action
+8. Verification
+9. Provenance
+10. Redactions
+11. Sensitive data
+12. Next action
 
 The renderer should preserve the existing escaping posture:
 
@@ -281,20 +288,24 @@ review-request renderer posture.
 
 The implementation should:
 
+- add `docs/protocol/review-response-packet.md`;
 - add `schemas/review-response.schema.json`;
 - register `review-response` `0.1` in `src/schemaRegistry.ts`;
 - add a `renderReviewResponseMarkdown` renderer and register it in
   `src/renderPacket.ts`;
-- add `open-relay render review-response <packet.json> [--output <relay.md>]`;
-- keep `open-relay render review-request` unchanged;
+- add generic `open-relay render <packet.json> [--output <relay.md>]`;
+- keep `open-relay render review-request <packet.json> [--output <relay.md>]`
+  as a backward-compatible alias;
+- do not add a new `render review-response` subcommand; the generic render
+  command is the public path for `review-response` and future packet types;
 - make `open-relay validate <packet.json>` messages packet-neutral or type-aware
   instead of saying `review-request` for every invalid packet;
 - add example JSON and Markdown under `examples/review-response/`;
 - export the review-response renderer from `src/index.ts`.
 
-This keeps public commands explicit while using the generic dispatcher
-internally. A future generic `open-relay render <packet.json>` alias remains
-deferred until more packet types exist.
+This is the point where a generic render command becomes useful: the envelope
+has a second packet type, and adding one subcommand per packet type would turn
+the dispatcher into a hidden implementation detail instead of the public model.
 
 ## Security And Privacy
 
@@ -310,7 +321,7 @@ validate-message fix must not introduce raw packet-content echoes.
 | Area | Decision |
 | --- | --- |
 | Create | First implementation accepts authored JSON examples and validation/rendering. Automatic generation from Claude/GitHub is deferred. |
-| List/view | Rendering to Markdown is included. Storage list/read surfaces are deferred. |
+| List/view | Generic rendering to Markdown is included. Storage list/read surfaces are deferred. |
 | Edit/update | Packet edits are manual JSON edits in this slice. Mutation workflows are deferred. |
 | Archive/delete | Deferred to future storage commands. |
 | Ownership | The reviewer owns packet contents; the local user decides whether to trust or act on them. |
@@ -329,12 +340,15 @@ validate-message fix must not introduce raw packet-content echoes.
 - Test semantic rules:
   - `changes_requested` requires at least one blocking finding;
   - `approved` rejects blocking findings;
+  - `commentary` rejects blocking findings;
   - `blocked` requires at least one limitation.
 - Test `validate` success and failure messages are packet-neutral or type-aware.
 - Test unsupported `review-response` version still reports supported
   combinations and does not echo non-dispatch fields.
-- Test `render review-response` stdout, `--output`, parser failures, invalid
-  JSON, schema-invalid JSON, and sanitized write failures.
+- Test generic `render <packet.json>` stdout, `--output`, parser failures,
+  invalid JSON, schema-invalid JSON, and sanitized write failures.
+- Test `render review-request <packet.json>` remains a backward-compatible
+  alias for existing callers.
 - Test `renderPacketMarkdown` dispatches review-response without changing
   review-request rendering.
 - Run `npm run check`, `npm run smoke:pack`, and `git diff --check`.
@@ -346,7 +360,6 @@ validate-message fix must not introduce raw packet-content echoes.
 - Posting review responses to GitHub PR comments.
 - Triggering Codex fixes or auto-merge decisions.
 - Saving review-response bundles under `.open-relay/`.
-- Generic `render <packet.json>` CLI alias.
 - Agent-specific prompt dialects.
 
 ## Open Decisions
