@@ -72,7 +72,7 @@ loop.
 | `summary` | string | Yes | Concise review summary. |
 | `findings` | array | Yes | Structured issues, nits, risks, or observations; use an empty array when none exist. |
 | `reviewed_scope` | object | Yes | Files and limitations covered by the review. |
-| `verification` | array | Yes | Commands, CI checks, manual checks, or external checks the reviewer considered. |
+| `verification` | array | Yes | Commands, CI checks, manual checks, or external checks the reviewer considered; use an empty array when none were run. |
 | `provenance` | array | No | External or source-linked evidence not already captured in findings, reviewed scope, or verification. |
 | `redactions` | array | Yes | Sensitive details intentionally omitted or transformed; use an empty array when none exist. |
 | `sensitive_data` | object | No | Optional note about secret, token, private log, or customer data exclusion. |
