@@ -91,7 +91,7 @@ next implementation slice.
 | 2026-06-27 | PR #28 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/28`; merge commit `bdefbb8`; `Governance Checks` passed, Claude re-review reported no remaining findings, and repo-local packet storage planning merged. |
 | 2026-06-27 | PR #29 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/29`; merge commit `87f0bb7`; `Governance Checks` passed; branch `npm run check` passed with 69 tests, `npm run smoke:pack` verified installed CLI save behavior, and `git diff --check` passed. |
 | 2026-06-27 | Review-loop roadmap re-anchor | Merged | PR #30: `https://github.com/AcrossWorksAPI/open-relay/pull/30`; merge commit `7f79246`; added protocol envelope design and implementation plan, restored roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, and addressed Claude review feedback by limiting the shared header to dispatch keys plus adding supported combinations to unsupported-type errors; `Governance Checks` passed and Claude re-review reported merge-ready. |
-| 2026-06-27 | Protocol envelope implementation branch checks | Passed | Branch `codex/relay-protocol-envelope-implementation`; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
+| 2026-06-27 | Protocol envelope implementation branch checks | Passed | PR #31: `https://github.com/AcrossWorksAPI/open-relay/pull/31`; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
 
 ## Next Step
 

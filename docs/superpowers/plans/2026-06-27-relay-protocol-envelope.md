@@ -511,7 +511,7 @@ git diff --check
 
 Expected: all pass.
 
-- [ ] **Step 4: Open implementation PR**
+- [x] **Step 4: Open implementation PR**
 
 Push `codex/relay-protocol-envelope-implementation` and create a PR titled:
 
