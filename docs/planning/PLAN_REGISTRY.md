@@ -82,7 +82,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | In progress | Codex | Implements `review-response` 0.1 validation, rendering, generic render, examples, protocol docs, package exports, smoke, and closeout. |
+| - | - | - | No active implementation plan; next slice is boundary/transport. |
 
 ## Implemented Or Historical Plans
 
@@ -101,6 +101,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | Done | Planned and implemented `save review-request`, repo-local bundle storage, CLI/storage tests, cleanup coverage, package smoke update, review, and merge closeout through PR #29. |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Done | Planned and implemented packet type/version schema registry dispatch, renderer dispatch, package export, supported-combination errors, test-only second-type proof, review, and merge closeout through PR #31. |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Done | Defined `review-response` 0.1 as the first protocol-envelope consumer and merged through PR #33. |
+| `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Done | Planned and implemented `review-response` schema validation, semantic checks, Markdown rendering, examples, generic render, neutral validate messages, package exports, package smoke coverage, Claude review fix, and merge closeout through PR #34. |
 
 ## Superseded Or Dormant Plans
 
