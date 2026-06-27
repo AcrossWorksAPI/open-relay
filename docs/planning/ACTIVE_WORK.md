@@ -63,6 +63,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implementation plan for schema registry, dispatching validator, renderer dispatcher, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |

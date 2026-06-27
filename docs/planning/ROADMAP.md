@@ -29,7 +29,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Direct Markdown generation | Done | Medium | No | Package and release target | docs/superpowers/plans/2026-06-26-direct-markdown-generation.md |
 | Unversioned | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
 | Unversioned | Repo-local packet storage | Done | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
-| Unversioned | Relay protocol envelope and multi-type validation | Planned | High | No | Repo-local packet storage | docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md |
+| Unversioned | Relay protocol envelope and multi-type validation | Planned | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
 | Unversioned | Boundary/transport decision | Planned | High | Required | Repo-local packet storage | - |
 | Unversioned | Packet evidence enrichment | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Review-response packet type | Planned | High | No | Relay protocol envelope and multi-type validation | - |

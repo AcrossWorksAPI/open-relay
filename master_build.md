@@ -46,7 +46,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - direct Markdown generation design, implementation plan, merged implementation, and package smoke coverage
 - local handoff workflow design, implementation plan, merged implementation, and package smoke coverage
 - repo-local packet storage design, implementation plan, and merged implementation
-- relay protocol envelope and multi-type extensibility design
+- relay protocol envelope and multi-type extensibility design and implementation plan
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register

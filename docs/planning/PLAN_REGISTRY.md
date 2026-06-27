@@ -46,6 +46,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Local handoff workflow design | Active |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Repo-local packet storage design | Active |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Relay protocol envelope and multi-type extensibility design | Active |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Relay protocol envelope implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Package target and release smoke implementation plan | Active |
@@ -66,7 +67,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | In progress | Codex | Re-anchors the next architecture slice around packet type/version dispatch before new loop packet types. |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | In progress | Codex | Plans schema registry, dispatching validator, renderer dispatcher, tests, and closeout for the envelope slice. |
 
 ## Implemented Or Historical Plans
 

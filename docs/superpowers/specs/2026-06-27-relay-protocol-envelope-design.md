@@ -58,22 +58,23 @@ The change is additive:
 
 ## Header Contract
 
-Every packet must expose enough metadata for dispatch:
+Every packet must expose the dispatch keys:
 
 ```json
 {
   "type": "object",
-  "required": ["packet_type", "packet_version", "created_at"],
+  "required": ["packet_type", "packet_version"],
   "properties": {
     "packet_type": { "type": "string", "minLength": 1 },
-    "packet_version": { "type": "string", "minLength": 1 },
-    "created_at": { "type": "string", "minLength": 1 }
+    "packet_version": { "type": "string", "minLength": 1 }
   }
 }
 ```
 
 Missing `packet_type` should produce a clear header error such as
 `/ must have required property 'packet_type'`, not an unsupported-type error.
+Fields such as `created_at` belong to per-type schemas so users receive the
+full set of type-specific validation errors in one pass.
 
 ## Schema Registry
 
@@ -108,7 +109,7 @@ registry decides which schema applies.
 2. Read `packet_type` and `packet_version`.
 3. Look up the matching schema in the registry.
 4. Fail closed if unsupported, with a sanitized message:
-   `unsupported packet_type/packet_version: <type>/<version>`.
+   `unsupported packet_type/packet_version: <type>/<version> (supported: <list>)`.
 5. Validate against the compiled schema.
 6. Run semantic checks registered for that packet type.
 
@@ -158,6 +159,9 @@ tracks bundle/manifest shape. No new manifest fields are needed for this slice.
   `packet_version`.
 - Optional-field additions still require a version bump while schemas use
   `additionalProperties: false`.
+- This is intentionally strict. If a packet type needs frequent additive
+  evolution, design explicit extension points instead of silently accepting
+  arbitrary fields.
 - The registry may support multiple versions of the same type at once.
 - Unknown packet versions fail closed.
 - Version migrators are deferred until a second version exists.
