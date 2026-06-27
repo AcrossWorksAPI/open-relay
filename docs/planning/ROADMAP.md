@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, and repo-local packet storage implementation in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, and review-loop roadmap re-anchoring in progress
 Last updated: 2026-06-27
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, and repo-local packet storage implementation in progress
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, and review-loop roadmap re-anchoring in progress
 
 ## Project Purpose
 
@@ -24,19 +24,39 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
 | Unversioned | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
 | Unversioned | Review-request packet CLI MVP | Done | High | No | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
-| Unversioned | Codex and Claude render templates | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-26-render-review-request.md |
-| Unversioned | Package and release target | Done | Medium | No | Codex and Claude render templates | docs/superpowers/plans/2026-06-26-package-release-smoke.md |
+| Unversioned | Codex and Claude render templates (neutral renderer only) | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-26-render-review-request.md |
+| Unversioned | Package and release target | Done | Medium | No | Codex and Claude render templates (neutral renderer only) | docs/superpowers/plans/2026-06-26-package-release-smoke.md |
 | Unversioned | Direct Markdown generation | Done | Medium | No | Package and release target | docs/superpowers/plans/2026-06-26-direct-markdown-generation.md |
 | Unversioned | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
-| Unversioned | Repo-local packet storage | In progress | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
+| Unversioned | Repo-local packet storage | Done | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
+| Unversioned | Relay protocol envelope and multi-type validation | Planned | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
+| Unversioned | Boundary/transport decision | Planned | High | Required | Repo-local packet storage | - |
+| Unversioned | Packet evidence enrichment | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
+| Unversioned | Review-response packet type | Planned | High | No | Relay protocol envelope and multi-type validation | - |
+| Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
+| Unversioned | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
+| Unversioned | Agent-ready prompt rendering | Planned | Medium | No | Review-response packet type | - |
+
+## Brief MVP Mapping For Planned Slices
+
+| Planned slice | Brief MVP feature advanced |
+| --- | --- |
+| Relay protocol envelope and multi-type validation | Feature 5: support review loops by making additional packet types possible. |
+| Boundary/transport decision | Product thesis and Feature 5: define how packets move between agents/workspaces. |
+| Packet evidence enrichment | Feature 2: include diff summary and tests run. |
+| Review-response packet type | Feature 5: support review response. |
+| Implementation-handoff packet type | Feature 5: support implementation handoff. |
+| Resume-project packet type | Feature 5: support resume project. |
+| Agent-ready prompt rendering | Feature 3: output Codex-ready and Claude-ready prompts. |
 
 ## Candidate Scope
 
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
-| Runtime | Publish to npm registry | Before first public live release | Candidate | Package smoke passes and publish authority is approved | - |
-| Templates | Agent-specific prompt dialects | After neutral Markdown renderer | Candidate | Maintainers need Claude/Codex-specific variants beyond packet-authored audience/focus fields | - |
+| Protocol | Packet-version migrators | After a second packet version exists | Candidate | A breaking packet version ships and old stored bundles must still load | - |
+| Security | Non-GitHub remote allowlist | When non-GitHub users appear | Candidate | Target users report dropped safe GitLab, Codeberg, or GitHub Enterprise remotes | - |
 | Security | Private redaction rule files | Before packets include sensitive data beyond git metadata | Candidate | Fixed generator redaction defaults are insufficient | - |
+| Runtime | Publish to npm registry | Before first public live release | Candidate | Package smoke passes and publish authority is approved | - |
 | Release | Version, tag, changelog, and publish workflow | Before live claims | Candidate | Package smoke passes and publish authority is approved | - |
 
 ## Update Rules
@@ -48,5 +68,11 @@ Markdown/JSON relay packet schema, not a SaaS app.
 - Client gate values must be one of: `Required`, `No`, `Candidate`, `-`.
 - Plan and source-plan cells must point to committed repo-relative Markdown docs
   or `-`.
+- Every new Versioned Slice must name the brief MVP feature it advances; a
+  slice that advances none is out of scope until the brief changes.
+- No new packet type may be implemented before the relay protocol envelope
+  slice is merged.
+- Do not add another command that only re-emits an existing packet. Current
+  creation/output coverage is `generate`, `render`, `handoff`, and `save`.
 - Do not mark a slice `Live` without deploy and smoke evidence in
   `docs/planning/VERSION_LEDGER.md` and `docs/STATUS.md`.

@@ -18,9 +18,11 @@ smoke are merged as the release-readiness gate before publishing. Direct
 Markdown generation is merged so the generator can emit review-ready Markdown
 without a separate render step. Local `handoff review-request` is merged as a
 Markdown-first workflow command that composes the existing generator and
-renderer path. npm registry publishing, global packet storage, external agent
-invocation, and private redaction rules remain deferred. Repo-local packet
-storage implementation is active as the next local workflow slice.
+renderer path. Repo-local packet storage is merged. npm registry publishing,
+global packet storage, external agent invocation, and private redaction rules
+remain deferred. The roadmap is being re-anchored to the product brief's review
+loop, agent-ready prompt, diff-summary, and test-evidence MVP items before the
+next implementation slice.
 
 ## Active Work
 
@@ -42,8 +44,9 @@ storage implementation is active as the next local workflow slice.
 | Direct Markdown generation implementation | Done | PR #23 merged `--format json|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
 | Local handoff workflow planning | Done | PR #25 merged the design and implementation plan for `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
 | Local handoff workflow implementation | Done | PR #26 merged `handoff review-request`, local-only help text, CLI regressions, parity with direct Markdown generation, sanitized write-error behavior, and installed-package smoke coverage. |
-| Repo-local packet storage implementation | In progress | Implementation branch adds explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, and local handoff workflow are merged; repo-local packet storage is implemented on branch; agent-specific prompt dialects, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
+| Repo-local packet storage implementation | Done | PR #29 merged explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
+| Protocol envelope planning | In progress | New design and implementation plan define multi-type/version dispatch before review-response, implementation-handoff, resume, or future packet versions. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, and repo-local packet storage are merged; review-response, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -85,12 +88,13 @@ storage implementation is active as the next local workflow slice.
 | 2026-06-26 | Claude review fixes for PR #25 | Passed | Added visible local-only help wording, tightened planned `--format` rejection to include `--format=...`, narrowed lifecycle wording to local request creation, and re-ran `npm run check`, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-26 | PR #26 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/26`; merge commit `c95f409`; `Governance Checks` passed, Claude review reported no findings, merged-main `npm run check` passed with 61 tests, `npm run smoke:pack` verified installed CLI `handoff review-request`, and `git diff --check` passed. |
 | 2026-06-27 | PR #28 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/28`; merge commit `bdefbb8`; `Governance Checks` passed, Claude re-review reported no remaining findings, and repo-local packet storage planning merged. |
-| 2026-06-27 | Repo-local packet storage implementation branch | In progress | Adds `src/storage.ts`, `open-relay save review-request`, `.open-relay/` gitignore entry, CLI/storage tests, cleanup regression coverage, and installed-package save smoke; `npm run check` passed with 69 tests, `npm run smoke:pack` verified installed CLI save behavior, and `git diff --check` passed. |
+| 2026-06-27 | PR #29 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/29`; merge commit `87f0bb7`; `Governance Checks` passed; branch `npm run check` passed with 69 tests, `npm run smoke:pack` verified installed CLI save behavior, and `git diff --check` passed. |
+| 2026-06-27 | Review-loop roadmap re-anchor | In progress | Added protocol envelope design and implementation plan, restored roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, and addressed Claude review feedback by limiting the shared header to dispatch keys plus adding supported combinations to unsupported-type errors; `npm run check` passed with 69 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
 
 ## Next Step
 
-Open the repo-local packet storage implementation PR, wait for CI and Claude
-review, then merge if no findings remain.
+Open the protocol envelope and roadmap re-anchor PR, wait for CI and Claude
+review, then implement the envelope before adding any new packet type.
 
 ## Owner Decisions Needed
 
@@ -99,6 +103,8 @@ review, then merge if no findings remain.
 - How opinionated should Open Relay be about Codex and Claude specifically?
   The current renderer plan keeps the first template agent-neutral and defers
   agent-specific prompt dialects.
+- Which first transport boundary should move packets between agents: committed
+  file, clipboard, MCP tool, PR comment, or another local mechanism?
 - Should private redaction rule files exist from day one? The generator plan
   starts with fixed fail-closed redaction defaults.
 - What npm account or organization should own the eventual first publish?
