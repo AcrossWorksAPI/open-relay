@@ -15,11 +15,12 @@ make the review-request path clearer as a workflow command. Repo-local packet
 storage is merged to make saved handoff packets durable without adding global
 storage, hosted sync, or external orchestration. Protocol envelope dispatch and
 `review-response` validation/rendering are merged, so the request/response
-packet shapes now exist end-to-end. The next slice is boundary/transport so
-packets can move between agents without manual copy/paste. That is followed by
-richer packet evidence, implementation-handoff, resume-project, and
-agent-ready prompts. The approved first runtime direction is a TypeScript CLI
-on Node.js with npm.
+packet shapes now exist end-to-end. GitHub PR exact-packet transport is in
+implementation as the first boundary so packets can move between agents without
+manual copy/paste. Native GitHub review import, response storage, fix
+automation, merge automation, richer packet evidence, implementation-handoff,
+resume-project, and agent-ready prompts remain later slices. The approved first
+runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -50,6 +51,8 @@ on Node.js with npm.
 | `src/schema.ts` | Active | Reusable packet validation module with packet type/version dispatch. |
 | `src/schemaRegistry.ts` | Active | Packet schema registry and review-request semantic checks. |
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
+| `src/transport/gh.ts` | Active | Sanitized local `gh` CLI runner for GitHub transport. |
+| `src/transport/githubPr.ts` | Active | GitHub PR packet comment marker, send, update, and fetch helpers. |
 | `src/cli.ts` | Active | Local CLI entrypoint for packet validation, review-request generation/handoff/save, generic rendering, and the `render review-request` alias. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
@@ -61,9 +64,11 @@ on Node.js with npm.
 | `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
+| `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `docs/protocol/review-response-packet.md` | Active | Review-response packet type and required protocol fields. |
+| `docs/protocol/github-pr-transport.md` | Active | GitHub PR exact-packet transport commands, marker contract, `gh` auth model, authorship limits, and non-goals. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `examples/review-response/relay.md` | Active | Human-readable synthetic review-response packet example. |
@@ -78,6 +83,7 @@ on Node.js with npm.
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
+| `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implemented schema registry, dispatching validator, renderer dispatcher, tests, and closeout through PR #31. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
@@ -100,7 +106,7 @@ on Node.js with npm.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Review loop transport not implemented | High | Review-request handoff and review-response validation/rendering are merged; transport, PR comments, automation, implementation-handoff, and resume-project remain planned. |
+| Review loop transport in progress | High | Review-request handoff and review-response validation/rendering are merged; GitHub PR exact-packet transport is in implementation; native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -108,7 +114,7 @@ on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Decide and implement the first packet transport boundary.
+1. Review and merge the GitHub PR exact-packet transport implementation.
 2. Decide whether private redaction rule files are needed before package
    publishing.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.
@@ -116,7 +122,8 @@ on Node.js with npm.
 ## Current Owner Decisions Needed
 
 - Global packet storage in addition to repo-local storage.
-- First packet transport boundary.
+- GitHub PR comments are the first packet transport boundary; native GitHub
+  review import remains a separate future decision.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
 - Redaction rules from day one.

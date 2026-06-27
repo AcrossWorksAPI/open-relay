@@ -33,6 +33,8 @@ or old plan files as inactive until this registry and current code agree.
 | `src/schema.ts` | Packet validation module with type/version dispatch | Active |
 | `src/schemaRegistry.ts` | Packet schema registry and semantic checks | Active |
 | `src/storage.ts` | Repo-local review-request storage writer | Active |
+| `src/transport/gh.ts` | Sanitized local `gh` CLI runner for GitHub transport | Active |
+| `src/transport/githubPr.ts` | GitHub PR exact-packet transport helpers | Active |
 | `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, and save routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
@@ -44,9 +46,11 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/renderPacket.test.ts` | Generic packet renderer dispatcher tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
 | `tests/storage.test.ts` | Repo-local storage tests | Active |
+| `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
+| `docs/protocol/github-pr-transport.md` | GitHub PR exact-packet transport protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `examples/review-response/relay.md` | Human-readable synthetic review-response packet | Active |
@@ -61,6 +65,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Relay protocol envelope and multi-type extensibility design | Active |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Review-response packet design | Active |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Review-response packet implementation plan | Active |
+| `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | GitHub PR exact-packet transport implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Relay protocol envelope implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
@@ -82,7 +87,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plan; next slice is boundary/transport. |
+| `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | In progress | Codex | Implements GitHub PR exact-packet transport through local `gh`, dry-run, update, author-filtered fetch, protocol docs, and package smoke. |
 
 ## Implemented Or Historical Plans
 
