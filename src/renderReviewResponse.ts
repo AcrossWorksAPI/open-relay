@@ -83,12 +83,29 @@ function renderFindings(packet: ReviewResponsePacket): string {
     return "No findings listed.";
   }
 
+  return packet.findings.map(renderFinding).join("\n\n");
+}
+
+function renderFinding(finding: ReviewResponsePacket["findings"][number]): string {
+  const blockingLabel = finding.blocking ? "blocking" : "non-blocking";
+
   return [
-    "| ID | Severity | Blocking | Title | Location | Description | Evidence | Recommendation |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- |",
-    ...packet.findings.map((finding) =>
-      `| \`${escapeCodeSpanTableCell(finding.id)}\` | ${escapeTableCell(finding.severity)} | ${finding.blocking ? "yes" : "no"} | ${escapeTableCell(finding.title)} | ${formatLocation(finding.location)} | ${escapeTableCell(finding.description)} | ${escapeTableCell(finding.evidence)} | ${escapeTableCell(finding.recommendation)} |`
-    )
+    `### ${inlineText(finding.id)} - ${inlineText(finding.severity)} - ${blockingLabel}`,
+    "",
+    `- Title: ${inlineText(finding.title)}`,
+    `- Location: ${formatLocation(finding.location)}`,
+    "",
+    "**Detail**",
+    "",
+    quoteBlock(finding.description),
+    "",
+    "**Evidence**",
+    "",
+    quoteBlock(finding.evidence),
+    "",
+    "**Recommendation**",
+    "",
+    quoteBlock(finding.recommendation)
   ].join("\n");
 }
 
@@ -168,5 +185,12 @@ function formatLocation(location: ReviewResponsePacket["findings"][number]["loca
 
   const line = location.line ? `:${location.line}` : "";
   const symbol = location.symbol ? ` (${location.symbol})` : "";
-  return `\`${escapeCodeSpanTableCell(`${location.path}${line}${symbol}`)}\``;
+  return `\`${codeSpanText(`${location.path}${line}${symbol}`)}\``;
+}
+
+function quoteBlock(value: string): string {
+  return blockText(value)
+    .split(/\r?\n/)
+    .map((line) => (line.length > 0 ? `> ${line}` : ">"))
+    .join("\n");
 }

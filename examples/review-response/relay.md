@@ -34,9 +34,22 @@ The implementation is non-breaking and safe to merge.
 
 ## Findings
 
-| ID | Severity | Blocking | Title | Location | Description | Evidence | Recommendation |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `F1` | low | no | Validation messages are still review-request-specific | `src/cli.ts (validateCommand)` | The validate command labels unsupported packets as invalid review-request packets. | A bogus packet prints 'Invalid review-request packet' before the correct unsupported type/version error. | Make validate command messages packet-neutral or type-aware before the second packet type is user-visible. |
+### F1 - low - non-blocking
+
+- Title: Validation messages are still review-request-specific
+- Location: `src/cli.ts (validateCommand)`
+
+**Detail**
+
+> The validate command labels unsupported packets as invalid review-request packets.
+
+**Evidence**
+
+> A bogus packet prints 'Invalid review-request packet' before the correct unsupported type/version error.
+
+**Recommendation**
+
+> Make validate command messages packet-neutral or type-aware before the second packet type is user-visible.
 
 ## Reviewed Scope
 

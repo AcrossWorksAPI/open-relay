@@ -154,6 +154,8 @@ Markdown rendering must escape table pipes, normalize inline/list line breaks,
 and strip backticks from code-span values. Block free-text fields such as
 `summary`, `findings[].description`, and `next_action` remain packet-authored
 prompt surfaces under the same accepted posture as `review-request`.
+Each finding renders as its own readable block, not as a table row, because
+finding descriptions, evidence, and recommendations are prose fields.
 
 ## Non-Goals
 

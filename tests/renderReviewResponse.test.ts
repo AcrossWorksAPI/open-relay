@@ -47,6 +47,18 @@ test("renders outcome and confidence together", () => {
   assert.match(markdown, /- Confidence: `high`/);
 });
 
+test("renders findings as readable blocks", () => {
+  const markdown = renderReviewResponseMarkdown(examplePacket);
+
+  assert.doesNotMatch(markdown, /\| ID \| Severity \| Blocking \|/);
+  assert.match(markdown, /### F1 - low - non-blocking/);
+  assert.match(markdown, /- Title: Validation messages are still review-request-specific/);
+  assert.match(markdown, /- Location: `src\/cli\.ts \(validateCommand\)`/);
+  assert.match(markdown, /\*\*Detail\*\*\n\n> The validate command labels unsupported packets as invalid review-request packets\./);
+  assert.match(markdown, /\*\*Evidence\*\*\n\n> A bogus packet prints 'Invalid review-request packet'/);
+  assert.match(markdown, /\*\*Recommendation\*\*\n\n> Make validate command messages packet-neutral/);
+});
+
 test("escapes review-response table cells and code spans", () => {
   const packet: ReviewResponsePacket = {
     ...examplePacket,
@@ -83,11 +95,13 @@ test("escapes review-response table cells and code spans", () => {
   const markdown = renderReviewResponseMarkdown(packet);
 
   assert.match(markdown, /AcrossWorksAPI\/open\|relay/);
-  assert.match(markdown, /F\\\|1/);
-  assert.match(markdown, /Pipe \\\| in title/);
-  assert.match(markdown, /src\/cli\\\|test\.ts:12/);
+  assert.match(markdown, /F\|1/);
+  assert.match(markdown, /Pipe \| in title/);
+  assert.match(markdown, /src\/cli\|test\.ts:12/);
   assert.doesNotMatch(markdown, /^## injected heading/m);
   assert.doesNotMatch(markdown, /^- injected bullet/m);
+  assert.match(markdown, /^> ## injected heading/m);
+  assert.match(markdown, /^> - injected bullet/m);
   assert.doesNotMatch(markdown, /`npm `run/);
 });
 
