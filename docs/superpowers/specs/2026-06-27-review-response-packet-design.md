@@ -263,7 +263,7 @@ A human-readable `review-response` Markdown render should use this order:
 1. Review response
 2. Response to
 3. Reviewer
-4. Outcome
+4. Outcome and confidence
 5. Summary
 6. Findings
 7. Reviewed scope
@@ -283,6 +283,9 @@ The renderer should preserve the existing escaping posture:
 Block free-text fields such as `summary`, `findings[].description`, and
 `next_action` remain packet-authored prompt surfaces, matching the current
 review-request renderer posture.
+
+The renderer must surface `confidence` next to the review outcome so a required
+trust signal is visible in the human handoff, not only in JSON.
 
 ## CLI And Registry Implications
 
@@ -345,6 +348,7 @@ validate-message fix must not introduce raw packet-content echoes.
 - Test `validate` success and failure messages are packet-neutral or type-aware.
 - Test unsupported `review-response` version still reports supported
   combinations and does not echo non-dispatch fields.
+- Test Markdown rendering surfaces the required `confidence` value.
 - Test generic `render <packet.json>` stdout, `--output`, parser failures,
   invalid JSON, schema-invalid JSON, and sanitized write failures.
 - Test `render review-request <packet.json>` remains a backward-compatible
