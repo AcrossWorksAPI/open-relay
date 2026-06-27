@@ -58,7 +58,7 @@ without a packet-version bump.
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
 | GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
 | Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
-| Packet evidence enrichment design | In progress | Design branch defines 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from `git diff --numstat`, with no raw diff embedding and no automatic test execution. |
+| Packet evidence enrichment design | In progress | PR #41 defines 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from `git diff --numstat`, with no raw diff embedding and no automatic test execution. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, and reviewer-produced response workflow are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -122,8 +122,7 @@ without a packet-version bump.
 
 ## Next Step
 
-Review the packet evidence enrichment design, then write the implementation
-plan if the spec is accepted.
+Review PR #41, then write the implementation plan if the spec is accepted.
 
 ## Owner Decisions Needed
 
