@@ -36,15 +36,18 @@ agent for review.
 
 ## Protocol
 
-The first protocol slice is the `review-request` packet:
+The first loop uses two packet types plus exact-packet transport:
 
-- Packet spec: `docs/protocol/review-request-packet.md`
-- Markdown example: `examples/review-request/relay.md`
-- JSON example: `examples/review-request/relay.json`
+- Review request spec: `docs/protocol/review-request-packet.md`
+- Review response spec: `docs/protocol/review-response-packet.md`
+- Review response producer: `docs/protocol/review-response-producer.md`
+- GitHub PR exact-packet transport: `docs/protocol/github-pr-transport.md`
+- Review request example: `examples/review-request/relay.json`
+- Review response example: `examples/review-response/relay.json`
 
-This packet is intentionally narrow. It defines the minimum context needed to
-ask a second reviewer to inspect completed repository work before Open Relay's
-generator is implemented.
+The packets are intentionally narrow. A `review-request` asks another reviewer
+to inspect a fixed diff. A `review-response` records reviewer-authored outcome,
+findings, scope, verification, and next action.
 
 ## CLI
 
@@ -57,11 +60,12 @@ node dist/src/cli.js validate examples/review-request/relay.json
 ```
 
 The validate command checks a `review-request` JSON packet against
-`schemas/review-request.schema.json`.
+`schemas/review-request.schema.json`; packet dispatch also validates
+`review-response/0.1`.
 
 ## Generate Review Packets
 
-Generate a `review-request` JSON packet from local git state:
+Generate a `review-request` packet from local git state:
 
 ```bash
 npm run build
@@ -73,10 +77,40 @@ node dist/src/cli.js generate review-request \
   --behavioral-intent "Help a second reviewer inspect the exact diff range." \
   --output relay.json
 node dist/src/cli.js validate relay.json
+node dist/src/cli.js generate review-request \
+  --base origin/main \
+  --head HEAD \
+  --goal "Review this implementation slice" \
+  --summary "Summarizes the branch for review." \
+  --behavioral-intent "Help a second reviewer inspect the exact diff range." \
+  --format markdown \
+  --output relay.md
 ```
 
-The generator writes JSON only. Markdown rendering and agent-specific prompt
-templates remain planned follow-up slices.
+Markdown rendering is also available through `open-relay render <packet.json>`.
+
+## Close A Review Loop
+
+Fetch a request packet from a PR, write a reviewer draft, then produce and
+dry-run the exact response packet comment:
+
+```bash
+node dist/src/cli.js transport github-pr fetch \
+  --pr AcrossWorksAPI/open-relay#36 \
+  --packet-type review-request \
+  --author codex \
+  --output request.json
+
+node dist/src/cli.js respond github-pr \
+  --request request.json \
+  --review review-draft.json \
+  --pr AcrossWorksAPI/open-relay#36 \
+  --dry-run
+```
+
+The reviewer still authors `review-draft.json`. Open Relay derives packet
+envelope fields, validates the final `review-response/0.1`, renders it, and can
+post the exact packet through GitHub PR transport.
 
 ## Runtime Plan
 

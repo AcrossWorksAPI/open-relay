@@ -1,6 +1,6 @@
 # GitHub PR Packet Transport
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Purpose
 
@@ -28,6 +28,17 @@ posts a new comment.
 This transport moves exact Open Relay packets. The reviewing agent or human must
 create a valid packet, such as `review-response/0.1`, and post it with `send`
 before another agent can retrieve it with `fetch`.
+
+The local way to create reviewer-authored response packets is the producer
+workflow:
+
+```text
+open-relay generate review-response --request <review-request.json> --review <review-response-draft.json>
+open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number>
+```
+
+See `docs/protocol/review-response-producer.md` for the draft contract,
+reserved-field guard, unknown-field guard, and `response_to` derivation rules.
 
 `fetch` does not synthesize packets from native GitHub review approvals, review
 requests, inline comments, or prose. Native GitHub review import is a separate

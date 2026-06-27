@@ -128,9 +128,9 @@ Do not copy `repository.local_path`, `remote_url`, or free-form request prose in
 
 ### Task 1: Add Review Draft Types And Builder Tests
 
-- [ ] Create `tests/reviewResponseProducer.test.ts`.
-- [ ] Add a parsed fixture helper that loads `examples/review-request/relay.json`.
-- [ ] Write a passing-input test before implementation:
+- [x] Create `tests/reviewResponseProducer.test.ts`.
+- [x] Add a parsed fixture helper that loads `examples/review-request/relay.json`.
+- [x] Write a passing-input test before implementation:
 
 ```ts
 test("builds a valid review-response packet from a request and draft", () => {
@@ -157,11 +157,11 @@ test("builds a valid review-response packet from a request and draft", () => {
 });
 ```
 
-- [ ] Add a test that `response_to` is derived from the request.
-- [ ] Add a test that the reserved-field guard rejects drafts containing `packet_type`, `packet_version`, `created_at`, or `response_to` before the packet is built.
-- [ ] Add a test that the draft-key allowlist rejects misspelled or unknown keys such as `verificaton` before the packet is built.
-- [ ] Add a test that defaulted `verification` and `redactions` become empty arrays in the final packet.
-- [ ] Add semantic tests through `validatePacket`:
+- [x] Add a test that `response_to` is derived from the request.
+- [x] Add a test that the reserved-field guard rejects drafts containing `packet_type`, `packet_version`, `created_at`, or `response_to` before the packet is built.
+- [x] Add a test that the draft-key allowlist rejects misspelled or unknown keys such as `verificaton` before the packet is built.
+- [x] Add a test that defaulted `verification` and `redactions` become empty arrays in the final packet.
+- [x] Add semantic tests through `validatePacket`:
   - `approved` rejects blocking findings.
   - `changes_requested` requires at least one blocking finding.
   - `blocked` requires at least one reviewed-scope limitation.
@@ -170,9 +170,9 @@ Expected initial result: tests fail because `src/reviewResponseProducer.ts` does
 
 ### Task 2: Implement The Producer Module
 
-- [ ] Add `src/reviewResponseProducer.ts`.
-- [ ] Export the builder from `src/index.ts`.
-- [ ] Keep the module pure. It should not read files, write files, call git, call GitHub, or touch process state.
+- [x] Add `src/reviewResponseProducer.ts`.
+- [x] Export the builder from `src/index.ts`.
+- [x] Keep the module pure. It should not read files, write files, call git, call GitHub, or touch process state.
 
 Implementation shape:
 
@@ -231,7 +231,7 @@ export function buildReviewResponsePacket(input: {
 }
 ```
 
-- [ ] Add a small `validateReviewResponseDraftKeys(value: unknown)` helper in this module or the CLI parser. The final behavior must reject reserved fields and unknown top-level keys before building, with generic messages that do not echo draft contents.
+- [x] Add a small `validateReviewResponseDraftKeys(value: unknown)` helper in this module or the CLI parser. The final behavior must reject reserved fields and unknown top-level keys before building, with generic messages that do not echo draft contents.
 
 Draft-key helper shape:
 
@@ -279,9 +279,9 @@ export function validateReviewResponseDraftKeys(value: unknown):
 
 ### Task 3: Add Response Producer Argument Parsing
 
-- [ ] Add `src/reviewResponseArgs.ts`.
-- [ ] Keep this separate from `src/args.ts`, which is already scoped to `generate review-request`.
-- [ ] Add `tests/reviewResponseArgs.test.ts`.
+- [x] Add `src/reviewResponseArgs.ts`.
+- [x] Keep this separate from `src/args.ts`, which is already scoped to `generate review-request`.
+- [x] Add `tests/reviewResponseArgs.test.ts`.
 
 Parser contracts:
 
@@ -325,14 +325,14 @@ Do not accept `--format` or `--output` on `respond github-pr`. Users who want lo
 
 ### Task 4: Add CLI Builder And Generate Command
 
-- [ ] Update `src/cli.ts` usage text:
+- [x] Update `src/cli.ts` usage text:
 
 ```text
 open-relay generate review-response --request <review-request.json> --review <review-response-draft.json> [--format json|markdown] [--output <path>]
 ```
 
-- [ ] Add `generateReviewResponseCommand(args: string[])`.
-- [ ] Add a shared helper in `src/cli.ts` or a small new module:
+- [x] Add `generateReviewResponseCommand(args: string[])`.
+- [x] Add a shared helper in `src/cli.ts` or a small new module:
 
 ```ts
 async function buildValidatedReviewResponseFromFiles(input: {
@@ -371,13 +371,13 @@ Output behavior:
 
 ### Task 5: Add `respond github-pr`
 
-- [ ] Update `src/cli.ts` usage text:
+- [x] Update `src/cli.ts` usage text:
 
 ```text
 open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
 ```
 
-- [ ] Add route:
+- [x] Add route:
 
 ```ts
 if (args[0] === "respond" && args[1] === "github-pr") {
@@ -385,10 +385,10 @@ if (args[0] === "respond" && args[1] === "github-pr") {
 }
 ```
 
-- [ ] Implement `respondGithubPrCommand` by reusing the same build/validate helper from Task 4.
-- [ ] Render via `renderPacketMarkdown(packet)`.
-- [ ] Send through `sendPacketToGithubPr` with existing `runGh`.
-- [ ] Reuse `safeTransportError` for allowed transport errors.
+- [x] Implement `respondGithubPrCommand` by reusing the same build/validate helper from Task 4.
+- [x] Render via `renderPacketMarkdown(packet)`.
+- [x] Send through `sendPacketToGithubPr` with existing `runGh`.
+- [x] Reuse `safeTransportError` for allowed transport errors.
 
 Output behavior:
 
@@ -408,7 +408,7 @@ This command must not write a temporary packet file. It should compose in memory
 
 ### Task 6: CLI And Transport-Composition Tests
 
-- [ ] Extend `tests/cli.test.ts` or add `tests/reviewResponseCli.test.ts`.
+- [x] Extend `tests/cli.test.ts` or add `tests/reviewResponseCli.test.ts`.
 
 Required tests:
 
@@ -448,26 +448,26 @@ function writeReviewResponseDraft(path: string): void {
 
 ### Task 7: Package Smoke
 
-- [ ] Update `scripts/smoke-pack.js`.
-- [ ] Write a response draft into the smoke workspace.
-- [ ] Run installed CLI:
+- [x] Update `scripts/smoke-pack.js`.
+- [x] Write a response draft into the smoke workspace.
+- [x] Run installed CLI:
 
 ```text
 open-relay generate review-response --request <example request> --review <draft> --format markdown --output <response.md>
 ```
 
-- [ ] Assert the output contains:
+- [x] Assert the output contains:
   - `# Review Response Relay Packet`
   - `## Outcome`
   - `## Next Action`
 
-- [ ] Run installed CLI:
+- [x] Run installed CLI:
 
 ```text
 open-relay respond github-pr --request <example request> --review <draft> --pr AcrossWorksAPI/open-relay#34 --dry-run
 ```
 
-- [ ] Assert the dry-run output contains:
+- [x] Assert the dry-run output contains:
   - `<!-- open-relay-packet`
   - `packet_type: review-response`
   - `payload_base64:`
@@ -477,7 +477,7 @@ Do not add a live GitHub call to package smoke.
 
 ### Task 8: Protocol And User Docs
 
-- [ ] Add `docs/protocol/review-response-producer.md`.
+- [x] Add `docs/protocol/review-response-producer.md`.
 
 Required content:
 
@@ -489,8 +489,8 @@ Required content:
 - Relationship to GitHub PR transport.
 - Non-goals: no native GitHub import, no AI invocation, no fixes, no merges.
 
-- [ ] Update `docs/protocol/github-pr-transport.md` Packet Producer Contract to point to the producer workflow as the local way to create review-response packets.
-- [ ] Update `README.md` with a short "Close a review loop" example:
+- [x] Update `docs/protocol/github-pr-transport.md` Packet Producer Contract to point to the producer workflow as the local way to create review-response packets.
+- [x] Update `README.md` with a short "Close a review loop" example:
 
 ```text
 open-relay transport github-pr fetch --pr AcrossWorksAPI/open-relay#36 --packet-type review-request --author codex --output request.json
@@ -501,12 +501,12 @@ Keep the README wording clear that the reviewer still authors the review draft.
 
 ### Task 9: Roadmap And Closeout
 
-- [ ] Update `docs/STATUS.md`.
-- [ ] Update `docs/planning/ROADMAP.md`.
-- [ ] Update `docs/planning/ACTIVE_WORK.md`.
-- [ ] Update `docs/planning/PLAN_REGISTRY.md`.
-- [ ] Update `docs/planning/VERSION_LEDGER.md`.
-- [ ] Update `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md` if it tracks the response producer as a workflow surface.
+- [x] Update `docs/STATUS.md`.
+- [x] Update `docs/planning/ROADMAP.md`.
+- [x] Update `docs/planning/ACTIVE_WORK.md`.
+- [x] Update `docs/planning/PLAN_REGISTRY.md`.
+- [x] Update `docs/planning/VERSION_LEDGER.md`.
+- [x] Update `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md` if it tracks the response producer as a workflow surface.
 
 Status posture:
 

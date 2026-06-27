@@ -66,6 +66,16 @@ test("prints github pr transport commands in help", () => {
   assert.match(result.stdout, /uses the local gh CLI/);
 });
 
+test("prints review-response producer commands in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay generate review-response/);
+  assert.match(result.stdout, /open-relay respond github-pr/);
+});
+
 test("validates the example packet", () => {
   const result = spawnSync(
     process.execPath,
@@ -281,6 +291,328 @@ test("transport github-pr fetch writes packet from fake gh without echoing outpu
 
     const fetched = JSON.parse(readFileSync(outputPath, "utf8"));
     assert.equal(fetched.packet_type, "review-response");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response prints valid json to stdout", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    const packet = JSON.parse(result.stdout);
+    assert.equal(packet.packet_type, "review-response");
+    assert.equal(packet.response_to.repository, "example/open-relay");
+    assert.equal(packet.response_to.diff_range, "def5678..abc1234");
+    assert.equal(packet.response_to.local_path, undefined);
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response renders markdown to stdout", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--format",
+      "markdown"
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /^# Review Response Relay Packet/);
+    assert.match(result.stdout, /## Next Action/);
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response writes output without echoing path", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.json");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--output",
+      outputPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Wrote review-response packet/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(JSON.parse(readFileSync(outputPath, "utf8")).packet_type, "review-response");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response rejects invalid request json without leaking contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const requestPath = join(directory, "request.json");
+  const draftPath = join(directory, "draft.json");
+  writeFileSync(requestPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      requestPath,
+      "--review",
+      draftPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid JSON in review-request file/);
+    assert.doesNotMatch(result.stderr, /SECRET_TOKEN_SHOULD_NOT_APPEAR/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response rejects invalid draft json without leaking contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeFileSync(draftPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid JSON in review-response draft file/);
+    assert.doesNotMatch(result.stderr, /SECRET_TOKEN_SHOULD_NOT_APPEAR/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response rejects reserved and unknown draft fields", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const reservedDraft = join(directory, "reserved.json");
+  const unknownDraft = join(directory, "unknown.json");
+  writeReviewResponseDraft(reservedDraft, { response_to: { repository: "SECRET_REPO_SHOULD_NOT_APPEAR" } });
+  writeReviewResponseDraft(unknownDraft, { verificaton: [] });
+
+  try {
+    const reservedResult = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      reservedDraft
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(reservedResult.status, 1);
+    assert.match(reservedResult.stderr, /reserved Open Relay fields/);
+    assert.doesNotMatch(reservedResult.stderr, /SECRET_REPO_SHOULD_NOT_APPEAR/);
+
+    const unknownResult = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      unknownDraft
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(unknownResult.status, 1);
+    assert.match(unknownResult.stderr, /unknown fields/);
+    assert.doesNotMatch(unknownResult.stderr, /verificaton/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-response rejects semantic validation failures", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeReviewResponseDraft(draftPath, { outcome: "changes_requested" });
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "review-response",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Generated review-response packet failed validation/);
+    assert.match(result.stderr, /changes_requested outcome requires at least one blocking finding/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("respond github-pr dry-run prints exact review-response comment body without gh", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "respond",
+      "github-pr",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--pr",
+      "AcrossWorksAPI/open-relay#38",
+      "--dry-run"
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Dry run target: AcrossWorksAPI\/open-relay#38/);
+    assert.match(result.stdout, /<!-- open-relay-packet/);
+    assert.match(result.stdout, /packet_type: review-response/);
+    assert.match(result.stdout, /payload_base64:/);
+    assert.match(result.stdout, /# Review Response Relay Packet/);
+    assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("respond github-pr rejects unsupported flags and malformed targets", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-response-"));
+  const draftPath = join(directory, "draft.json");
+  writeReviewResponseDraft(draftPath);
+
+  try {
+    const missingPr = spawnSync(process.execPath, [
+      cliPath,
+      "respond",
+      "github-pr",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(missingPr.status, 2);
+    assert.match(missingPr.stderr, /Missing required flags: --pr/);
+
+    const outputFlag = spawnSync(process.execPath, [
+      cliPath,
+      "respond",
+      "github-pr",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--pr",
+      "AcrossWorksAPI/open-relay#38",
+      "--output",
+      "response.json"
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(outputFlag.status, 2);
+    assert.match(outputFlag.stderr, /Unknown flag: --output/);
+
+    const formatFlag = spawnSync(process.execPath, [
+      cliPath,
+      "respond",
+      "github-pr",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--pr",
+      "AcrossWorksAPI/open-relay#38",
+      "--format",
+      "markdown"
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(formatFlag.status, 2);
+    assert.match(formatFlag.stderr, /Unknown flag: --format/);
+
+    const badTarget = spawnSync(process.execPath, [
+      cliPath,
+      "respond",
+      "github-pr",
+      "--request",
+      "examples/review-request/relay.json",
+      "--review",
+      draftPath,
+      "--pr",
+      "https://example.com/acme/repo/pull/SECRET_REF_SHOULD_NOT_APPEAR",
+      "--dry-run"
+    ], {
+      encoding: "utf8"
+    });
+    assert.equal(badTarget.status, 2);
+    assert.match(badTarget.stderr, /Invalid GitHub pull request target/);
+    assert.doesNotMatch(badTarget.stderr, /SECRET_REF_SHOULD_NOT_APPEAR/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -1170,6 +1502,31 @@ function writeFakeGh(binDir: string, output: string): void {
   const ghPath = join(binDir, "gh");
   writeFileSync(ghPath, `#!/bin/sh\ncat <<'JSON'\n${output}\nJSON\n`, "utf8");
   chmodSync(ghPath, 0o755);
+}
+
+function writeReviewResponseDraft(path: string, overrides: Record<string, unknown> = {}): void {
+  writeFileSync(path, JSON.stringify({
+    reviewer: {
+      name: "Claude Code",
+      kind: "agent",
+      tool: "Claude Code"
+    },
+    outcome: "approved",
+    confidence: "high",
+    summary: "No blocking findings.",
+    findings: [],
+    reviewed_scope: {
+      files: [{
+        path: "src/cli.ts",
+        notes: "Reviewed CLI route."
+      }],
+      limitations: []
+    },
+    verification: [],
+    redactions: [],
+    next_action: "Merge after CI passes.",
+    ...overrides
+  }, null, 2), "utf8");
 }
 
 function runGit(cwd: string, ...args: string[]): string {
