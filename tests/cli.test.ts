@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -53,6 +53,17 @@ test("prints save review-request in help", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay save review-request/);
+});
+
+test("prints github pr transport commands in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay transport github-pr send <packet\.json>/);
+  assert.match(result.stdout, /open-relay transport github-pr fetch/);
+  assert.match(result.stdout, /uses the local gh CLI/);
 });
 
 test("validates the example packet", () => {
@@ -112,6 +123,167 @@ test("rejects schema-invalid packets", () => {
   assert.match(result.stderr, /Invalid packet/);
   assert.doesNotMatch(result.stderr, /Invalid review-request packet/);
   assert.match(result.stderr, /must have required property/);
+});
+
+test("transport github-pr send dry-run prints exact comment body without gh", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "transport",
+    "github-pr",
+    "send",
+    "examples/review-request/relay.json",
+    "--pr",
+    "AcrossWorksAPI/open-relay#34",
+    "--dry-run"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /Dry run target: AcrossWorksAPI\/open-relay#34/);
+  assert.match(result.stdout, /<!-- open-relay-packet/);
+  assert.match(result.stdout, /payload_base64:/);
+  assert.match(result.stdout, /# Review Request Relay Packet/);
+  assert.equal(result.stderr, "");
+});
+
+test("transport github-pr send rejects missing pr flag", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "transport",
+    "github-pr",
+    "send",
+    "examples/review-request/relay.json"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Missing required flag: --pr/);
+});
+
+test("transport github-pr send rejects malformed pr targets as parser errors", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "transport",
+    "github-pr",
+    "send",
+    "examples/review-request/relay.json",
+    "--pr",
+    "https://example.com/acme/repo/pull/SECRET_REF_SHOULD_NOT_APPEAR",
+    "--dry-run"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Invalid GitHub pull request target/);
+  assert.doesNotMatch(result.stderr, /SECRET_REF_SHOULD_NOT_APPEAR/);
+});
+
+test("transport github-pr send rejects invalid packet without publishing", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-transport-"));
+  const packetPath = join(directory, "packet.json");
+  writeFileSync(packetPath, JSON.stringify({ packet_type: "review-request", packet_version: "0.1" }), "utf8");
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "transport",
+      "github-pr",
+      "send",
+      packetPath,
+      "--pr",
+      "AcrossWorksAPI/open-relay#34",
+      "--dry-run"
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid packet/);
+    assert.doesNotMatch(result.stdout, /open-relay-packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("transport github-pr fetch requires author", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "transport",
+    "github-pr",
+    "fetch",
+    "--pr",
+    "AcrossWorksAPI/open-relay#34",
+    "--packet-type",
+    "review-response"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Missing required flag: --author/);
+});
+
+test("transport github-pr fetch writes packet from fake gh without echoing output path", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-transport-"));
+  const binDir = join(directory, "bin");
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.json");
+
+  try {
+    const packet = JSON.parse(readFileSync("examples/review-response/relay.json", "utf8"));
+    const payload = Buffer.from(`${JSON.stringify(packet, null, 2)}\n`, "utf8").toString("base64");
+    const body = [
+      "<!-- open-relay-packet",
+      "packet_type: review-response",
+      "packet_version: 0.1",
+      `payload_base64: ${payload}`,
+      "-->",
+      "# Open Relay Packet: review-response/0.1",
+      "",
+      "# Review Response Relay Packet",
+      ""
+    ].join("\n");
+    const comments = JSON.stringify([[
+      { id: 99, body, created_at: "2026-06-27T00:00:00Z", user: { login: "claude" } }
+    ]]);
+
+    writeFakeGh(binDir, comments);
+
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "transport",
+      "github-pr",
+      "fetch",
+      "--pr",
+      "AcrossWorksAPI/open-relay#34",
+      "--packet-type",
+      "review-response",
+      "--packet-version",
+      "0.1",
+      "--author",
+      "claude",
+      "--output",
+      outputPath
+    ], {
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH ?? ""}`
+      }
+    });
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Wrote fetched Open Relay packet/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stderr, "");
+
+    const fetched = JSON.parse(readFileSync(outputPath, "utf8"));
+    assert.equal(fetched.packet_type, "review-response");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("rejects generate review-request with missing flags", () => {
@@ -991,6 +1163,13 @@ function createChangedGitRepo(directory: string): { base: string; head: string }
 
 function stripCreatedAt(markdown: string): string {
   return markdown.replace(/- Created at: `[^`]+`/, "- Created at: `<timestamp>`");
+}
+
+function writeFakeGh(binDir: string, output: string): void {
+  mkdirSync(binDir, { recursive: true });
+  const ghPath = join(binDir, "gh");
+  writeFileSync(ghPath, `#!/bin/sh\ncat <<'JSON'\n${output}\nJSON\n`, "utf8");
+  chmodSync(ghPath, 0o755);
 }
 
 function runGit(cwd: string, ...args: string[]): string {
