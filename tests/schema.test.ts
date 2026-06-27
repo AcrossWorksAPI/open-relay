@@ -11,8 +11,21 @@ async function validPacketFixture(): Promise<Record<string, unknown>> {
   return JSON.parse(raw) as Record<string, unknown>;
 }
 
+async function validReviewResponseFixture(): Promise<Record<string, unknown>> {
+  const raw = await readFile("examples/review-response/relay.json", "utf8");
+  return JSON.parse(raw) as Record<string, unknown>;
+}
+
 test("validates the synthetic review-request example", async () => {
   const packet = await validPacketFixture();
+  const result = validatePacket(packet);
+
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.errors, []);
+});
+
+test("validates the synthetic review-response example", async () => {
+  const packet = await validReviewResponseFixture();
   const result = validatePacket(packet);
 
   assert.equal(result.valid, true);
@@ -43,6 +56,90 @@ test("rejects mismatched changed file count", async () => {
   );
 });
 
+test("rejects contradictory review-response outcomes", async () => {
+  const approved = await validReviewResponseFixture();
+  (approved.findings as Array<Record<string, unknown>>)[0].blocking = true;
+  assert.match(
+    validatePacket(approved).errors.join("\n"),
+    /approved outcome cannot include blocking findings/
+  );
+
+  const commentary = await validReviewResponseFixture();
+  commentary.outcome = "commentary";
+  (commentary.findings as Array<Record<string, unknown>>)[0].blocking = true;
+  assert.match(
+    validatePacket(commentary).errors.join("\n"),
+    /commentary outcome cannot include blocking findings/
+  );
+
+  const changesRequested = await validReviewResponseFixture();
+  changesRequested.outcome = "changes_requested";
+  (changesRequested.findings as Array<Record<string, unknown>>)[0].blocking = false;
+  assert.match(
+    validatePacket(changesRequested).errors.join("\n"),
+    /changes_requested outcome requires at least one blocking finding/
+  );
+
+  const blocked = await validReviewResponseFixture();
+  blocked.outcome = "blocked";
+  (blocked.reviewed_scope as Record<string, unknown>).limitations = [];
+  assert.match(
+    validatePacket(blocked).errors.join("\n"),
+    /blocked outcome requires at least one limitation/
+  );
+});
+
+test("accepts review-response empty arrays and enum values", async () => {
+  for (const outcome of ["approved", "commentary"] as const) {
+    const packet = await validReviewResponseFixture();
+    packet.outcome = outcome;
+    packet.findings = [];
+    packet.verification = [];
+    packet.provenance = [];
+    packet.redactions = [];
+
+    const result = validatePacket(packet);
+
+    assert.equal(result.valid, true);
+  }
+
+  const changesRequested = await validReviewResponseFixture();
+  changesRequested.outcome = "changes_requested";
+  (changesRequested.findings as Array<Record<string, unknown>>)[0].blocking = true;
+  (changesRequested.findings as Array<Record<string, unknown>>)[0].severity = "high";
+  changesRequested.confidence = "medium";
+  (changesRequested.reviewer as Record<string, unknown>).kind = "human";
+  (changesRequested.verification as Array<Record<string, unknown>>)[0].kind = "manual";
+  (changesRequested.verification as Array<Record<string, unknown>>)[0].result = "failed";
+
+  assert.equal(validatePacket(changesRequested).valid, true);
+
+  const blocked = await validReviewResponseFixture();
+  blocked.outcome = "blocked";
+  blocked.confidence = "low";
+  blocked.findings = [];
+  blocked.reviewed_scope = {
+    files: [],
+    limitations: ["Reviewer could not access the target branch."]
+  };
+  blocked.verification = [
+    {
+      kind: "external",
+      command: "GitHub PR page",
+      result: "unknown",
+      evidence: "Reviewer access was unavailable."
+    },
+    {
+      kind: "command",
+      command: "npm run check",
+      result: "not_run",
+      evidence: "Blocked before local verification."
+    }
+  ];
+
+  assert.equal(validatePacket(blocked).valid, true);
+});
+
 test("rejects unsupported packet types with supported combinations", () => {
   const packet = {
     packet_type: "SECRET_PACKET_TYPE_SHOULD_NOT_APPEAR",
@@ -57,6 +154,23 @@ test("rejects unsupported packet types with supported combinations", () => {
   assert.equal(result.valid, false);
   assert.match(errors, /unsupported packet_type\/packet_version/);
   assert.match(errors, /review-request\/0\.1/);
+  assert.doesNotMatch(errors, /SECRET_FIELD_SHOULD_NOT_APPEAR/);
+});
+
+test("rejects unsupported review-response versions with supported combinations", async () => {
+  const packet = {
+    ...(await validReviewResponseFixture()),
+    packet_version: "9.9",
+    secret: "SECRET_FIELD_SHOULD_NOT_APPEAR"
+  };
+
+  const result = validatePacket(packet);
+  const errors = result.errors.join("\n");
+
+  assert.equal(result.valid, false);
+  assert.match(errors, /unsupported packet_type\/packet_version: review-response\/9\.9/);
+  assert.match(errors, /supported: .*review-request\/0\.1/);
+  assert.match(errors, /review-response\/0\.1/);
   assert.doesNotMatch(errors, /SECRET_FIELD_SHOULD_NOT_APPEAR/);
 });
 

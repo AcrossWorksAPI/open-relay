@@ -1,0 +1,84 @@
+{
+  "packet_version": "0.1",
+  "packet_type": "review-response",
+  "created_at": "2026-06-27T00:00:00.000Z",
+  "response_to": {
+    "packet_type": "review-request",
+    "packet_version": "0.1",
+    "repository": "AcrossWorksAPI/open-relay",
+    "working_branch": "codex/relay-protocol-envelope-implementation",
+    "base_commit": "7f79246",
+    "head_commit": "beeda6b",
+    "diff_range": "7f79246..beeda6b",
+    "pull_request_url": "https://github.com/AcrossWorksAPI/open-relay/pull/31",
+    "source": "PR #31 review"
+  },
+  "reviewer": {
+    "name": "Claude",
+    "kind": "agent",
+    "tool": "GitHub PR review",
+    "requested_by": "Codex"
+  },
+  "outcome": "approved",
+  "confidence": "high",
+  "summary": "The implementation is non-breaking and safe to merge.",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "low",
+      "blocking": false,
+      "title": "Validation messages are still review-request-specific",
+      "description": "The validate command labels unsupported packets as invalid review-request packets.",
+      "evidence": "A bogus packet prints 'Invalid review-request packet' before the correct unsupported type/version error.",
+      "recommendation": "Make validate command messages packet-neutral or type-aware before the second packet type is user-visible.",
+      "location": {
+        "path": "src/cli.ts",
+        "symbol": "validateCommand"
+      }
+    }
+  ],
+  "reviewed_scope": {
+    "files": [
+      {
+        "path": "src/schema.ts",
+        "notes": "Validator dispatch path reviewed."
+      },
+      {
+        "path": "src/schemaRegistry.ts",
+        "notes": "Registry dispatch path reviewed."
+      },
+      {
+        "path": "src/cli.ts",
+        "notes": "Validate command wording reviewed."
+      }
+    ],
+    "limitations": []
+  },
+  "verification": [
+    {
+      "kind": "command",
+      "command": "npm run check",
+      "result": "passed",
+      "evidence": "77 tests passed at PR head."
+    },
+    {
+      "kind": "ci",
+      "command": "Governance Checks",
+      "result": "passed",
+      "evidence": "GitHub Actions passed on PR #31."
+    }
+  ],
+  "provenance": [
+    {
+      "type": "pull_request",
+      "reference": "https://github.com/AcrossWorksAPI/open-relay/pull/31",
+      "supports": "Review target and merge-readiness context."
+    }
+  ],
+  "redactions": [],
+  "sensitive_data": {
+    "excluded": true,
+    "notes": "No secrets, private logs, customer data, or private repository content included."
+  },
+  "next_action": "Merge the PR, then fix the validate-message seam with the review-response implementation."
+}
