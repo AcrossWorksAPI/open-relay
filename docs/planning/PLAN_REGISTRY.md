@@ -93,7 +93,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | In progress | Codex | Implementation source for creating a validated `review-response` from a request packet plus reviewer draft, then optionally sending it through GitHub PR exact-packet transport. |
+| - | - | - | No active implementation plans. |
 
 ## Implemented Or Historical Plans
 
@@ -114,6 +114,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Done | Defined `review-response` 0.1 as the first protocol-envelope consumer and merged through PR #33. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Done | Planned and implemented `review-response` schema validation, semantic checks, Markdown rendering, examples, generic render, neutral validate messages, package exports, package smoke coverage, Claude review fix, and merge closeout through PR #34. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Done | Planned and implemented GitHub PR exact-packet transport through local `gh`, dry-run, authenticated-user update, author-filtered fetch, protocol docs, package smoke, Claude review fixes, and merge closeout through PR #36. |
+| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Done | Planned and implemented reviewer-authored response draft production, `generate review-response`, `respond github-pr`, draft key guards, protocol docs, package smoke coverage, Claude dogfood review, and merge closeout through PR #39. |
 
 ## Superseded Or Dormant Plans
 
