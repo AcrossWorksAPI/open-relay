@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, and merged reviewer-produced review-response workflow | PR #39 merge commit `82ff91e`; producer workflow implementation source `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, and packet evidence enrichment design in progress | PR #39 merge commit `82ff91e`; evidence enrichment design source `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` |
 
 ## Scope
 
@@ -50,6 +50,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - review-response packet design, merged spec, validation/rendering implementation, examples, and package smoke
 - merged GitHub PR exact-packet transport implementation
 - merged reviewer-produced review-response workflow implementation
+- packet evidence enrichment design
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -95,6 +96,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement review-response packet type | Done | No |
 | P1 | Implement first packet transport boundary | Done | No |
 | P1 | Implement reviewer-produced review-response workflow | Done | No |
+| P1 | Design packet evidence enrichment | In progress | No |
 
 ## Known Gaps
 
@@ -113,7 +115,9 @@ Current scope is the first local protocol and validation CLI baseline:
   `review-response` validation/rendering implementation, and GitHub PR
   exact-packet transport and reviewer-side response packet production are
   merged, so the request/response loop can move as packets without manual
-  copy/paste when both sides emit Open Relay packet drafts.
+  copy/paste when both sides emit Open Relay packet drafts. Packet evidence
+  enrichment design is in progress to improve changed-file triage without
+  embedding raw diffs.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
