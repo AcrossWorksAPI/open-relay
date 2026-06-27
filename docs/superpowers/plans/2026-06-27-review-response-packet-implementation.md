@@ -310,7 +310,7 @@ Expected: failure until schema, examples, renderer, package export, and generic 
 
 - [x] **Step 3: Implement export and closeout docs**
 
-Export `renderReviewResponseMarkdown` and `ReviewResponsePacket` from `src/index.ts`. Update roadmap/status/ledger/matrix to mark review-response implementation in progress on the branch, record tests and package smoke evidence, and keep transport, storage, generation, PR comments, and automation deferred.
+Export `renderReviewResponseMarkdown` and `ReviewResponsePacket` from `src/index.ts`. Update roadmap/status/ledger/matrix to record the review-response implementation and package smoke evidence, then keep transport, storage, generation, PR comments, and automation deferred.
 
 - [x] **Step 4: Final verification**
 
