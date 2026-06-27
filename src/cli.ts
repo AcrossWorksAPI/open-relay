@@ -17,6 +17,7 @@ Usage:
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
   open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--storage-dir <path>]
+  open-relay render <packet.json> [--output <relay.md>]
   open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay --help
 
@@ -48,20 +49,41 @@ export async function run(argv: string[]): Promise<number> {
     return saveReviewRequestCommand(args.slice(2));
   }
 
-  if (args[0] === "render" && args[1] === "review-request") {
-    return renderReviewRequestCommand(args.slice(2));
+  if (args[0] === "render") {
+    if (args[1] === "review-request") {
+      return renderPacketCommand(args.slice(2), {
+        invalidMessage: "Invalid review-request packet",
+        writeErrorMessage: "Could not write review-request Markdown.",
+        writeSuccessMessage: "Wrote review-request Markdown.",
+        renderErrorMessage: "Could not render review-request packet."
+      });
+    }
+
+    return renderPacketCommand(args.slice(1), {
+      invalidMessage: "Invalid packet",
+      writeErrorMessage: "Could not write packet Markdown.",
+      writeSuccessMessage: "Wrote packet Markdown.",
+      renderErrorMessage: "Could not render packet."
+    });
   }
 
   process.stderr.write(`Unknown command: ${args.join(" ")}\n\n${usage}`);
   return 2;
 }
 
-type RenderReviewRequestArgs =
+type RenderArgs =
   | { ok: true; packetPath: string; output?: string }
   | { ok: false; message: string };
 
-async function renderReviewRequestCommand(args: string[]): Promise<number> {
-  const parsed = parseRenderReviewRequestArgs(args);
+type RenderMessages = {
+  invalidMessage: string;
+  writeErrorMessage: string;
+  writeSuccessMessage: string;
+  renderErrorMessage: string;
+};
+
+async function renderPacketCommand(args: string[], messages: RenderMessages): Promise<number> {
+  const parsed = parseRenderArgs(args);
   if (!parsed.ok) {
     process.stderr.write(`${parsed.message}\n\n${usage}`);
     return 2;
@@ -73,7 +95,7 @@ async function renderReviewRequestCommand(args: string[]): Promise<number> {
     const result = validatePacket(packet);
 
     if (!result.valid) {
-      process.stderr.write(`Invalid review-request packet: ${parsed.packetPath}\n`);
+      process.stderr.write(`${messages.invalidMessage}: ${parsed.packetPath}\n`);
       for (const error of result.errors) {
         process.stderr.write(`- ${error}\n`);
       }
@@ -86,10 +108,10 @@ async function renderReviewRequestCommand(args: string[]): Promise<number> {
       try {
         await writeFile(parsed.output, markdown, "utf8");
       } catch {
-        process.stderr.write("Could not write review-request Markdown.\n");
+        process.stderr.write(`${messages.writeErrorMessage}\n`);
         return 1;
       }
-      process.stdout.write("Wrote review-request Markdown.\n");
+      process.stdout.write(`${messages.writeSuccessMessage}\n`);
     } else {
       process.stdout.write(markdown);
     }
@@ -98,14 +120,14 @@ async function renderReviewRequestCommand(args: string[]): Promise<number> {
   } catch (error: unknown) {
     const message = error instanceof SyntaxError
       ? `Invalid JSON in ${parsed.packetPath}`
-      : "Could not render review-request packet.";
+      : messages.renderErrorMessage;
 
     process.stderr.write(`${message}\n`);
     return 1;
   }
 }
 
-function parseRenderReviewRequestArgs(args: string[]): RenderReviewRequestArgs {
+function parseRenderArgs(args: string[]): RenderArgs {
   const packetPath = args[0];
   let output: string | undefined;
 
@@ -318,11 +340,11 @@ async function validateCommand(path: string | undefined): Promise<number> {
     const result = await validatePacketFile(path);
 
     if (result.valid) {
-      process.stdout.write(`${path} is a valid review-request packet.\n`);
+      process.stdout.write(`${path} is a valid packet.\n`);
       return 0;
     }
 
-    process.stderr.write(`Invalid review-request packet: ${path}\n`);
+    process.stderr.write(`Invalid packet: ${path}\n`);
     for (const error of result.errors) {
       process.stderr.write(`- ${error}\n`);
     }

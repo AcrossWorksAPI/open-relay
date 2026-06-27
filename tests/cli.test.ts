@@ -32,6 +32,7 @@ test("prints render review-request in help", () => {
   });
 
   assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay render <packet\.json>/);
   assert.match(result.stdout, /open-relay render review-request/);
 });
 
@@ -64,7 +65,23 @@ test("validates the example packet", () => {
   );
 
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /valid review-request packet/);
+  assert.match(result.stdout, /valid packet/);
+  assert.doesNotMatch(result.stdout, /valid review-request packet/);
+  assert.equal(result.stderr, "");
+});
+
+test("validates the review-response example packet", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "validate", "examples/review-response/relay.json"],
+    {
+      encoding: "utf8"
+    }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /valid packet/);
+  assert.doesNotMatch(result.stdout, /valid review-request packet/);
   assert.equal(result.stderr, "");
 });
 
@@ -92,7 +109,8 @@ test("rejects schema-invalid packets", () => {
   });
 
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /Invalid review-request packet/);
+  assert.match(result.stderr, /Invalid packet/);
+  assert.doesNotMatch(result.stderr, /Invalid review-request packet/);
   assert.match(result.stderr, /must have required property/);
 });
 
@@ -695,6 +713,32 @@ test("renders a review-request packet to stdout", () => {
   assert.equal(result.stderr, "");
 });
 
+test("renders a review-response packet through generic render", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "examples/review-response/relay.json"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Review Response Relay Packet/);
+  assert.match(result.stdout, /## Outcome And Confidence/);
+  assert.equal(result.stderr, "");
+});
+
+test("renders a review-request packet through generic render", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "examples/review-request/relay.json"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Review Request Relay Packet/);
+  assert.match(result.stdout, /## Next Action/);
+  assert.equal(result.stderr, "");
+});
+
 test("renders a review-request packet to a file", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
   const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
@@ -716,6 +760,27 @@ test("renders a review-request packet to a file", () => {
   }
 });
 
+test("renders a review-response packet to a file through generic render", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
+
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [cliPath, "render", "examples/review-response/relay.json", "--output", outputPath],
+      { encoding: "utf8" }
+    );
+
+    assert.equal(result.status, 0);
+    assert.match(result.stdout, /Wrote packet Markdown/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stderr, "");
+    assert.match(readFileSync(outputPath, "utf8"), /^# Review Response Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("rejects render review-request with missing path", () => {
   const result = spawnSync(process.execPath, [cliPath, "render", "review-request"], {
     encoding: "utf8"
@@ -724,6 +789,27 @@ test("rejects render review-request with missing path", () => {
   assert.equal(result.status, 2);
   assert.match(result.stderr, /Missing packet path/);
   assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
+});
+
+test("rejects generic render with missing path", () => {
+  const result = spawnSync(process.execPath, [cliPath, "render"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Missing packet path/);
+});
+
+test("does not add a render review-response subcommand", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "review-response", "examples/review-response/relay.json"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Unexpected argument: examples\/review-response\/relay\.json/);
+  assert.doesNotMatch(result.stdout, /^# Review Response Relay Packet/m);
 });
 
 test("rejects render review-request with unknown flags", () => {
@@ -757,6 +843,24 @@ test("rejects render review-request with duplicate output flags", () => {
   assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
 });
 
+test("rejects generic render with duplicate output flags", () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      cliPath,
+      "render",
+      "examples/review-response/relay.json",
+      "--output", "first.md",
+      "--output", "second.md"
+    ],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Duplicate flag: --output/);
+  assert.doesNotMatch(result.stdout, /^# Review Response Relay Packet/m);
+});
+
 test("rejects render review-request with extra positional arguments", () => {
   const result = spawnSync(
     process.execPath,
@@ -783,6 +887,20 @@ test("rejects invalid render JSON without printing file contents", () => {
   assert.doesNotMatch(result.stderr, /SECRET/);
 });
 
+test("rejects invalid generic render JSON without printing file contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const packetPath = join(directory, "bad.json");
+  writeFileSync(packetPath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "render", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid JSON/);
+  assert.doesNotMatch(result.stderr, /SECRET/);
+});
+
 test("rejects schema-invalid render packets", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
   const packetPath = join(directory, "packet.json");
@@ -794,6 +912,21 @@ test("rejects schema-invalid render packets", () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Invalid review-request packet/);
+  assert.match(result.stderr, /must have required property/);
+});
+
+test("rejects schema-invalid generic render packets", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-render-"));
+  const packetPath = join(directory, "packet.json");
+  writeFileSync(packetPath, JSON.stringify({ packet_version: "0.1" }), "utf8");
+
+  const result = spawnSync(process.execPath, [cliPath, "render", packetPath], {
+    encoding: "utf8"
+  });
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Invalid packet/);
+  assert.doesNotMatch(result.stderr, /Invalid review-request packet/);
   assert.match(result.stderr, /must have required property/);
 });
 
@@ -811,12 +944,26 @@ test("rejects unwritable render output paths without echoing path values", () =>
   assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
 });
 
+test("rejects unwritable generic render output paths without echoing path values", () => {
+  const outputPath = join(tmpdir(), "SECRET_OUTPUT_SHOULD_NOT_APPEAR", "relay.md");
+
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "examples/review-response/relay.json", "--output", outputPath],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Could not write packet Markdown/);
+  assert.doesNotMatch(result.stderr, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+});
+
 test("exports the validator and renderer from the package entrypoint", () => {
   const result = spawnSync(
     process.execPath,
     [
       "-e",
-      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1);"
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewResponseMarkdown !== 'function') process.exit(1);"
     ],
     {
       encoding: "utf8"

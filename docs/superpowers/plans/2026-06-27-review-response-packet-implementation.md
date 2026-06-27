@@ -196,7 +196,7 @@ Expected: renderer tests pass and the review-request committed example snapshot 
 - Modify: `src/cli.ts`
 - Modify: `tests/cli.test.ts`
 
-- [ ] **Step 1: Write failing CLI tests**
+- [x] **Step 1: Write failing CLI tests**
 
 Add tests that assert:
 
@@ -222,7 +222,7 @@ test("validate uses packet-neutral messages", () => {
 });
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -232,7 +232,7 @@ npm test -- --test-name-pattern "generic render|packet-neutral|backward-compatib
 
 Expected: failure because generic render and neutral validate messages are not implemented.
 
-- [ ] **Step 3: Implement CLI changes**
+- [x] **Step 3: Implement CLI changes**
 
 Update help to include:
 
@@ -260,7 +260,7 @@ Change `validate` success/failure messages to packet-neutral:
 Invalid packet: <path>
 ```
 
-- [ ] **Step 4: Verify GREEN**
+- [x] **Step 4: Verify GREEN**
 
 Run:
 
