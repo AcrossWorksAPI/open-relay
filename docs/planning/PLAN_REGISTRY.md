@@ -66,6 +66,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Review-response packet design | Active |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Review-response packet implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | GitHub PR exact-packet transport implementation plan | Active |
+| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Reviewer-produced review-response workflow implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Relay protocol envelope implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
@@ -87,7 +88,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans; next candidate is reviewer-produced `review-response` packet workflow for the merged GitHub PR transport. |
+| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | In progress | Codex | Planning gate for creating a validated `review-response` from a request packet plus reviewer draft, then optionally sending it through GitHub PR exact-packet transport. |
 
 ## Implemented Or Historical Plans
 

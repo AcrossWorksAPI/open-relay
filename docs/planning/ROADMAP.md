@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, and GitHub PR packet transport merged
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, and reviewer-produced review-response workflow planning in progress
 Last updated: 2026-06-27
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, and GitHub PR packet transport merged
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, and reviewer-produced review-response workflow planning in progress
 
 ## Project Purpose
 
@@ -33,6 +33,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Boundary/transport decision | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-github-pr-transport.md |
 | Unversioned | Packet evidence enrichment | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
+| Unversioned | Reviewer-produced review-response workflow | In progress | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
 | Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
 | Unversioned | Agent-ready prompt rendering | Planned | Medium | No | Review-response packet type | - |
@@ -45,6 +46,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Boundary/transport decision | Product thesis and Feature 5: define how packets move between agents/workspaces. |
 | Packet evidence enrichment | Feature 2: include diff summary and tests run. |
 | Review-response packet type | Feature 5: support review response. |
+| Reviewer-produced review-response workflow | Feature 5: close the review loop by letting reviewers create and send response packets without manual copy/paste. |
 | Implementation-handoff packet type | Feature 5: support implementation handoff. |
 | Resume-project packet type | Feature 5: support resume project. |
 | Agent-ready prompt rendering | Feature 3: output Codex-ready and Claude-ready prompts. |
