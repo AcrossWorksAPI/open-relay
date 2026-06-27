@@ -1,167 +1,192 @@
-# GitHub PR Transport Implementation Plan
+# GitHub PR Review-Request Transport Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add the first Open Relay transport boundary by posting and fetching validated relay packets through GitHub pull request comments.
+**Goal:** Add the first outward Open Relay transport by posting an existing validated `review-request` packet to an explicit GitHub pull request through the local `gh` CLI.
 
-**Architecture:** Implement GitHub PR comments as the first explicit transport because PRs are already the review workspace for Codex and Claude. Keep the transport generic over packet type: the CLI sends any valid packet and fetches the newest valid marked packet matching a requested type/version. Do not parse arbitrary reviewer prose, request Claude, trigger fixes, merge PRs, or add hosted services in this slice.
+**Architecture:** Use GitHub PR comments as the first transport boundary because PRs are already the review workspace and provide audit history. Use the local `gh` CLI instead of raw GitHub API token handling, so Open Relay never reads or prints tokens and no new npm dependency is needed. Scope this first slice to sending `review-request` packets only; fetching GitHub reviews into `review-response` packets is the next slice because it carries separate state-mapping semantics.
 
-**Tech Stack:** TypeScript, Node.js built-in `fetch`, GitHub REST API issue comments, existing JSON Schema validator, existing Markdown renderer, existing Node test runner, existing npm package smoke.
+**Tech Stack:** TypeScript, Node.js `execFileSync` with argument arrays, GitHub CLI (`gh`) as an external runtime dependency, existing JSON Schema validator, existing Markdown renderer, existing Node test runner, existing npm package smoke.
 
 ---
 
 ## Transport Decision
 
-Use GitHub pull request comments as the first transport boundary.
+Use GitHub pull request comments as the first transport boundary, driven through `gh`.
 
-The first transport comment contains both:
+This is the first networked/publication capability in Open Relay. All previous runtime slices were local-only. The safety posture is therefore stricter than normal CLI output:
 
-1. A human-readable Markdown render from `renderPacketMarkdown(packet)`.
-2. The exact validated packet JSON in a fenced `json open-relay` block.
+- Sending requires an explicit PR target.
+- Sending defaults to a dry run.
+- Public repositories require an explicit confirmation flag before posting.
+- Open Relay never handles GitHub tokens directly.
+- Errors never echo packet bodies, token values, raw `gh` stderr, local paths, or full PR URLs.
 
-That makes the comment readable by humans and agents while keeping a precise machine payload for `fetch`. The transport is explicit and auditable, but still local-first: the CLI runs on the user's machine and talks directly to GitHub only when the user runs a `transport github-pr` command.
+## Chosen First Slice
 
-Alternatives intentionally deferred:
-
-- Clipboard transport: quickest, but still depends on a human as courier and gives weak audit history.
-- Committed packet files: auditable, but changes the reviewed branch and creates repository noise before the transport semantics are settled.
-- MCP or hosted relay: likely useful later, but too much infrastructure for the first boundary.
-- Parsing arbitrary Claude prose: attractive, but brittle and unsafe before the exact packet transport works.
-
-## Command Shape
-
-Add two commands:
+Implement only:
 
 ```text
-open-relay transport github-pr send <packet.json> --pr <url>
-open-relay transport github-pr fetch --pr <url> --packet-type <type> [--packet-version <version>] [--output <packet.json>]
+open-relay transport github-pr send review-request --pr <url-or-owner/repo#number> --packet <path> [--dry-run] [--update] [--confirm-public]
 ```
+
+This removes half of the manual relay immediately: Codex can generate/save a request packet locally, then publish the review request to the PR without the owner copying it into GitHub.
+
+Do not implement `fetch review-response` in this slice. The next slice should map GitHub's structured review data into `review-response`:
+
+- review `state` -> `outcome`;
+- review body -> `summary`;
+- inline review comments -> `findings`;
+- PR review URL -> `provenance`;
+- `CHANGES_REQUESTED` without inline comments -> one synthesized blocking finding from the review body.
+
+That mapping is valuable, but it is a separate risk/semantic surface from sending an already-valid packet.
+
+## Command Behavior
+
+`send review-request` accepts:
+
+- `--pr <target>`: required. Accepts `https://github.com/owner/repo/pull/34` or `owner/repo#34`.
+- `--packet <path>`: required. Must point to a JSON packet.
+- `--dry-run`: optional. Prints the comment body that would be posted and does not call `gh`.
+- `--update`: optional. Updates the latest existing Open Relay review-request comment on the PR instead of posting a new comment.
+- `--confirm-public`: optional. Required for non-dry-run posting when the target repository is public.
 
 Rules:
 
-- `send` validates the packet before posting.
-- `send` renders the packet with the existing generic renderer.
-- `fetch` extracts only marked Open Relay packet comments, parses the fenced JSON payload, validates it, and returns the newest matching packet.
-- `fetch` writes JSON to stdout by default or to `--output` when supplied.
-- `--packet-version` is optional; when omitted, `fetch` chooses the newest valid packet with the requested `packet_type`.
-- Commands require `GITHUB_TOKEN` or `GH_TOKEN`.
-- Success messages must not echo PR URLs, output paths, token values, comment ids, API URLs, or raw packet bodies.
-- Failure messages must be sanitized and actionable.
+- Missing required flags or duplicate singleton flags exit `2`.
+- Malformed PR targets exit `2`.
+- Missing `gh`, unauthenticated `gh`, network failure, invalid JSON, invalid packet, non-review-request packet, public repo without confirmation, and post/update failure exit `1`.
+- Dry runs validate the packet and render the exact comment body, but do not check repo visibility or call `gh`.
+- Non-dry-run sends check repository visibility with `gh repo view owner/repo --json visibility`.
+- Non-dry-run sends post with `gh api repos/owner/repo/issues/number/comments --method POST --field body=<body>`.
+- `--update` finds an existing marker comment using `gh api repos/owner/repo/issues/number/comments`, then patches it with `gh api repos/owner/repo/issues/comments/comment_id --method PATCH --field body=<body>`.
+- Success output for posting is exactly `Posted Open Relay review request to GitHub PR.`
+- Success output for update is exactly `Updated Open Relay review request on GitHub PR.`
+- Success output never includes the PR target, comment id, packet path, or packet body.
 
-## Comment Format
+## Comment Contract
 
-`send` posts comments in this format:
+The posted comment body uses this format:
 
 ````markdown
-<!-- open-relay:packet packet_type=review-request packet_version=0.1 -->
-# Open Relay Packet: review-request/0.1
+<!-- open-relay:review-request packet_version=0.1 -->
+# Open Relay Review Request
 
-<rendered packet markdown>
-
-## Machine Packet
-
-```json open-relay
-{
-  "packet_version": "0.1",
-  "packet_type": "review-request"
-}
-```
+<rendered review-request Markdown>
 ````
 
-The actual JSON block contains the full pretty-printed packet plus a trailing newline. `fetch` must ignore any unmarked comment or marked comment without a valid `json open-relay` fenced packet.
+The marker is invisible on GitHub but available through `gh api` for update/future correlation. The rendered Markdown is produced by `renderReviewRequestMarkdown(packet)`, not hand-built by transport code.
+
+## Alternatives Decided
+
+| Option | Decision |
+| --- | --- |
+| Clipboard transport | Deferred because it preserves the human as courier and has weak audit history. |
+| Raw GitHub REST API with `GITHUB_TOKEN` | Rejected for the first networked slice because Open Relay would handle a token directly. |
+| Generic `send <packet.json>` | Deferred. The first outward action should be explicit about publishing a review request. |
+| `fetch review-response` in the same PR | Deferred to the next slice; GitHub review-state mapping is valuable but distinct from send. |
+| MCP or hosted relay | Deferred until the CLI loop proves the transport shape. |
 
 ## Files
 
-- Create `docs/protocol/github-pr-transport.md`: transport semantics, command behavior, comment marker, security posture, and non-goals.
-- Create `src/githubPrTransport.ts`: PR URL parsing, comment body formatting, packet extraction, GitHub API calls, and sanitized transport errors.
-- Create `tests/githubPrTransport.test.ts`: pure transport parser/formatter/extractor/client tests with a local HTTP server.
-- Modify `src/cli.ts`: add `transport github-pr send` and `transport github-pr fetch` routes, strict argument parsing, token lookup, validation, rendering, write handling, and sanitized errors.
-- Modify `tests/cli.test.ts`: add help, parser, sanitized error, fake API success, and invalid packet coverage for transport commands.
-- Modify `scripts/smoke-pack.js`: assert installed CLI help exposes the transport commands and token-missing failures stay sanitized.
+- Create `docs/protocol/github-pr-transport.md`: transport semantics, command behavior, marker, `gh` dependency, security posture, and non-goals.
+- Create `src/transport/gh.ts`: thin injectable `runGh(args: string[])` wrapper around `execFileSync("gh", args, ...)` with sanitized failure messages.
+- Create `src/transport/githubPr.ts`: PR target parsing, review-request comment body formatting, repo visibility parsing, existing-marker comment extraction, and send/update orchestration.
+- Create `tests/githubPrTransport.test.ts`: pure parser/formatter/update-selection tests and fake `runGh` orchestration tests.
+- Modify `src/cli.ts`: add `transport github-pr send review-request` route, strict parser, JSON read/validation, review-request type guard, dry-run output, and sanitized error handling.
+- Modify `tests/cli.test.ts`: add help, parser, dry-run, token-free error, non-review-request rejection, public confirmation, and sanitized failure coverage.
+- Modify `scripts/smoke-pack.js`: assert installed CLI help exposes the send command and dry-run works without network.
 - Modify `docs/STATUS.md`: record the active transport implementation branch and verification evidence.
 - Modify `docs/planning/ROADMAP.md`: mark Boundary/transport decision as In progress and point to this plan.
-- Modify `docs/planning/ACTIVE_WORK.md`: record GitHub PR comment transport as the next active implementation.
+- Modify `docs/planning/ACTIVE_WORK.md`: record GitHub PR review-request transport as the active first boundary.
 - Modify `docs/planning/PLAN_REGISTRY.md`: register this plan and protocol doc.
 - Modify `docs/planning/VERSION_LEDGER.md`: add branch evidence and rollback note.
-- Modify `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`: mark transport create/view/error-smoke as In progress, while PR review APIs, automation, and merge actions remain unbuilt.
-- Modify `master_build.md`: show transport as the current near-term slice.
+- Modify `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`: mark transport create/error-smoke as In progress; fetch/read, automation, review-response storage, and merge actions remain planned/deferred.
+- Modify `master_build.md`: show GitHub PR review-request transport as the current near-term slice.
 
 ## Task 1: Pure Transport Helpers
 
 **Files:**
-- Create: `src/githubPrTransport.ts`
+- Create: `src/transport/githubPr.ts`
 - Create: `tests/githubPrTransport.test.ts`
 
 - [ ] **Step 1: Write failing parser and formatter tests**
 
-Add this test file:
+Add `tests/githubPrTransport.test.ts`:
 
 ```ts
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
-  buildTransportCommentBody,
-  extractOpenRelayPacketsFromComments,
-  parseGithubPullRequestUrl
-} from "../src/githubPrTransport";
+  buildReviewRequestCommentBody,
+  findLatestOpenRelayReviewRequestComment,
+  parseGithubPrTarget
+} from "../src/transport/githubPr";
 
-const packet = {
+const reviewRequestPacket = {
   packet_type: "review-request",
-  packet_version: "0.1",
-  created_at: "2026-06-27T00:00:00.000Z"
+  packet_version: "0.1"
 };
 
-test("parses github pull request URLs", () => {
+test("parses github pull request URL targets", () => {
   assert.deepEqual(
-    parseGithubPullRequestUrl("https://github.com/AcrossWorksAPI/open-relay/pull/34"),
+    parseGithubPrTarget("https://github.com/AcrossWorksAPI/open-relay/pull/34"),
     {
       owner: "AcrossWorksAPI",
       repo: "open-relay",
-      pullNumber: 34
+      pullNumber: 34,
+      display: "AcrossWorksAPI/open-relay#34"
     }
   );
 });
 
-test("rejects unsupported pull request URLs without echoing them", () => {
+test("parses owner repo number shorthand targets", () => {
+  assert.deepEqual(parseGithubPrTarget("AcrossWorksAPI/open-relay#34"), {
+    owner: "AcrossWorksAPI",
+    repo: "open-relay",
+    pullNumber: 34,
+    display: "AcrossWorksAPI/open-relay#34"
+  });
+});
+
+test("rejects unsupported pull request targets without echoing them", () => {
   assert.throws(
-    () => parseGithubPullRequestUrl("https://example.com/acme/repo/pull/1"),
-    /Invalid GitHub pull request URL/
+    () => parseGithubPrTarget("https://example.com/acme/repo/pull/SECRET_REF_SHOULD_NOT_APPEAR"),
+    /Invalid GitHub pull request target/
   );
 });
 
-test("builds marked comments with rendered markdown and exact packet JSON", () => {
-  const body = buildTransportCommentBody({
-    packet,
-    markdown: "# Review Request Relay Packet\n"
+test("builds marked review-request comments from rendered markdown", () => {
+  const body = buildReviewRequestCommentBody({
+    packet: reviewRequestPacket,
+    markdown: "# Review Request Relay Packet\n\n## Next Action\n"
   });
 
-  assert.match(body, /<!-- open-relay:packet packet_type=review-request packet_version=0\.1 -->/);
-  assert.match(body, /# Open Relay Packet: review-request\/0\.1/);
+  assert.match(body, /<!-- open-relay:review-request packet_version=0\.1 -->/);
+  assert.match(body, /# Open Relay Review Request/);
   assert.match(body, /# Review Request Relay Packet/);
-  assert.match(body, /```json open-relay\n/);
-  assert.match(body, /"packet_type": "review-request"/);
+  assert.match(body, /## Next Action/);
 });
 
-test("extracts newest matching marked packet from comments", () => {
-  const older = buildTransportCommentBody({
-    packet: { ...packet, created_at: "2026-06-27T00:00:00.000Z" },
-    markdown: "# Older\n"
+test("finds latest existing open relay review-request comment", () => {
+  const first = buildReviewRequestCommentBody({
+    packet: reviewRequestPacket,
+    markdown: "# First\n"
   });
-  const newer = buildTransportCommentBody({
-    packet: { ...packet, created_at: "2026-06-27T00:01:00.000Z" },
-    markdown: "# Newer\n"
-  });
-
-  const [found] = extractOpenRelayPacketsFromComments([
-    { body: older, created_at: "2026-06-27T00:00:00.000Z" },
-    { body: "plain human comment", created_at: "2026-06-27T00:02:00.000Z" },
-    { body: newer, created_at: "2026-06-27T00:03:00.000Z" }
-  ], {
-    packetType: "review-request"
+  const second = buildReviewRequestCommentBody({
+    packet: reviewRequestPacket,
+    markdown: "# Second\n"
   });
 
-  assert.equal(found.packet.created_at, "2026-06-27T00:01:00.000Z");
+  const found = findLatestOpenRelayReviewRequestComment([
+    { id: 1, body: first, created_at: "2026-06-27T00:00:00Z" },
+    { id: 2, body: "human comment", created_at: "2026-06-27T00:02:00Z" },
+    { id: 3, body: second, created_at: "2026-06-27T00:01:00Z" }
+  ]);
+
+  assert.equal(found?.id, 3);
 });
 ```
 
@@ -170,120 +195,86 @@ test("extracts newest matching marked packet from comments", () => {
 Run:
 
 ```bash
-npm test -- --test-name-pattern "github pull request|marked comments|newest matching"
+npm test -- --test-name-pattern "github pull request|owner repo|marked review-request|latest existing"
 ```
 
-Expected: build fails because `src/githubPrTransport.ts` does not exist.
+Expected: build fails because `src/transport/githubPr.ts` does not exist.
 
 - [ ] **Step 3: Implement pure helpers**
 
-Create `src/githubPrTransport.ts` with:
+Create `src/transport/githubPr.ts`:
 
 ```ts
-export type GithubPullRequestRef = {
+export type GithubPrTarget = {
   owner: string;
   repo: string;
   pullNumber: number;
+  display: string;
 };
 
-export type GithubComment = {
+export type GithubIssueComment = {
+  id: number;
   body: string;
   created_at: string;
 };
 
-export type ExtractedTransportPacket = {
-  packet: Record<string, unknown>;
-  createdAt: string;
-};
+const reviewRequestMarker = "<!-- open-relay:review-request packet_version=0.1 -->";
 
-export type ExtractPacketOptions = {
-  packetType: string;
-  packetVersion?: string;
-};
+export function parseGithubPrTarget(value: string): GithubPrTarget {
+  const shorthand = /^([^/\s]+)\/([^#\s]+)#([1-9][0-9]*)$/.exec(value);
+  if (shorthand) {
+    return buildTarget(shorthand[1], shorthand[2], shorthand[3]);
+  }
 
-const markerPattern = /<!-- open-relay:packet packet_type=([^ ]+) packet_version=([^ ]+) -->/;
-const packetFencePattern = /```json open-relay\n([\s\S]*?)\n```/;
-
-export function parseGithubPullRequestUrl(value: string): GithubPullRequestRef {
   let url: URL;
   try {
     url = new URL(value);
   } catch {
-    throw new Error("Invalid GitHub pull request URL.");
+    throw new Error("Invalid GitHub pull request target.");
   }
 
   const segments = url.pathname.split("/").filter(Boolean);
   if (url.hostname !== "github.com" || segments.length !== 4 || segments[2] !== "pull") {
-    throw new Error("Invalid GitHub pull request URL.");
+    throw new Error("Invalid GitHub pull request target.");
   }
 
-  const pullNumber = Number.parseInt(segments[3], 10);
-  if (!Number.isInteger(pullNumber) || pullNumber <= 0 || `${pullNumber}` !== segments[3]) {
-    throw new Error("Invalid GitHub pull request URL.");
-  }
-
-  return {
-    owner: segments[0],
-    repo: segments[1],
-    pullNumber
-  };
+  return buildTarget(segments[0], segments[1], segments[3]);
 }
 
-export function buildTransportCommentBody(input: {
+export function buildReviewRequestCommentBody(input: {
   packet: Record<string, unknown>;
   markdown: string;
 }): string {
-  const packetType = String(input.packet.packet_type ?? "");
   const packetVersion = String(input.packet.packet_version ?? "");
-  const json = `${JSON.stringify(input.packet, null, 2)}\n`;
-
   return [
-    `<!-- open-relay:packet packet_type=${packetType} packet_version=${packetVersion} -->`,
-    `# Open Relay Packet: ${packetType}/${packetVersion}`,
+    `<!-- open-relay:review-request packet_version=${packetVersion} -->`,
+    "# Open Relay Review Request",
     "",
     input.markdown.trimEnd(),
-    "",
-    "## Machine Packet",
-    "",
-    "```json open-relay",
-    json.trimEnd(),
-    "```",
     ""
   ].join("\n");
 }
 
-export function extractOpenRelayPacketsFromComments(
-  comments: GithubComment[],
-  options: ExtractPacketOptions
-): ExtractedTransportPacket[] {
+export function findLatestOpenRelayReviewRequestComment(
+  comments: GithubIssueComment[]
+): GithubIssueComment | undefined {
   return comments
-    .flatMap((comment) => {
-      const marker = markerPattern.exec(comment.body);
-      if (!marker) {
-        return [];
-      }
+    .filter((comment) => comment.body.includes(reviewRequestMarker))
+    .sort((left, right) => right.created_at.localeCompare(left.created_at))[0];
+}
 
-      const [, packetType, packetVersion] = marker;
-      if (packetType !== options.packetType) {
-        return [];
-      }
-      if (options.packetVersion && packetVersion !== options.packetVersion) {
-        return [];
-      }
+function buildTarget(owner: string, repo: string, pullNumberText: string): GithubPrTarget {
+  const pullNumber = Number.parseInt(pullNumberText, 10);
+  if (!Number.isInteger(pullNumber) || pullNumber <= 0 || `${pullNumber}` !== pullNumberText) {
+    throw new Error("Invalid GitHub pull request target.");
+  }
 
-      const fence = packetFencePattern.exec(comment.body);
-      if (!fence) {
-        return [];
-      }
-
-      try {
-        const packet = JSON.parse(fence[1]) as Record<string, unknown>;
-        return [{ packet, createdAt: comment.created_at }];
-      } catch {
-        return [];
-      }
-    })
-    .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  return {
+    owner,
+    repo,
+    pullNumber,
+    display: `${owner}/${repo}#${pullNumber}`
+  };
 }
 ```
 
@@ -292,115 +283,100 @@ export function extractOpenRelayPacketsFromComments(
 Run:
 
 ```bash
-npm test -- --test-name-pattern "github pull request|marked comments|newest matching"
+npm test -- --test-name-pattern "github pull request|owner repo|marked review-request|latest existing"
 ```
 
-Expected: parser, formatter, and extraction tests pass.
+Expected: parser, formatter, and update-selection tests pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/githubPrTransport.ts tests/githubPrTransport.test.ts
+git add src/transport/githubPr.ts tests/githubPrTransport.test.ts
 git commit -m "feat: add github pr transport helpers"
 ```
 
-## Task 2: GitHub API Client
+## Task 2: Injectable `gh` Transport Operations
 
 **Files:**
-- Modify: `src/githubPrTransport.ts`
+- Create: `src/transport/gh.ts`
+- Modify: `src/transport/githubPr.ts`
 - Modify: `tests/githubPrTransport.test.ts`
 
-- [ ] **Step 1: Write failing API client tests**
+- [ ] **Step 1: Write failing send orchestration tests**
 
-Append tests using a local HTTP server:
+Append tests:
 
 ```ts
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { once } from "node:events";
-
 import {
-  fetchLatestGithubPrPacket,
-  postGithubPrPacket
-} from "../src/githubPrTransport";
+  sendReviewRequestToGithubPr,
+  type RunGh
+} from "../src/transport/githubPr";
 
-test("posts packet comments to the github issue comments endpoint", async () => {
-  const requests: Array<{ method?: string; url?: string; authorization?: string; body: string }> = [];
-  const server = createServer(async (request: IncomingMessage, response: ServerResponse) => {
-    const chunks: Buffer[] = [];
-    request.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    await once(request, "end");
-    requests.push({
-      method: request.method,
-      url: request.url,
-      authorization: request.headers.authorization,
-      body: Buffer.concat(chunks).toString("utf8")
-    });
-    response.writeHead(201, { "content-type": "application/json" });
-    response.end(JSON.stringify({ id: 123 }));
+test("dry-run send does not call gh", () => {
+  const calls: string[][] = [];
+  const result = sendReviewRequestToGithubPr({
+    prTarget: "AcrossWorksAPI/open-relay#34",
+    packet: reviewRequestPacket,
+    markdown: "# Review Request Relay Packet\n",
+    dryRun: true,
+    update: false,
+    confirmPublic: false,
+    runGh: (args) => {
+      calls.push(args);
+      return "{}";
+    }
   });
-  await listen(server);
 
-  try {
-    await postGithubPrPacket({
-      prUrl: "https://github.com/AcrossWorksAPI/open-relay/pull/34",
-      token: "SECRET_TOKEN_SHOULD_NOT_APPEAR",
-      packet,
+  assert.equal(calls.length, 0);
+  assert.match(result.body, /open-relay:review-request/);
+});
+
+test("send checks public visibility before posting", () => {
+  const calls: string[][] = [];
+  const runGh: RunGh = (args) => {
+    calls.push(args);
+    if (args[0] === "repo") {
+      return JSON.stringify({ visibility: "private" });
+    }
+    return JSON.stringify({ id: 123 });
+  };
+
+  sendReviewRequestToGithubPr({
+    prTarget: "AcrossWorksAPI/open-relay#34",
+    packet: reviewRequestPacket,
+    markdown: "# Review Request Relay Packet\n",
+    dryRun: false,
+    update: false,
+    confirmPublic: false,
+    runGh
+  });
+
+  assert.deepEqual(calls[0], ["repo", "view", "AcrossWorksAPI/open-relay", "--json", "visibility"]);
+  assert.equal(calls[1][0], "api");
+  assert.match(calls[1].join(" "), /issues\/34\/comments/);
+});
+
+test("send rejects public repositories without confirmation", () => {
+  const runGh: RunGh = (args) => {
+    if (args[0] === "repo") {
+      return JSON.stringify({ visibility: "public" });
+    }
+    return "{}";
+  };
+
+  assert.throws(
+    () => sendReviewRequestToGithubPr({
+      prTarget: "AcrossWorksAPI/open-relay#34",
+      packet: reviewRequestPacket,
       markdown: "# Review Request Relay Packet\n",
-      apiBaseUrl: localBaseUrl(server)
-    });
-
-    assert.equal(requests[0].method, "POST");
-    assert.equal(requests[0].url, "/repos/AcrossWorksAPI/open-relay/issues/34/comments");
-    assert.equal(requests[0].authorization, "Bearer SECRET_TOKEN_SHOULD_NOT_APPEAR");
-    assert.match(JSON.parse(requests[0].body).body, /open-relay:packet/);
-  } finally {
-    await close(server);
-  }
+      dryRun: false,
+      update: false,
+      confirmPublic: false,
+      runGh
+    }),
+    /Public GitHub repository requires --confirm-public/
+  );
 });
-
-test("fetches newest valid packet from github issue comments", async () => {
-  const body = buildTransportCommentBody({
-    packet,
-    markdown: "# Review Request Relay Packet\n"
-  });
-  const server = createServer((_request: IncomingMessage, response: ServerResponse) => {
-    response.writeHead(200, { "content-type": "application/json" });
-    response.end(JSON.stringify([
-      { body: "plain comment", created_at: "2026-06-27T00:00:00Z" },
-      { body, created_at: "2026-06-27T00:01:00Z" }
-    ]));
-  });
-  await listen(server);
-
-  try {
-    const found = await fetchLatestGithubPrPacket({
-      prUrl: "https://github.com/AcrossWorksAPI/open-relay/pull/34",
-      token: "token",
-      packetType: "review-request",
-      apiBaseUrl: localBaseUrl(server)
-    });
-
-    assert.equal(found.packet.packet_type, "review-request");
-  } finally {
-    await close(server);
-  }
-});
-
-async function listen(server: ReturnType<typeof createServer>): Promise<void> {
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-}
-
-async function close(server: ReturnType<typeof createServer>): Promise<void> {
-  server.close();
-  await once(server, "close");
-}
-
-function localBaseUrl(server: ReturnType<typeof createServer>): string {
-  const address = server.address();
-  assert.ok(address && typeof address === "object");
-  return `http://127.0.0.1:${address.port}`;
-}
 ```
 
 - [ ] **Step 2: Verify RED**
@@ -408,115 +384,137 @@ function localBaseUrl(server: ReturnType<typeof createServer>): string {
 Run:
 
 ```bash
-npm test -- --test-name-pattern "posts packet comments|fetches newest valid packet"
+npm test -- --test-name-pattern "dry-run send|checks public visibility|public repositories"
 ```
 
-Expected: build fails because `postGithubPrPacket` and `fetchLatestGithubPrPacket` are not exported yet.
+Expected: build fails because `sendReviewRequestToGithubPr` is not exported.
 
-- [ ] **Step 3: Implement API client**
+- [ ] **Step 3: Implement `runGh` wrapper**
 
-Add:
+Create `src/transport/gh.ts`:
 
 ```ts
-export type GithubApiInput = {
-  prUrl: string;
-  token: string;
-  apiBaseUrl?: string;
-};
+import { execFileSync } from "node:child_process";
 
-export type PostGithubPrPacketInput = GithubApiInput & {
-  packet: Record<string, unknown>;
-  markdown: string;
-};
-
-export type FetchGithubPrPacketInput = GithubApiInput & {
-  packetType: string;
-  packetVersion?: string;
-};
-
-export class GithubTransportError extends Error {
+export class GhError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "GithubTransportError";
+    this.name = "GhError";
   }
 }
 
-export async function postGithubPrPacket(input: PostGithubPrPacketInput): Promise<void> {
-  const pr = parseGithubPullRequestUrl(input.prUrl);
-  const response = await fetch(githubIssueCommentsUrl(input.apiBaseUrl, pr), {
-    method: "POST",
-    headers: githubHeaders(input.token),
-    body: JSON.stringify({
-      body: buildTransportCommentBody({
-        packet: input.packet,
-        markdown: input.markdown
-      })
-    })
-  });
-
-  if (response.status !== 201) {
-    throw new GithubTransportError("Could not post GitHub PR comment.");
+export function runGh(args: string[]): string {
+  try {
+    return execFileSync("gh", args, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+  } catch {
+    throw new GhError("GitHub CLI command failed.");
   }
-}
-
-export async function fetchLatestGithubPrPacket(
-  input: FetchGithubPrPacketInput
-): Promise<ExtractedTransportPacket> {
-  const pr = parseGithubPullRequestUrl(input.prUrl);
-  const response = await fetch(githubIssueCommentsUrl(input.apiBaseUrl, pr), {
-    headers: githubHeaders(input.token)
-  });
-
-  if (!response.ok) {
-    throw new GithubTransportError("Could not read GitHub PR comments.");
-  }
-
-  const comments = await response.json() as GithubComment[];
-  const [packet] = extractOpenRelayPacketsFromComments(comments, {
-    packetType: input.packetType,
-    ...(input.packetVersion ? { packetVersion: input.packetVersion } : {})
-  });
-
-  if (!packet) {
-    throw new GithubTransportError("No matching Open Relay packet found.");
-  }
-
-  return packet;
-}
-
-function githubIssueCommentsUrl(apiBaseUrl: string | undefined, pr: GithubPullRequestRef): string {
-  const base = apiBaseUrl ?? "https://api.github.com";
-  return `${base}/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/issues/${pr.pullNumber}/comments`;
-}
-
-function githubHeaders(token: string): Record<string, string> {
-  return {
-    "accept": "application/vnd.github+json",
-    "authorization": `Bearer ${token}`,
-    "content-type": "application/json",
-    "user-agent": "open-relay"
-  };
 }
 ```
 
-- [ ] **Step 4: Verify GREEN**
+- [ ] **Step 4: Implement send orchestration**
+
+Add to `src/transport/githubPr.ts`:
+
+```ts
+export type RunGh = (args: string[]) => string;
+
+export type SendReviewRequestInput = {
+  prTarget: string;
+  packet: Record<string, unknown>;
+  markdown: string;
+  dryRun: boolean;
+  update: boolean;
+  confirmPublic: boolean;
+  runGh: RunGh;
+};
+
+export type SendReviewRequestResult =
+  | { kind: "dry-run"; body: string; target: string }
+  | { kind: "posted" }
+  | { kind: "updated" };
+
+export function sendReviewRequestToGithubPr(input: SendReviewRequestInput): SendReviewRequestResult {
+  const target = parseGithubPrTarget(input.prTarget);
+  const body = buildReviewRequestCommentBody({
+    packet: input.packet,
+    markdown: input.markdown
+  });
+
+  if (input.dryRun) {
+    return { kind: "dry-run", body, target: target.display };
+  }
+
+  assertPublicConfirmation(target, input.confirmPublic, input.runGh);
+
+  if (input.update) {
+    updateReviewRequestComment(target, body, input.runGh);
+    return { kind: "updated" };
+  }
+
+  input.runGh([
+    "api",
+    `repos/${target.owner}/${target.repo}/issues/${target.pullNumber}/comments`,
+    "--method",
+    "POST",
+    "--field",
+    `body=${body}`
+  ]);
+
+  return { kind: "posted" };
+}
+
+function assertPublicConfirmation(target: GithubPrTarget, confirmPublic: boolean, runGh: RunGh): void {
+  const raw = runGh(["repo", "view", `${target.owner}/${target.repo}`, "--json", "visibility"]);
+  const parsed = JSON.parse(raw) as { visibility?: string };
+  if (parsed.visibility === "public" && !confirmPublic) {
+    throw new Error("Public GitHub repository requires --confirm-public.");
+  }
+}
+
+function updateReviewRequestComment(target: GithubPrTarget, body: string, runGh: RunGh): void {
+  const raw = runGh([
+    "api",
+    `repos/${target.owner}/${target.repo}/issues/${target.pullNumber}/comments`
+  ]);
+  const comments = JSON.parse(raw) as GithubIssueComment[];
+  const comment = findLatestOpenRelayReviewRequestComment(comments);
+  if (!comment) {
+    throw new Error("No existing Open Relay review-request comment found.");
+  }
+
+  runGh([
+    "api",
+    `repos/${target.owner}/${target.repo}/issues/comments/${comment.id}`,
+    "--method",
+    "PATCH",
+    "--field",
+    `body=${body}`
+  ]);
+}
+```
+
+- [ ] **Step 5: Verify GREEN**
 
 Run:
 
 ```bash
-npm test -- --test-name-pattern "posts packet comments|fetches newest valid packet"
+npm test -- --test-name-pattern "dry-run send|checks public visibility|public repositories"
 ```
 
-Expected: API client tests pass with no real network use.
+Expected: send orchestration tests pass.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/githubPrTransport.ts tests/githubPrTransport.test.ts
-git commit -m "feat: add github pr transport client"
+git add src/transport/gh.ts src/transport/githubPr.ts tests/githubPrTransport.test.ts
+git commit -m "feat: add gh-backed review request transport"
 ```
 
-## Task 3: CLI Send And Fetch Commands
+## Task 3: CLI Send Command
 
 **Files:**
 - Modify: `src/cli.ts`
@@ -524,49 +522,74 @@ git commit -m "feat: add github pr transport client"
 
 - [ ] **Step 1: Write failing CLI tests**
 
-Add tests that assert:
+Add tests:
 
 ```ts
-test("prints github-pr transport commands in help", () => {
+test("prints github-pr send command in help", () => {
   const result = spawnSync(process.execPath, [cliPath, "--help"], { encoding: "utf8" });
 
   assert.equal(result.status, 0);
-  assert.match(result.stdout, /open-relay transport github-pr send <packet\.json> --pr <url>/);
-  assert.match(result.stdout, /open-relay transport github-pr fetch --pr <url> --packet-type <type>/);
+  assert.match(result.stdout, /open-relay transport github-pr send review-request --pr <url-or-owner\/repo#number> --packet <path>/);
 });
 
-test("rejects github-pr transport without a token", () => {
+test("dry-runs github-pr review-request transport without gh", () => {
   const result = spawnSync(process.execPath, [
     cliPath,
     "transport",
     "github-pr",
     "send",
-    "examples/review-request/relay.json",
+    "review-request",
     "--pr",
-    "https://github.com/AcrossWorksAPI/open-relay/pull/34"
-  ], {
-    encoding: "utf8",
-    env: { ...process.env, GITHUB_TOKEN: "", GH_TOKEN: "" }
-  });
+    "AcrossWorksAPI/open-relay#34",
+    "--packet",
+    "examples/review-request/relay.json",
+    "--dry-run"
+  ], { encoding: "utf8" });
 
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /Missing GitHub token/);
-  assert.doesNotMatch(result.stderr, /AcrossWorksAPI\/open-relay/);
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /Would post Open Relay review request to AcrossWorksAPI\/open-relay#34/);
+  assert.match(result.stdout, /<!-- open-relay:review-request packet_version=0\.1 -->/);
+  assert.match(result.stdout, /# Review Request Relay Packet/);
 });
 
-test("rejects github-pr fetch with duplicate packet type", () => {
+test("rejects github-pr send without dry-run when gh fails", () => {
   const result = spawnSync(process.execPath, [
     cliPath,
     "transport",
     "github-pr",
-    "fetch",
-    "--pr", "https://github.com/AcrossWorksAPI/open-relay/pull/34",
-    "--packet-type", "review-response",
-    "--packet-type", "review-request"
+    "send",
+    "review-request",
+    "--pr",
+    "AcrossWorksAPI/open-relay#34",
+    "--packet",
+    "examples/review-request/relay.json"
+  ], {
+    encoding: "utf8",
+    env: { ...process.env, PATH: "" }
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Could not send Open Relay review request/);
+  assert.doesNotMatch(result.stderr, /AcrossWorksAPI\/open-relay/);
+  assert.doesNotMatch(result.stderr, /Review Request Relay Packet/);
+});
+
+test("rejects non-review-request packets for github-pr send", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "transport",
+    "github-pr",
+    "send",
+    "review-request",
+    "--pr",
+    "AcrossWorksAPI/open-relay#34",
+    "--packet",
+    "examples/review-response/relay.json",
+    "--dry-run"
   ], { encoding: "utf8" });
 
-  assert.equal(result.status, 2);
-  assert.match(result.stderr, /Duplicate flag: --packet-type/);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Packet is not a review-request/);
 });
 ```
 
@@ -575,111 +598,78 @@ test("rejects github-pr fetch with duplicate packet type", () => {
 Run:
 
 ```bash
-npm test -- --test-name-pattern "github-pr transport"
+npm test -- --test-name-pattern "github-pr send|dry-runs github-pr|non-review-request"
 ```
 
-Expected: tests fail because the command is not routed yet.
+Expected: tests fail because CLI route does not exist.
 
-- [ ] **Step 3: Implement CLI route and strict parsers**
+- [ ] **Step 3: Implement CLI parser and route**
 
-Update usage to include:
+Update `src/cli.ts`:
+
+- Add usage line:
 
 ```text
-open-relay transport github-pr send <packet.json> --pr <url>
-open-relay transport github-pr fetch --pr <url> --packet-type <type> [--packet-version <version>] [--output <packet.json>]
+open-relay transport github-pr send review-request --pr <url-or-owner/repo#number> --packet <path> [--dry-run] [--update] [--confirm-public]
 ```
 
-Add command routing:
+- Route:
 
 ```ts
-if (args[0] === "transport" && args[1] === "github-pr") {
-  if (args[2] === "send") {
-    return transportGithubPrSendCommand(args.slice(3));
-  }
-  if (args[2] === "fetch") {
-    return transportGithubPrFetchCommand(args.slice(3));
-  }
+if (args[0] === "transport" && args[1] === "github-pr" && args[2] === "send" && args[3] === "review-request") {
+  return transportGithubPrSendReviewRequestCommand(args.slice(4));
 }
 ```
 
-Use these behaviors:
-
-- `send` parses `<packet.json> --pr <url>`.
-- `send` rejects unknown flags, duplicate `--pr`, missing packet path, and missing `--pr`.
-- `send` reads and parses JSON with the same invalid-JSON privacy posture as validate/render.
-- `send` validates the packet with `validatePacket`.
-- `send` renders with `renderPacketMarkdown`.
-- `send` posts with `postGithubPrPacket`.
-- `send` prints exactly `Posted Open Relay packet to GitHub PR.` on success.
-- `fetch` parses `--pr`, `--packet-type`, optional `--packet-version`, optional `--output`.
-- `fetch` validates the fetched packet before writing.
-- `fetch` writes pretty JSON plus trailing newline to stdout or `--output`.
-- `fetch` prints exactly `Fetched Open Relay packet from GitHub PR.` on file write success.
-- Both commands read token with `process.env.GITHUB_TOKEN || process.env.GH_TOKEN`.
-- Both commands pass `process.env.OPEN_RELAY_GITHUB_API_BASE_URL` into the client for tests. Do not mention that variable in help output.
-
-- [ ] **Step 4: Add fake API CLI success tests**
-
-Add a local HTTP server helper in `tests/cli.test.ts` and test:
+- Parser returns:
 
 ```ts
-test("sends packets to github-pr transport through the CLI", async () => {
-  const requests: string[] = [];
-  const server = createServer(async (request, response) => {
-    const chunks: Buffer[] = [];
-    request.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    await once(request, "end");
-    requests.push(Buffer.concat(chunks).toString("utf8"));
-    response.writeHead(201, { "content-type": "application/json" });
-    response.end(JSON.stringify({ id: 1 }));
-  });
-  await listen(server);
-
-  try {
-    const result = spawnSync(process.execPath, [
-      cliPath,
-      "transport",
-      "github-pr",
-      "send",
-      "examples/review-request/relay.json",
-      "--pr",
-      "https://github.com/AcrossWorksAPI/open-relay/pull/34"
-    ], {
-      encoding: "utf8",
-      env: {
-        ...process.env,
-        GITHUB_TOKEN: "SECRET_TOKEN_SHOULD_NOT_APPEAR",
-        OPEN_RELAY_GITHUB_API_BASE_URL: localBaseUrl(server)
-      }
-    });
-
-    assert.equal(result.status, 0);
-    assert.match(result.stdout, /Posted Open Relay packet to GitHub PR/);
-    assert.doesNotMatch(result.stdout, /AcrossWorksAPI\/open-relay/);
-    assert.match(requests[0], /open-relay:packet/);
-  } finally {
-    await close(server);
-  }
-});
+type TransportGithubPrSendArgs =
+  | { ok: true; prTarget: string; packetPath: string; dryRun: boolean; update: boolean; confirmPublic: boolean }
+  | { ok: false; message: string };
 ```
 
-Add the matching `fetch` test with a server returning a comment containing `examples/review-response/relay.json` inside a transport comment and assert stdout validates as `packet_type: "review-response"`.
+- Parser rules:
+  - `--pr` and `--packet` require values.
+  - `--dry-run`, `--update`, and `--confirm-public` are boolean flags.
+  - Unknown flags fail.
+  - Duplicate singleton flags fail.
+  - Positional arguments fail.
 
-- [ ] **Step 5: Verify GREEN**
+- Command rules:
+  - Read packet JSON.
+  - Validate with `validatePacket`.
+  - Reject if `packet_type !== "review-request"`.
+  - Render with `renderPacketMarkdown`.
+  - Call `sendReviewRequestToGithubPr` with `runGh` from `src/transport/gh.ts`.
+  - On dry run, write:
+
+```text
+Would post Open Relay review request to owner/repo#number.
+
+<body>
+```
+
+  - On posted success, write `Posted Open Relay review request to GitHub PR.`
+  - On updated success, write `Updated Open Relay review request on GitHub PR.`
+  - On invalid JSON, write `Invalid JSON in <path>`.
+  - On write/send/gh failures, write `Could not send Open Relay review request.`
+
+- [ ] **Step 4: Verify GREEN**
 
 Run:
 
 ```bash
-npm test -- --test-name-pattern "github-pr transport|GitHub token|sends packets|fetches packets"
+npm test -- --test-name-pattern "github-pr send|dry-runs github-pr|non-review-request"
 ```
 
-Expected: CLI parser and fake API tests pass.
+Expected: CLI transport tests pass.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/cli.ts tests/cli.test.ts
-git commit -m "feat: add github pr transport cli"
+git commit -m "feat: add github pr send cli"
 ```
 
 ## Task 4: Protocol Doc, Package Smoke, And Closeout
@@ -697,7 +687,7 @@ git commit -m "feat: add github pr transport cli"
 
 - [ ] **Step 1: Write protocol doc**
 
-Create `docs/protocol/github-pr-transport.md` with these sections:
+Create `docs/protocol/github-pr-transport.md` with:
 
 ```markdown
 # GitHub PR Transport
@@ -707,35 +697,34 @@ Last updated: 2026-06-27
 ## Purpose
 
 GitHub PR transport moves already-valid Open Relay packets through GitHub pull
-request comments. It is the first explicit transport boundary for the review
-loop.
+request comments. The first implementation sends `review-request` packets.
 
 ## Commands
 
-- `open-relay transport github-pr send <packet.json> --pr <url>`
-- `open-relay transport github-pr fetch --pr <url> --packet-type <type> [--packet-version <version>] [--output <packet.json>]`
+`open-relay transport github-pr send review-request --pr <target> --packet <path> [--dry-run] [--update] [--confirm-public]`
 
-## Comment Contract
+## Safety Contract
 
-Transport comments must include an Open Relay marker and a fenced `json
-open-relay` machine packet. The human-readable body is for review. The fenced
-JSON is the source of truth for `fetch`.
+Sending is an outward publication action. `--pr` is always explicit. Dry runs do
+not call `gh`. Non-dry-run sends use the user's local `gh` authentication and
+never read or print token values. Public repositories require
+`--confirm-public`.
 
-## Security And Privacy
+## Marker Contract
 
-Commands require `GITHUB_TOKEN` or `GH_TOKEN`. Output must not echo token
-values, PR URLs, API URLs, output paths, comment ids, or raw packet bodies in
-success or failure messages. The command posts only the packet the user
-explicitly provides.
+Open Relay comments include `<!-- open-relay:review-request packet_version=0.1 -->`
+so `--update` and future fetch/correlation commands can find transport-owned
+comments without scraping prose.
 
 ## Non-Goals
 
-- Requesting Claude review.
+- Fetching review responses.
 - Parsing arbitrary reviewer prose.
-- Posting review decisions to GitHub review APIs.
+- Requesting Claude review.
+- Posting GitHub review decisions.
 - Triggering Codex fixes.
 - Auto-merging.
-- Saving fetched review responses.
+- Saving fetched responses.
 - Supporting GitHub Enterprise or non-GitHub remotes.
 ```
 
@@ -744,23 +733,21 @@ explicitly provides.
 In `scripts/smoke-pack.js`, add:
 
 ```js
-runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
-runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
+runCli(cli, ["--help"], { contains: "open-relay transport github-pr send review-request" });
 
-const missingToken = spawnSync(cli, [
+runCli(cli, [
   "transport",
   "github-pr",
   "send",
-  join(fixtureDir, "examples", "review-request", "relay.json"),
+  "review-request",
   "--pr",
-  "https://github.com/AcrossWorksAPI/open-relay/pull/34"
+  "AcrossWorksAPI/open-relay#34",
+  "--packet",
+  join(fixtureDir, "examples", "review-request", "relay.json"),
+  "--dry-run"
 ], {
-  encoding: "utf8",
-  env: { ...process.env, GITHUB_TOKEN: "", GH_TOKEN: "" }
+  contains: "Would post Open Relay review request to AcrossWorksAPI/open-relay#34"
 });
-assert.equal(missingToken.status, 1);
-assert.match(missingToken.stderr, /Missing GitHub token/);
-assert.doesNotMatch(missingToken.stderr, /AcrossWorksAPI\/open-relay/);
 ```
 
 - [ ] **Step 3: Update roadmap docs**
@@ -768,12 +755,12 @@ assert.doesNotMatch(missingToken.stderr, /AcrossWorksAPI\/open-relay/);
 Make these status changes:
 
 - `docs/planning/ROADMAP.md`: Boundary/transport decision -> `In progress`, plan -> `docs/superpowers/plans/2026-06-27-github-pr-transport.md`.
-- `docs/planning/ACTIVE_WORK.md`: current direction says GitHub PR comment transport is the active first boundary.
+- `docs/planning/ACTIVE_WORK.md`: current direction says GitHub PR review-request transport is the active first boundary.
 - `docs/planning/PLAN_REGISTRY.md`: register this plan and protocol doc as active.
 - `docs/planning/VERSION_LEDGER.md`: add branch evidence row with local commands.
-- `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`: transport create/view/error-smoke -> `In progress`; notifications/automation/merge remain `Deferred` or `Planned`.
+- `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`: transport create/error-smoke -> `In progress`; fetch/read, automation, review-response storage, and merge actions remain planned/deferred.
 - `master_build.md`: near-term queue says first packet transport boundary is in progress.
-- `docs/STATUS.md`: next step says review and merge GitHub PR transport.
+- `docs/STATUS.md`: next step says review and merge GitHub PR review-request transport.
 
 - [ ] **Step 4: Final verification**
 
@@ -797,23 +784,36 @@ Expected:
 
 ```bash
 git add docs/protocol/github-pr-transport.md scripts/smoke-pack.js docs/STATUS.md docs/planning/ROADMAP.md docs/planning/ACTIVE_WORK.md docs/planning/PLAN_REGISTRY.md docs/planning/VERSION_LEDGER.md docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md master_build.md
-git commit -m "docs: close github pr transport implementation"
+git commit -m "docs: close github pr review-request transport"
 ```
 
 ## Acceptance Criteria
 
-- A user can post any valid relay packet to a GitHub PR comment with one command.
-- A user can fetch the newest valid marked relay packet of a requested type from a GitHub PR comment with one command.
-- Transport commands validate packets before sending and after fetching.
-- The comment format is readable by humans and exact enough for machines.
-- No live tests hit GitHub.
-- No command output leaks token values, PR URLs, API URLs, output paths, comment ids, or packet bodies.
-- The implementation remains generic over packet type and does not add type-specific transport commands.
-- The implementation does not request Claude, parse arbitrary prose, trigger fixes, save fetched responses, or merge PRs.
+- A user can dry-run posting an existing valid `review-request` packet to a GitHub PR without `gh` being installed.
+- A user can post an existing valid `review-request` packet to a GitHub PR through local `gh` authentication.
+- A user can update the latest existing Open Relay review-request comment on a PR.
+- Sending validates packets before rendering/posting.
+- Sending refuses non-review-request packets.
+- Sending refuses public repository posting unless `--confirm-public` is supplied.
+- Open Relay never reads `GITHUB_TOKEN` or `GH_TOKEN`.
+- Command execution uses `execFileSync("gh", args, ...)`, not shell strings.
+- Failure output never echoes packet bodies, raw `gh` stderr, local paths, token values, or full PR URLs.
+- No tests hit live GitHub.
+- The implementation does not fetch responses, request Claude, parse arbitrary prose, trigger fixes, save responses, or merge PRs.
+
+## Follow-Up Slice
+
+After send lands, implement:
+
+```text
+open-relay transport github-pr fetch review-response --pr <target> [--reviewer <login>] [--output <path>]
+```
+
+The fetch slice should map GitHub's structured reviews and inline review comments to a validated `review-response` packet. It should not parse arbitrary prose beyond assigning GitHub-provided review/comment bodies into packet fields.
 
 ## Self-Review
 
-- Spec coverage: This plan covers the chosen GitHub PR comment boundary, send/fetch commands, exact comment contract, token handling, sanitized output, local test strategy, package smoke, and roadmap closeout.
-- Scope check: This is one bounded implementation slice. It moves exact packets through PR comments and deliberately avoids reviewer-prose parsing, automation, PR review APIs, and hosted relay infrastructure.
+- Spec coverage: This reconciles the GitHub PR first-boundary call with the safer `gh`-based implementation path, explicit outward-action safety, dry-run, public-repo confirmation, update behavior, package smoke, and roadmap closeout.
+- Scope check: This is one bounded implementation slice: send an existing validated review request to a PR. Fetching review responses is explicitly the next slice.
 - Placeholder-term scan: The plan contains no unresolved marker words or unowned future work phrased as implementation steps.
-- Type consistency: The plan consistently uses `GithubPullRequestRef`, `GithubComment`, `ExtractedTransportPacket`, `postGithubPrPacket`, `fetchLatestGithubPrPacket`, and `transport github-pr`.
+- Type consistency: The plan consistently uses `GithubPrTarget`, `GithubIssueComment`, `RunGh`, `sendReviewRequestToGithubPr`, and `transport github-pr send review-request`.
