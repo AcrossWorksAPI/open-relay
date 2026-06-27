@@ -234,6 +234,10 @@ The initial JSON packet is an object with stable top-level keys:
 protocol shape, not a final JSON Schema. A later slice should convert it into
 `schemas/relay.schema.json` after the example packet survives review.
 
+Under the protocol envelope, `review-request` keeps `additionalProperties:
+false`. Any new accepted field, including optional additions, requires a new
+`packet_version` unless a future version explicitly defines an extension point.
+
 ## Review-Ready Standard
 
 A `review-request` packet is review-ready when:

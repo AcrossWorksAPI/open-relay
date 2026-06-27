@@ -67,7 +67,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | In progress | Codex | Plans schema registry, dispatching validator, renderer dispatcher, tests, and closeout for the envelope slice. |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | In progress | Codex | Implementation branch `codex/relay-protocol-envelope-implementation` is executing the schema registry, dispatching validator, renderer dispatcher, tests, and closeout plan. |
 
 ## Implemented Or Historical Plans
 

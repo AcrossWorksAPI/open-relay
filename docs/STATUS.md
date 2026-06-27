@@ -45,8 +45,9 @@ next implementation slice.
 | Local handoff workflow planning | Done | PR #25 merged the design and implementation plan for `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
 | Local handoff workflow implementation | Done | PR #26 merged `handoff review-request`, local-only help text, CLI regressions, parity with direct Markdown generation, sanitized write-error behavior, and installed-package smoke coverage. |
 | Repo-local packet storage implementation | Done | PR #29 merged explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
-| Protocol envelope planning | In progress | New design and implementation plan define multi-type/version dispatch before review-response, implementation-handoff, resume, or future packet versions. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, and repo-local packet storage are merged; review-response, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
+| Protocol envelope planning | Done | PR #30 merged the multi-type/version dispatch design and implementation plan before review-response, implementation-handoff, resume, or future packet versions. |
+| Protocol envelope implementation | In progress | Branch `codex/relay-protocol-envelope-implementation` adds schema registry dispatch, renderer dispatch, unsupported-combination errors, and second-type registry proof tests. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, and repo-local packet storage are merged; protocol envelope implementation is in progress; review-response, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -89,12 +90,13 @@ next implementation slice.
 | 2026-06-26 | PR #26 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/26`; merge commit `c95f409`; `Governance Checks` passed, Claude review reported no findings, merged-main `npm run check` passed with 61 tests, `npm run smoke:pack` verified installed CLI `handoff review-request`, and `git diff --check` passed. |
 | 2026-06-27 | PR #28 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/28`; merge commit `bdefbb8`; `Governance Checks` passed, Claude re-review reported no remaining findings, and repo-local packet storage planning merged. |
 | 2026-06-27 | PR #29 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/29`; merge commit `87f0bb7`; `Governance Checks` passed; branch `npm run check` passed with 69 tests, `npm run smoke:pack` verified installed CLI save behavior, and `git diff --check` passed. |
-| 2026-06-27 | Review-loop roadmap re-anchor | In progress | Added protocol envelope design and implementation plan, restored roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, and addressed Claude review feedback by limiting the shared header to dispatch keys plus adding supported combinations to unsupported-type errors; `npm run check` passed with 69 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
+| 2026-06-27 | Review-loop roadmap re-anchor | Merged | PR #30: `https://github.com/AcrossWorksAPI/open-relay/pull/30`; merge commit `7f79246`; added protocol envelope design and implementation plan, restored roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, and addressed Claude review feedback by limiting the shared header to dispatch keys plus adding supported combinations to unsupported-type errors; `Governance Checks` passed and Claude re-review reported merge-ready. |
+| 2026-06-27 | Protocol envelope implementation branch checks | Passed | PR #31: `https://github.com/AcrossWorksAPI/open-relay/pull/31`; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
 
 ## Next Step
 
-Open the protocol envelope and roadmap re-anchor PR, wait for CI and Claude
-review, then implement the envelope before adding any new packet type.
+Open the protocol envelope implementation PR, wait for CI and Claude review,
+then merge it before planning the first `review-response` packet type.
 
 ## Owner Decisions Needed
 

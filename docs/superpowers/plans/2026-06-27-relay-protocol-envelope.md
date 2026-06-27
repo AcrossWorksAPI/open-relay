@@ -39,7 +39,7 @@
 - Modify `src/schema.ts`
 - Modify `tests/schema.test.ts`
 
-- [ ] **Step 1: Add failing unsupported dispatch tests**
+- [x] **Step 1: Add failing unsupported dispatch tests**
 
 Add to `tests/schema.test.ts`:
 
@@ -74,7 +74,7 @@ test("rejects unsupported packet versions with supported combinations", () => {
 });
 ```
 
-- [ ] **Step 2: Add failing minimal-header test**
+- [x] **Step 2: Add failing minimal-header test**
 
 Add to `tests/schema.test.ts`:
 
@@ -87,7 +87,7 @@ test("requires packet type before dispatch", () => {
 });
 ```
 
-- [ ] **Step 3: Add failing no-created-at-short-circuit test**
+- [x] **Step 3: Add failing no-created-at-short-circuit test**
 
 Add to `tests/schema.test.ts`:
 
@@ -111,7 +111,7 @@ test("lets review-request schema own created_at validation", () => {
 
 Expected: `npm run check` fails because unsupported packets currently go through the single review-request schema and no registry exists.
 
-- [ ] **Step 4: Create schema registry**
+- [x] **Step 4: Create schema registry**
 
 Create `src/schemaRegistry.ts`:
 
@@ -173,7 +173,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 ```
 
-- [ ] **Step 5: Refactor validator dispatch**
+- [x] **Step 5: Refactor validator dispatch**
 
 Update `src/schema.ts`:
 
@@ -260,7 +260,7 @@ function formatErrors(errors: ErrorObject[]): string[] {
 }
 ```
 
-- [ ] **Step 6: Run validator tests**
+- [x] **Step 6: Run validator tests**
 
 Run:
 
@@ -278,7 +278,7 @@ Expected: selected tests pass.
 - Modify `src/cli.ts`
 - Modify `src/index.ts`
 
-- [ ] **Step 1: Add failing renderer dispatcher tests**
+- [x] **Step 1: Add failing renderer dispatcher tests**
 
 Create `tests/renderPacket.test.ts`:
 
@@ -309,7 +309,7 @@ test("rejects packets without a registered renderer", () => {
 
 Expected: `npm run check` fails because `src/renderPacket.ts` does not exist.
 
-- [ ] **Step 2: Create renderer dispatcher**
+- [x] **Step 2: Create renderer dispatcher**
 
 Create `src/renderPacket.ts`:
 
@@ -335,7 +335,7 @@ export function renderPacketMarkdown(packet: Record<string, unknown>): string {
 }
 ```
 
-- [ ] **Step 3: Use dispatcher in CLI**
+- [x] **Step 3: Use dispatcher in CLI**
 
 Modify `src/cli.ts`:
 
@@ -357,7 +357,7 @@ const output = parsed.options.format === "markdown"
   : `${JSON.stringify(packet, null, 2)}\n`;
 ```
 
-- [ ] **Step 4: Export dispatcher**
+- [x] **Step 4: Export dispatcher**
 
 Modify `src/index.ts`:
 
@@ -365,7 +365,7 @@ Modify `src/index.ts`:
 export { renderPacketMarkdown } from "./renderPacket";
 ```
 
-- [ ] **Step 5: Run renderer tests**
+- [x] **Step 5: Run renderer tests**
 
 Run:
 
@@ -381,7 +381,7 @@ Expected: selected tests pass and committed example Markdown remains unchanged.
 - Modify `tests/schema.test.ts`
 - Modify `tests/renderPacket.test.ts`
 
-- [ ] **Step 1: Add test-only schema registry entry test**
+- [x] **Step 1: Add test-only schema registry entry test**
 
 Add to `tests/schema.test.ts`:
 
@@ -426,7 +426,7 @@ test("validates a test-only packet type through the registry", () => {
 });
 ```
 
-- [ ] **Step 2: Add test-only renderer registry entry test**
+- [x] **Step 2: Add test-only renderer registry entry test**
 
 Update the existing `tests/renderPacket.test.ts` dispatcher import to also include
 `PACKET_RENDERERS`:
@@ -456,7 +456,7 @@ test("renders a test-only packet type through the renderer registry", () => {
 });
 ```
 
-- [ ] **Step 3: Run extensibility tests**
+- [x] **Step 3: Run extensibility tests**
 
 Run:
 
@@ -478,7 +478,7 @@ Expected: selected tests pass.
 - Modify `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 - Modify `master_build.md`
 
-- [ ] **Step 1: Record versioning rule**
+- [x] **Step 1: Record versioning rule**
 
 Add to `docs/protocol/review-request-packet.md`:
 
@@ -488,7 +488,7 @@ Any new accepted field, including optional additions, requires a new
 `packet_version` unless a future version explicitly defines an extension point.
 ```
 
-- [ ] **Step 2: Update roadmap/status closeout**
+- [x] **Step 2: Update roadmap/status closeout**
 
 Record:
 
@@ -499,7 +499,7 @@ Record:
 After merge, update the slice to `Done` and the lifecycle matrix row toward
 `Shipped`.
 
-- [ ] **Step 3: Run full verification**
+- [x] **Step 3: Run full verification**
 
 Run:
 
@@ -511,7 +511,7 @@ git diff --check
 
 Expected: all pass.
 
-- [ ] **Step 4: Open implementation PR**
+- [x] **Step 4: Open implementation PR**
 
 Push `codex/relay-protocol-envelope-implementation` and create a PR titled:
 
