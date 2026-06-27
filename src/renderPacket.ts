@@ -1,10 +1,13 @@
 import { renderReviewRequestMarkdown } from "./renderReviewRequest";
+import { renderReviewResponseMarkdown } from "./renderReviewResponse";
 import type { ReviewRequestPacket } from "./reviewRequest";
+import type { ReviewResponsePacket } from "./reviewResponse";
 
 export type PacketRenderer = (packet: Record<string, unknown>) => string;
 
 export const PACKET_RENDERERS: Record<string, PacketRenderer> = {
-  "review-request": (packet) => renderReviewRequestMarkdown(packet as unknown as ReviewRequestPacket)
+  "review-request": (packet) => renderReviewRequestMarkdown(packet as unknown as ReviewRequestPacket),
+  "review-response": (packet) => renderReviewResponseMarkdown(packet as unknown as ReviewResponsePacket)
 };
 
 export function renderPacketMarkdown(packet: Record<string, unknown>): string {

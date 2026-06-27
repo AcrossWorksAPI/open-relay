@@ -1,4 +1,13 @@
 import type { ReviewRequestPacket } from "./reviewRequest";
+import {
+  blockText,
+  codeSpanText,
+  escapeCodeSpanTableCell,
+  escapeTableCell,
+  formatList,
+  inlineText,
+  labelForProvenanceType
+} from "./renderMarkdown";
 
 export function renderReviewRequestMarkdown(packet: ReviewRequestPacket): string {
   const sections = [
@@ -142,41 +151,4 @@ function renderSensitiveData(packet: ReviewRequestPacket): string {
   return packet.sensitive_data.excluded
     ? blockText(packet.sensitive_data.notes)
     : `Sensitive-data exclusion not asserted. ${inlineText(packet.sensitive_data.notes)}`;
-}
-
-function formatList(values: string[], emptyText = "none"): string {
-  return values.length > 0 ? values.map(inlineText).join(", ") : emptyText;
-}
-
-function escapeTableCell(value: string): string {
-  return inlineText(value).replace(/\|/g, "\\|");
-}
-
-function escapeCodeSpanTableCell(value: string): string {
-  return codeSpanText(value).replace(/\|/g, "\\|");
-}
-
-function inlineText(value: string): string {
-  return value.replace(/\r?\n/g, " ");
-}
-
-function codeSpanText(value: string): string {
-  return inlineText(value).replace(/`/g, "");
-}
-
-function blockText(value: string): string {
-  return value.trim();
-}
-
-function labelForProvenanceType(type: ReviewRequestPacket["provenance"][number]["type"]): string {
-  const labels: Record<ReviewRequestPacket["provenance"][number]["type"], string> = {
-    pull_request: "Pull Request",
-    ci_run: "CI Run",
-    commit: "Commit",
-    issue: "Issue",
-    user_note: "User Note",
-    external_url: "External URL"
-  };
-
-  return labels[type];
 }

@@ -128,7 +128,7 @@ Expected: review-response schema and semantic tests pass; unsupported-combinatio
 - Modify: `src/renderPacket.ts`
 - Modify: `tests/renderPacket.test.ts`
 
-- [ ] **Step 1: Write failing renderer tests**
+- [x] **Step 1: Write failing renderer tests**
 
 Add tests that assert:
 
@@ -149,7 +149,7 @@ test("renders review-response through the packet dispatcher", () => {
 });
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -159,7 +159,7 @@ npm test -- --test-name-pattern "review-response markdown|Outcome And Confidence
 
 Expected: failure because the renderer and fixture Markdown do not exist yet.
 
-- [ ] **Step 3: Implement renderer and examples**
+- [x] **Step 3: Implement renderer and examples**
 
 Extract `inlineText`, `blockText`, `codeSpanText`, `escapeTableCell`, `escapeCodeSpanTableCell`, `formatList`, and `labelForProvenanceType` into `src/renderMarkdown.ts`. Update `renderReviewRequest.ts` to import them and keep the existing review-request snapshot byte-identical.
 
@@ -180,7 +180,7 @@ Implement `renderReviewResponseMarkdown(packet)` with this section order:
 
 Render neutral empty states for empty findings, files, limitations, verification, provenance, and redactions. Generate `examples/review-response/relay.md` from `examples/review-response/relay.json` through the renderer.
 
-- [ ] **Step 4: Verify GREEN**
+- [x] **Step 4: Verify GREEN**
 
 Run:
 
