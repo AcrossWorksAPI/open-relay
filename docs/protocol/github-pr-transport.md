@@ -19,6 +19,16 @@ open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-ty
 comments, filters by author and packet type/version, decodes the marker payload,
 and validates the fetched packet before printing or writing it.
 
+## Packet Producer Contract
+
+This transport moves exact Open Relay packets. The reviewing agent or human must
+create a valid packet, such as `review-response/0.1`, and post it with `send`
+before another agent can retrieve it with `fetch`.
+
+`fetch` does not synthesize packets from native GitHub review approvals, review
+requests, inline comments, or prose. Native GitHub review import is a separate
+future transport mode.
+
 ## Marker Contract
 
 The machine-readable payload is a base64-encoded JSON packet in an HTML comment:
