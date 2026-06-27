@@ -14,10 +14,11 @@ Markdown packet in one command. Local `handoff review-request` is merged to
 make the review-request path clearer as a workflow command. Repo-local packet
 storage is merged to make saved handoff packets durable without adding global
 storage, hosted sync, or external orchestration. Protocol envelope dispatch is
-merged, so the next planning direction is the first `review-response` packet
-type, followed by boundary/transport, richer packet evidence,
-implementation-handoff, resume-project, and agent-ready prompts. The approved
-first runtime direction is a TypeScript CLI on Node.js with npm.
+merged, and the active planning branch now defines the first
+`review-response` packet type. That is followed by boundary/transport, richer
+packet evidence, implementation-handoff, resume-project, and agent-ready
+prompts. The approved first runtime direction is a TypeScript CLI on Node.js
+with npm.
 
 ## Current Implementation Source
 
@@ -66,6 +67,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
+| `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implemented schema registry, dispatching validator, renderer dispatcher, tests, and closeout through PR #31. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
@@ -89,7 +91,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Review loop not implemented | High | Roadmap re-anchor restores review-response, implementation-handoff, resume-project, and protocol envelope slices as planned work. |
-| Review-response packet type missing | High | Protocol envelope dispatch is merged; `review-response` is the next packet-type spec. |
+| Review-response packet implementation missing | High | `review-response` packet design is active; implementation remains unbuilt until spec review and plan approval. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -97,9 +99,9 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Draft the first `review-response` packet spec.
-2. Decide the first packet transport boundary.
-3. Plan packet evidence enrichment for richer diff/test capture.
+1. Review and merge the first `review-response` packet spec.
+2. Write the implementation plan for `review-response` validation and rendering.
+3. Decide the first packet transport boundary.
 4. Decide whether private redaction rule files are needed before package
    publishing.
 5. Define npm publish owner, first semver version, changelog, and tag workflow.

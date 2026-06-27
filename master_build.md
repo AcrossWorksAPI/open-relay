@@ -88,7 +88,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Add local review-request handoff workflow | Done | No |
 | P1 | Add repo-local packet storage | Done | No |
 | P1 | Re-anchor roadmap to review loop and protocol envelope | Done | No |
-| P1 | Define review-response packet type | Planned | No |
+| P1 | Define review-response packet type | In progress | No |
 
 ## Known Gaps
 

@@ -47,7 +47,8 @@ next protocol slice is the first `review-response` packet type.
 | Repo-local packet storage implementation | Done | PR #29 merged explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
 | Protocol envelope planning | Done | PR #30 merged the multi-type/version dispatch design and implementation plan before review-response, implementation-handoff, resume, or future packet versions. |
 | Protocol envelope implementation | Done | PR #31 merged schema registry dispatch, renderer dispatch, unsupported-combination errors, package export, and second-type registry proof tests. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, and protocol envelope dispatch are merged; review-response, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
+| Review-response packet planning | In progress | Branch `codex/review-response-packet-spec` defines `review-response` 0.1 as the first consumer of the protocol envelope and carries forward the validate-message follow-up. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, and protocol envelope dispatch are merged; review-response implementation, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -93,12 +94,12 @@ next protocol slice is the first `review-response` packet type.
 | 2026-06-27 | Review-loop roadmap re-anchor | Merged | PR #30: `https://github.com/AcrossWorksAPI/open-relay/pull/30`; merge commit `7f79246`; added protocol envelope design and implementation plan, restored roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, and addressed Claude review feedback by limiting the shared header to dispatch keys plus adding supported combinations to unsupported-type errors; `Governance Checks` passed and Claude re-review reported merge-ready. |
 | 2026-06-27 | Protocol envelope implementation branch checks | Passed | PR #31: `https://github.com/AcrossWorksAPI/open-relay/pull/31`; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. |
 | 2026-06-27 | PR #31 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/31`; merge commit `5c3b739`; `Governance Checks` passed, Claude handoff review reported merge-ready with one low command-message follow-up for the review-response slice, and fresh local `npm run check` passed with 77 tests before merge. |
+| 2026-06-27 | Review-response packet spec branch checks | Passed | Branch `codex/review-response-packet-spec`; `npm run check` passed with 77 tests and `git diff --check` passed locally. |
 
 ## Next Step
 
-Draft the first `review-response` packet spec, carrying forward the generic
-validate-message follow-up now that a second packet type is about to make it
-user-visible.
+Open the `review-response` packet spec PR, wait for CI and Claude review, then
+write the implementation plan after the spec is approved.
 
 ## Owner Decisions Needed
 

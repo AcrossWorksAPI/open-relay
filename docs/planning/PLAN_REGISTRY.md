@@ -49,6 +49,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Local handoff workflow design | Active |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Repo-local packet storage design | Active |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Relay protocol envelope and multi-type extensibility design | Active |
+| `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Review-response packet design | Active |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Relay protocol envelope implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Git-state review-request generator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Review-request Markdown renderer implementation plan | Active |
@@ -70,7 +71,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans; next planned source is the `review-response` packet spec. |
+| `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | In progress | Codex | Defines `review-response` 0.1 and the validation/rendering implementation boundary. |
 
 ## Implemented Or Historical Plans
 
