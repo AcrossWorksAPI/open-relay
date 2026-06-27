@@ -15,12 +15,14 @@ make the review-request path clearer as a workflow command. Repo-local packet
 storage is merged to make saved handoff packets durable without adding global
 storage, hosted sync, or external orchestration. Protocol envelope dispatch and
 `review-response` validation/rendering are merged, so the request/response
-packet shapes now exist end-to-end. GitHub PR exact-packet transport is in
-implementation as the first boundary so packets can move between agents without
-manual copy/paste. Native GitHub review import, response storage, fix
-automation, merge automation, richer packet evidence, implementation-handoff,
-resume-project, and agent-ready prompts remain later slices. The approved first
-runtime direction is a TypeScript CLI on Node.js with npm.
+packet shapes now exist end-to-end. GitHub PR exact-packet transport is merged
+as the first boundary so packets can move between agents without manual
+copy/paste when both sides emit Open Relay packets. Reviewer-produced
+`review-response` packet workflow, native GitHub review import, response
+storage, fix automation, merge automation, richer packet evidence,
+implementation-handoff, resume-project, and agent-ready prompts remain later
+slices. The approved first runtime direction is a TypeScript CLI on Node.js
+with npm.
 
 ## Current Implementation Source
 
@@ -106,7 +108,7 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Review loop transport in progress | High | Review-request handoff and review-response validation/rendering are merged; GitHub PR exact-packet transport is in implementation; native review import, automation, implementation-handoff, and resume-project remain planned. |
+| Review response production workflow absent | High | Review-request handoff, review-response validation/rendering, and GitHub PR exact-packet transport are merged; a reviewer still needs a workflow to emit and send a `review-response` packet without manual copy/paste. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -114,7 +116,8 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review and merge the GitHub PR exact-packet transport implementation.
+1. Plan the reviewer-produced `review-response` packet workflow for the merged
+   GitHub PR transport.
 2. Decide whether private redaction rule files are needed before package
    publishing.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.

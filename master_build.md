@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, and GitHub PR exact-packet transport implementation in progress | PR #34 merge commit `ead0c90`; transport implementation source `docs/superpowers/plans/2026-06-27-github-pr-transport.md` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, and merged GitHub PR exact-packet transport | PR #36 merge commit `0f774e5`; transport implementation source `docs/superpowers/plans/2026-06-27-github-pr-transport.md` |
 
 ## Scope
 
@@ -48,7 +48,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - repo-local packet storage design, implementation plan, and merged implementation
 - relay protocol envelope and multi-type extensibility design, implementation plan, and merged implementation
 - review-response packet design, merged spec, validation/rendering implementation, examples, and package smoke
-- GitHub PR exact-packet transport implementation in progress
+- merged GitHub PR exact-packet transport implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -92,7 +92,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Re-anchor roadmap to review loop and protocol envelope | Done | No |
 | P1 | Define review-response packet type | Done | No |
 | P1 | Implement review-response packet type | Done | No |
-| P1 | Implement first packet transport boundary | In progress | No |
+| P1 | Implement first packet transport boundary | Done | No |
 
 ## Known Gaps
 
@@ -107,10 +107,10 @@ Current scope is the first local protocol and validation CLI baseline:
   bundles; global storage, list/read/delete/archive, retention, and hosted sync
   remain deferred.
 - The product brief's review loop, agent-ready prompts, diff summary, and test
-  evidence items are not fully implemented yet; protocol extensibility and the
-  `review-response` validation/rendering implementation are merged; GitHub PR
-  exact-packet transport is in implementation as the first boundary before the
-  loop moves without manual copy/paste.
+  evidence items are not fully implemented yet; protocol extensibility, the
+  `review-response` validation/rendering implementation, and GitHub PR
+  exact-packet transport are merged; reviewer-side response packet production is
+  the next gap before the loop moves without manual copy/paste.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.

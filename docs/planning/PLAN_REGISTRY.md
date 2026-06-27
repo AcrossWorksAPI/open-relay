@@ -87,7 +87,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | In progress | Codex | Implements GitHub PR exact-packet transport through local `gh`, dry-run, update, author-filtered fetch, protocol docs, and package smoke. |
+| - | - | - | No active implementation plans; next candidate is reviewer-produced `review-response` packet workflow for the merged GitHub PR transport. |
 
 ## Implemented Or Historical Plans
 
@@ -107,6 +107,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Done | Planned and implemented packet type/version schema registry dispatch, renderer dispatch, package export, supported-combination errors, test-only second-type proof, review, and merge closeout through PR #31. |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Done | Defined `review-response` 0.1 as the first protocol-envelope consumer and merged through PR #33. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Done | Planned and implemented `review-response` schema validation, semantic checks, Markdown rendering, examples, generic render, neutral validate messages, package exports, package smoke coverage, Claude review fix, and merge closeout through PR #34. |
+| `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Done | Planned and implemented GitHub PR exact-packet transport through local `gh`, dry-run, authenticated-user update, author-filtered fetch, protocol docs, package smoke, Claude review fixes, and merge closeout through PR #36. |
 
 ## Superseded Or Dormant Plans
 

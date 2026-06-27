@@ -25,7 +25,7 @@ merged, so request and response packet shapes now validate and render
 end-to-end. npm registry publishing, global packet storage, external agent
 invocation, review-response generation/storage, native GitHub review import,
 automation, and private redaction rules remain deferred. GitHub PR exact-packet
-transport is in implementation as the first outward packet boundary.
+transport is merged as the first outward packet boundary.
 
 ## Active Work
 
@@ -52,8 +52,8 @@ transport is in implementation as the first outward packet boundary.
 | Protocol envelope implementation | Done | PR #31 merged schema registry dispatch, renderer dispatch, unsupported-combination errors, package export, and second-type registry proof tests. |
 | Review-response packet planning | Done | PR #33 merged `review-response` 0.1 as the first consumer of the protocol envelope, with top-level verification reuse, outcome/confidence semantics, generic packet rendering direction, and explicit Markdown confidence rendering. |
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
-| GitHub PR packet transport implementation | In progress | Branch `codex/github-pr-transport-plan` adds `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, and GitHub PR exact-packet transport implementation are in place or in progress; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response generation/storage, automation, and external orchestration remain unbuilt. |
+| GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, and GitHub PR exact-packet transport are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response generation/storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -106,11 +106,14 @@ transport is in implementation as the first outward packet boundary.
 | 2026-06-27 | PR #34 merged-main closeout | Passed | Fresh `main` verification after merge: `npm run check` passed with 98 tests, `npm run smoke:pack` passed, `git diff --check` passed, and the placeholder guard found no unresolved marker terms. |
 | 2026-06-27 | GitHub PR packet transport branch checks | Passed | Branch `codex/github-pr-transport-plan`: `npm run check` passed with 123 tests, and `npm run smoke:pack` verified installed CLI transport help plus `transport github-pr send ... --dry-run` without live GitHub calls. |
 | 2026-06-27 | Claude review fixes for PR #36 | Passed | Added safe `gh auth status` first-run hint, scoped `send --update` to the authenticated `gh` user's matching packet comments, and made marker extraction CRLF-tolerant; `npm run check` passed with 123 tests and `git diff --check` passed. |
+| 2026-06-27 | PR #36 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/36`; merge commit `0f774e5`; `Governance Checks` passed, Claude review reported merge-ready, and review nits were addressed before merge. |
+| 2026-06-27 | PR #36 merged-main closeout | Passed | Fresh `main` verification after merge: `npm run check` passed with 123 tests, `npm run smoke:pack` passed, `git diff --check` passed, and the closeout placeholder scan found no unresolved marker terms. |
 
 ## Next Step
 
-Review and merge the GitHub PR exact-packet transport implementation so review
-requests and review responses can move between agents without manual copy/paste.
+Plan the reviewer-produced `review-response` packet workflow so a reviewing
+agent can create and send a response packet through the merged GitHub PR
+transport without manual copy/paste.
 
 ## Owner Decisions Needed
 
