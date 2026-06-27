@@ -283,7 +283,7 @@ Expected: CLI tests pass with existing review-request behavior still covered.
 - Modify: `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 - Modify: `master_build.md`
 
-- [ ] **Step 1: Write failing package smoke expectations**
+- [x] **Step 1: Write failing package smoke expectations**
 
 Update `scripts/smoke-pack.js` so installed package smoke asserts:
 
@@ -298,7 +298,7 @@ runCli(cli, ["render", join(fixtureDir, "examples", "review-response", "relay.js
 
 Update the entrypoint test command to assert `renderReviewResponseMarkdown` exists.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -308,11 +308,11 @@ npm run smoke:pack
 
 Expected: failure until schema, examples, renderer, package export, and generic render are implemented.
 
-- [ ] **Step 3: Implement export and closeout docs**
+- [x] **Step 3: Implement export and closeout docs**
 
 Export `renderReviewResponseMarkdown` and `ReviewResponsePacket` from `src/index.ts`. Update roadmap/status/ledger/matrix to mark review-response implementation in progress on the branch, record tests and package smoke evidence, and keep transport, storage, generation, PR comments, and automation deferred.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 Run:
 
