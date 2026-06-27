@@ -18,11 +18,12 @@ storage, hosted sync, or external orchestration. Protocol envelope dispatch and
 packet shapes now exist end-to-end. GitHub PR exact-packet transport is merged
 as the first boundary so packets can move between agents without manual
 copy/paste when both sides emit Open Relay packets. Reviewer-produced
-`review-response` packet workflow, native GitHub review import, response
-storage, fix automation, merge automation, richer packet evidence,
-implementation-handoff, resume-project, and agent-ready prompts remain later
-slices. The approved first runtime direction is a TypeScript CLI on Node.js
-with npm.
+`review-response` packet workflow planning is in progress so the reviewer side
+can create and send response packets without manual copy/paste. Native GitHub
+review import, response storage, fix automation, merge automation, richer
+packet evidence, implementation-handoff, resume-project, and agent-ready
+prompts remain later slices. The approved first runtime direction is a
+TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -86,6 +87,7 @@ with npm.
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
+| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
 | `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implemented schema registry, dispatching validator, renderer dispatcher, tests, and closeout through PR #31. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
@@ -108,7 +110,7 @@ with npm.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Review response production workflow absent | High | Review-request handoff, review-response validation/rendering, and GitHub PR exact-packet transport are merged; a reviewer still needs a workflow to emit and send a `review-response` packet without manual copy/paste. Native review import, automation, implementation-handoff, and resume-project remain planned. |
+| Review response production workflow absent | High | Planning is in progress for a local producer that turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -116,8 +118,8 @@ with npm.
 
 ## Next Recommended Work
 
-1. Plan the reviewer-produced `review-response` packet workflow for the merged
-   GitHub PR transport.
+1. Review the reviewer-produced `review-response` workflow plan, then implement
+   it if the planning gate passes.
 2. Decide whether private redaction rule files are needed before package
    publishing.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.
