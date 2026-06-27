@@ -76,12 +76,18 @@ Example:
 }
 ```
 
-Reserved fields are owned by Open Relay and must be rejected if present in the draft:
+The producer must validate the draft with a top-level key allowlist before
+building the packet. Reserved fields are owned by Open Relay and must be
+rejected if present in the draft:
 
 - `packet_type`
 - `packet_version`
 - `created_at`
 - `response_to`
+
+Unknown draft keys must also be rejected. This prevents reviewer-authored
+optional content from disappearing because of a typo, such as `verificaton`
+instead of `verification`.
 
 `verification` and `redactions` may be omitted in the draft and default to empty arrays. `provenance` and `sensitive_data` remain optional. All final packet semantics remain enforced by the existing `review-response` schema and registry semantic checks.
 
@@ -153,6 +159,7 @@ test("builds a valid review-response packet from a request and draft", () => {
 
 - [ ] Add a test that `response_to` is derived from the request.
 - [ ] Add a test that the reserved-field guard rejects drafts containing `packet_type`, `packet_version`, `created_at`, or `response_to` before the packet is built.
+- [ ] Add a test that the draft-key allowlist rejects misspelled or unknown keys such as `verificaton` before the packet is built.
 - [ ] Add a test that defaulted `verification` and `redactions` become empty arrays in the final packet.
 - [ ] Add semantic tests through `validatePacket`:
   - `approved` rejects blocking findings.
@@ -224,7 +231,51 @@ export function buildReviewResponsePacket(input: {
 }
 ```
 
-- [ ] Add a small `hasReservedReviewResponseDraftFields(value: unknown)` helper in this module or the CLI parser. The final behavior must reject reserved fields before building, with a generic message that does not echo draft contents.
+- [ ] Add a small `validateReviewResponseDraftKeys(value: unknown)` helper in this module or the CLI parser. The final behavior must reject reserved fields and unknown top-level keys before building, with generic messages that do not echo draft contents.
+
+Draft-key helper shape:
+
+```ts
+const allowedDraftKeys = new Set([
+  "reviewer",
+  "outcome",
+  "confidence",
+  "summary",
+  "findings",
+  "reviewed_scope",
+  "verification",
+  "provenance",
+  "redactions",
+  "sensitive_data",
+  "next_action"
+]);
+
+const reservedDraftKeys = new Set([
+  "packet_type",
+  "packet_version",
+  "created_at",
+  "response_to"
+]);
+
+export function validateReviewResponseDraftKeys(value: unknown):
+  | { ok: true }
+  | { ok: false; reason: "reserved" | "unknown" } {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { ok: true };
+  }
+
+  for (const key of Object.keys(value)) {
+    if (reservedDraftKeys.has(key)) {
+      return { ok: false, reason: "reserved" };
+    }
+    if (!allowedDraftKeys.has(key)) {
+      return { ok: false, reason: "unknown" };
+    }
+  }
+
+  return { ok: true };
+}
+```
 
 ### Task 3: Add Response Producer Argument Parsing
 
@@ -302,9 +353,10 @@ Required behavior:
 5. Read the draft JSON.
 6. Reject invalid draft JSON with `Invalid JSON in review-response draft file.` and no raw parser snippet.
 7. Reject reserved draft fields with `Review-response draft contains reserved Open Relay fields.`.
-8. Build with `buildReviewResponsePacket`.
-9. Validate the final packet with `validatePacket`.
-10. If validation fails, print `Generated review-response packet failed validation.` plus validation errors.
+8. Reject unknown draft fields with `Review-response draft contains unknown fields.`.
+9. Build with `buildReviewResponsePacket`.
+10. Validate the final packet with `validatePacket`.
+11. If validation fails, print `Generated review-response packet failed validation.` plus validation errors.
 
 Output behavior:
 
@@ -368,6 +420,7 @@ Required tests:
 - Invalid request JSON does not print file contents or parser snippets.
 - Invalid draft JSON does not print file contents or parser snippets.
 - Reserved draft fields are rejected.
+- Unknown draft fields are rejected so optional reviewer content cannot silently disappear because of a typo.
 - A draft that violates outcome semantics fails final validation.
 - `respond github-pr --dry-run` prints an exact marked packet comment with `packet_type: review-response`, a base64 payload, and rendered response Markdown.
 - `respond github-pr --dry-run` does not require `gh`.
@@ -431,6 +484,7 @@ Required content:
 - Purpose: reviewer-authored draft to validated `review-response` packet.
 - Commands and draft input shape.
 - Reserved fields and why Open Relay derives them.
+- Unknown-field rejection and why the draft is fail-closed for typos.
 - `response_to` derivation rules.
 - Relationship to GitHub PR transport.
 - Non-goals: no native GitHub import, no AI invocation, no fixes, no merges.
@@ -492,7 +546,7 @@ Ask reviewers to check:
 - Does the draft-file design reduce copy/paste without making Open Relay pretend to author the review?
 - Is `response_to` derived from the request packet with the right amount of data and no local-path expansion?
 - Does `respond github-pr` compose with exact-packet transport cleanly, without polluting the transport layer?
-- Are reserved fields and sanitized error paths sufficient for public open-source use?
+- Are reserved-field and unknown-field draft guards plus sanitized error paths sufficient for public open-source use?
 - Is the command surface small enough, or should one of the two commands wait?
 
 ## Expected End State
