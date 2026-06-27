@@ -9,7 +9,7 @@ import { renderPacketMarkdown } from "./renderPacket";
 import { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
 import { validatePacket, validatePacketFile } from "./schema";
 import { saveReviewRequestBundle } from "./storage";
-import { runGh } from "./transport/gh";
+import { GH_FAILURE_MESSAGE, runGh } from "./transport/gh";
 import {
   fetchPacketFromGithubPr,
   parseGithubPrTarget,
@@ -539,7 +539,7 @@ function safeTransportError(error: unknown, fallback: string): string {
     "Invalid GitHub pull request target.",
     "No matching Open Relay packet comment found.",
     "Public GitHub repository requires --confirm-public.",
-    "GitHub CLI command failed."
+    GH_FAILURE_MESSAGE
   ];
 
   return allowedMessages.includes(error.message) ? error.message : fallback;

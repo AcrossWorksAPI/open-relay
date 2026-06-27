@@ -20,7 +20,7 @@ This plan deliberately combines the strongest parts of the independent Codex and
 - **Round-trip exact Open Relay packets.** A reviewing agent closes the loop by producing a `review-response` packet and sending it through the same transport. Importing native GitHub review states or prose into `review-response` is a later mode.
 - **Use a base64 machine marker, not a Markdown code fence.** Packet-authored text can contain triple backticks, so fenced JSON is not safe as the machine carrier.
 - **Require an author filter on fetch.** Schema-valid packets prove shape, not authorship. The first read surface must not trust any commenter by default.
-- **Make remote publication deliberate.** `--dry-run` prints the exact comment body without calling `gh`, public repositories require `--confirm-public`, and `--update` avoids duplicate comment spam.
+- **Make remote publication deliberate.** `--dry-run` prints the exact comment body without calling `gh`, public repositories require `--confirm-public`, and `--update` avoids duplicate comment spam by editing only the authenticated user's matching packet comment.
 
 ## Command Shape
 
@@ -37,7 +37,7 @@ Behavior:
 - `send --dry-run` validates and renders, then prints the target and exact comment body. It never calls `gh`.
 - Non-dry-run `send` checks visibility with `gh repo view owner/repo --json visibility`.
 - Public repository sends require `--confirm-public`.
-- `send --update` edits the newest existing Open Relay packet comment for the same packet type/version regardless of comment author. If no matching comment exists, it posts a new one.
+- `send --update` edits the newest existing Open Relay packet comment for the same packet type/version and authenticated `gh` user. If no matching comment by that user exists, it posts a new one.
 - Non-update `send` always posts a new issue comment through the GitHub PR's issue-comments endpoint.
 - `fetch` requires `--author` and ignores packet comments from every other login.
 - `fetch` decodes only the marker payload, validates the decoded packet, filters by requested `packet_type` and optional `packet_version`, and returns the newest matching packet.
@@ -115,7 +115,7 @@ That mode can map native GitHub review state, inline comments, and review body p
 | --- | --- |
 | Create/invite/attach | `send` creates or updates a PR comment containing an exact packet marker plus rendered Markdown. |
 | List/search/view | `fetch` lists PR issue comments through `gh api` and reads only Open Relay markers. |
-| Edit/update | `send --update` edits the newest matching packet comment for the same packet type/version. |
+| Edit/update | `send --update` edits the newest matching packet comment for the same packet type/version and authenticated `gh` user. |
 | Activate/deactivate/archive | N/A for comments in this slice; GitHub owns comment lifecycle. |
 | Remove/delete/offboard | Deferred; no delete command. Users can delete comments in GitHub. |
 | Transfer/reassignment/ownership | GitHub comment authorship is external metadata; Open Relay filters by author but does not own identity. |
@@ -672,6 +672,8 @@ Create `src/transport/gh.ts`:
 ```ts
 import { execFileSync } from "node:child_process";
 
+export const GH_FAILURE_MESSAGE = "GitHub CLI command failed. Check `gh auth status` and that the PR exists.";
+
 export class GhError extends Error {
   constructor(message: string) {
     super(message);
@@ -686,7 +688,7 @@ export function runGh(args: string[]): string {
       stdio: ["ignore", "pipe", "pipe"]
     });
   } catch {
-    throw new GhError("GitHub CLI command failed.");
+    throw new GhError(GH_FAILURE_MESSAGE);
   }
 }
 ```
@@ -1357,7 +1359,7 @@ git commit -m "docs: record github pr packet transport"
 
 - `send --dry-run` validates any supported packet type, renders it, and prints the exact PR comment body without calling `gh`.
 - Non-dry-run `send` posts any supported packet through `gh api`.
-- `send --update` edits the newest existing Open Relay packet comment for the same packet type/version, or posts if none exists.
+- `send --update` edits the newest existing Open Relay packet comment for the same packet type/version and authenticated `gh` user, or posts if none exists by that user.
 - Public repository sends fail without `--confirm-public`.
 - `fetch` requires `--author`.
 - `fetch` returns the newest valid marked packet for the requested packet type, optional packet version, and author.
@@ -1372,6 +1374,6 @@ git commit -m "docs: record github pr packet transport"
 
 ## Self-Review
 
-- **Spec coverage:** Claude's feedback is covered: `gh` auth, generic commands, exact packet carrier, base64 marker, author-filtered fetch, dry-run, public confirmation, and update behavior. The reviewer-packet production assumption is explicit, and native review import is a named follow-up.
+- **Spec coverage:** Claude's feedback is covered: `gh` auth, generic commands, exact packet carrier, base64 marker, author-filtered fetch, dry-run, public confirmation, authenticated-author update behavior, CRLF-tolerant marker parsing, and safe first-run `gh` troubleshooting hints. The reviewer-packet production assumption is explicit, and native review import is a named follow-up.
 - **Placeholder scan:** The plan uses concrete file paths, commands, function names, tests, and snippets; no unresolved placeholder markers are intentionally present.
 - **Type consistency:** Helper types introduced in Task 1 are reused by Task 2; CLI commands in Task 3 call Task 2 orchestration; Task 4 records the same command names and marker contract.

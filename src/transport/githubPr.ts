@@ -1,3 +1,5 @@
+import { GH_FAILURE_MESSAGE } from "./gh";
+
 export type GithubPrTarget = {
   owner: string;
   repo: string;
@@ -32,6 +34,7 @@ export type PacketMatch = {
 export type UpdatePacketMatch = {
   packetType: string;
   packetVersion: string;
+  author: string;
 };
 
 export type RunGh = (args: string[]) => string;
@@ -59,7 +62,7 @@ export type FetchPacketInput = {
   runGh: RunGh;
 };
 
-const markerPattern = /<!-- open-relay-packet\npacket_type: ([^\n]+)\npacket_version: ([^\n]+)\npayload_base64: ([A-Za-z0-9+/=]+)\n-->/;
+const markerPattern = /<!-- open-relay-packet\r?\npacket_type: ([^\r\n]+)\r?\npacket_version: ([^\r\n]+)\r?\npayload_base64: ([A-Za-z0-9+/=]+)\r?\n-->/;
 
 export function parseGithubPrTarget(value: string): GithubPrTarget {
   const shorthand = /^([^/\s]+)\/([^#\s]+)#([1-9][0-9]*)$/.exec(value);
@@ -145,7 +148,8 @@ export function findLatestPacketCommentForUpdate(
 ): OpenRelayPacketComment | undefined {
   return newestFirst(extractOpenRelayPacketComments(comments)
     .filter((comment) => comment.packetType === match.packetType)
-    .filter((comment) => comment.packetVersion === match.packetVersion))[0];
+    .filter((comment) => comment.packetVersion === match.packetVersion)
+    .filter((comment) => comment.author === match.author))[0];
 }
 
 export function sendPacketToGithubPr(input: SendPacketInput): SendPacketResult {
@@ -164,8 +168,9 @@ export function sendPacketToGithubPr(input: SendPacketInput): SendPacketResult {
   assertPublicConfirmation(target, input.confirmPublic, input.runGh);
 
   if (input.update) {
+    const author = getAuthenticatedGithubLogin(input.runGh);
     const comments = listIssueComments(target, input.runGh);
-    const existing = findLatestPacketCommentForUpdate(comments, { packetType, packetVersion });
+    const existing = findLatestPacketCommentForUpdate(comments, { packetType, packetVersion, author });
     if (existing) {
       input.runGh([
         "api",
@@ -220,6 +225,14 @@ function assertPublicConfirmation(target: GithubPrTarget, confirmPublic: boolean
   if (String(parsed.visibility ?? "").toLowerCase() === "public" && !confirmPublic) {
     throw new Error("Public GitHub repository requires --confirm-public.");
   }
+}
+
+function getAuthenticatedGithubLogin(runGh: RunGh): string {
+  const login = runGh(["api", "user", "--jq", ".login"]).trim();
+  if (!login) {
+    throw new Error(GH_FAILURE_MESSAGE);
+  }
+  return login;
 }
 
 function listIssueComments(target: GithubPrTarget, runGh: RunGh): GithubIssueComment[] {

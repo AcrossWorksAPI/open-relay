@@ -19,6 +19,10 @@ open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-ty
 comments, filters by author and packet type/version, decodes the marker payload,
 and validates the fetched packet before printing or writing it.
 
+With `--update`, `send` edits the newest matching packet comment authored by
+the authenticated `gh` user. If no matching comment by that user exists, it
+posts a new comment.
+
 ## Packet Producer Contract
 
 This transport moves exact Open Relay packets. The reviewing agent or human must
@@ -51,7 +55,8 @@ decode the marker payload and validate the decoded packet.
 
 Open Relay uses the local GitHub CLI (`gh`) for authentication. Open Relay does
 not read GitHub token environment variables and does not print raw `gh` output
-on failure.
+on failure. GitHub CLI failures include only a safe troubleshooting hint to
+check `gh auth status` and the PR target.
 
 ## Authorship And Trust
 

@@ -11,6 +11,7 @@ import {
   sendPacketToGithubPr,
   type RunGh
 } from "../src/transport/githubPr";
+import { GH_FAILURE_MESSAGE, GhError, runGh } from "../src/transport/gh";
 
 const requestPacket = {
   packet_type: "review-request",
@@ -89,6 +90,24 @@ test("extracts packets from base64 markers without reading markdown prose", () =
   assert.equal(found.author, "claude");
 });
 
+test("extracts packets from CRLF marker comments", () => {
+  const body = buildOpenRelayPacketCommentBody({
+    packet: responsePacket,
+    markdown: "# Review Response Relay Packet\n"
+  }).replaceAll("\n", "\r\n");
+
+  const [found] = extractOpenRelayPacketComments([
+    {
+      id: 43,
+      body,
+      created_at: "2026-06-27T00:02:00Z",
+      user: { login: "claude" }
+    }
+  ]);
+
+  assert.equal(found.packet.packet_type, "review-response");
+});
+
 test("skips markers whose decoded packet disagrees with marker metadata", () => {
   const body = buildOpenRelayPacketCommentBody({
     packet: requestPacket,
@@ -127,7 +146,7 @@ test("finds newest matching packet comment by type version and author", () => {
   assert.equal(found?.comment.id, 3);
 });
 
-test("finds newest update candidate by type and version without author filtering", () => {
+test("finds newest update candidate by type version and author", () => {
   const body = buildOpenRelayPacketCommentBody({
     packet: requestPacket,
     markdown: "# Request\n"
@@ -138,10 +157,11 @@ test("finds newest update candidate by type and version without author filtering
     { id: 2, body, created_at: "2026-06-27T00:05:00Z", user: { login: "other" } }
   ], {
     packetType: "review-request",
-    packetVersion: "0.1"
+    packetVersion: "0.1",
+    author: "codex"
   });
 
-  assert.equal(found?.comment.id, 2);
+  assert.equal(found?.comment.id, 1);
 });
 
 test("dry-run send returns the exact comment body without calling gh", () => {
@@ -252,6 +272,9 @@ test("update edits latest matching packet comment or posts when none exists", ()
     if (args[0] === "repo") {
       return JSON.stringify({ visibility: "PRIVATE" });
     }
+    if (args[0] === "api" && args[1] === "user") {
+      return "codex\n";
+    }
     if (args[1] === "repos/AcrossWorksAPI/open-relay/issues/34/comments?per_page=100") {
       return JSON.stringify([[
         { id: 7, body: existingBody, created_at: "2026-06-27T00:00:00Z", user: { login: "codex" } }
@@ -276,6 +299,48 @@ test("update edits latest matching packet comment or posts when none exists", ()
     "repos/AcrossWorksAPI/open-relay/issues/comments/7",
     "--method",
     "PATCH"
+  ]);
+});
+
+test("update posts instead of editing another author's matching packet comment", () => {
+  const otherAuthorBody = buildOpenRelayPacketCommentBody({
+    packet: requestPacket,
+    markdown: "# Existing\n"
+  });
+  const calls: string[][] = [];
+  const runGh: RunGh = (args) => {
+    calls.push(args);
+    if (args[0] === "repo") {
+      return JSON.stringify({ visibility: "PRIVATE" });
+    }
+    if (args[0] === "api" && args[1] === "user") {
+      return "codex\n";
+    }
+    if (args[1] === "repos/AcrossWorksAPI/open-relay/issues/34/comments?per_page=100") {
+      return JSON.stringify([[
+        { id: 7, body: otherAuthorBody, created_at: "2026-06-27T00:00:00Z", user: { login: "other" } }
+      ]]);
+    }
+    return JSON.stringify({ id: 8 });
+  };
+
+  const result = sendPacketToGithubPr({
+    prTarget: "AcrossWorksAPI/open-relay#34",
+    packet: requestPacket,
+    markdown: "# Posted\n",
+    dryRun: false,
+    update: true,
+    confirmPublic: false,
+    runGh
+  });
+
+  assert.equal(result.kind, "posted");
+  assert.equal(calls.some((args) => args.includes("--method") && args.includes("PATCH")), false);
+  assert.deepEqual(calls.at(-1)?.slice(0, 4), [
+    "api",
+    "repos/AcrossWorksAPI/open-relay/issues/34/comments",
+    "--method",
+    "POST"
   ]);
 });
 
@@ -316,5 +381,13 @@ test("fetch reports no matching packet without echoing author or target", () => 
       runGh
     }),
     /^Error: No matching Open Relay packet comment found\.$/
+  );
+});
+
+test("gh failures include a safe first-run troubleshooting hint", () => {
+  assert.throws(
+    () => runGh(["__open_relay_missing_command__"]),
+    (error: unknown) => error instanceof GhError
+      && error.message === GH_FAILURE_MESSAGE
   );
 });
