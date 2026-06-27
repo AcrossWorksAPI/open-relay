@@ -328,5 +328,5 @@ Expected: all pass.
 
 - Spec coverage: The plan covers schema, semantic checks, protocol doc, examples, renderer, generic render CLI, validate-message neutrality, package export, package smoke, and governance closeout.
 - Deferred scope: Authoring/generation, Markdown parsing, GitHub PR comments, automation, review-response storage, agent-specific templates, global storage, and transport remain deferred.
-- Placeholder scan: No `TBD`, `TODO`, or unowned "implement later" steps are present.
+- Placeholder-term scan: The plan contains no unresolved marker words or unowned "implement later" steps.
 - Type consistency: The plan consistently uses `response_to`, `reviewer`, `outcome`, `confidence`, `findings`, `reviewed_scope`, `verification`, `provenance`, `redactions`, `sensitive_data`, and `next_action`.
