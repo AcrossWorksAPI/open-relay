@@ -34,6 +34,31 @@ export type UpdatePacketMatch = {
   packetVersion: string;
 };
 
+export type RunGh = (args: string[]) => string;
+
+export type SendPacketInput = {
+  prTarget: string;
+  packet: Record<string, unknown>;
+  markdown: string;
+  dryRun: boolean;
+  update: boolean;
+  confirmPublic: boolean;
+  runGh: RunGh;
+};
+
+export type SendPacketResult =
+  | { kind: "dry-run"; body: string; target: string }
+  | { kind: "posted" }
+  | { kind: "updated" };
+
+export type FetchPacketInput = {
+  prTarget: string;
+  packetType: string;
+  packetVersion?: string;
+  author: string;
+  runGh: RunGh;
+};
+
 const markerPattern = /<!-- open-relay-packet\npacket_type: ([^\n]+)\npacket_version: ([^\n]+)\npayload_base64: ([A-Za-z0-9+/=]+)\n-->/;
 
 export function parseGithubPrTarget(value: string): GithubPrTarget {
@@ -123,11 +148,95 @@ export function findLatestPacketCommentForUpdate(
     .filter((comment) => comment.packetVersion === match.packetVersion))[0];
 }
 
+export function sendPacketToGithubPr(input: SendPacketInput): SendPacketResult {
+  const target = parseGithubPrTarget(input.prTarget);
+  const packetType = String(input.packet.packet_type ?? "");
+  const packetVersion = String(input.packet.packet_version ?? "");
+  const body = buildOpenRelayPacketCommentBody({
+    packet: input.packet,
+    markdown: input.markdown
+  });
+
+  if (input.dryRun) {
+    return { kind: "dry-run", body, target: target.display };
+  }
+
+  assertPublicConfirmation(target, input.confirmPublic, input.runGh);
+
+  if (input.update) {
+    const comments = listIssueComments(target, input.runGh);
+    const existing = findLatestPacketCommentForUpdate(comments, { packetType, packetVersion });
+    if (existing) {
+      input.runGh([
+        "api",
+        `repos/${target.owner}/${target.repo}/issues/comments/${existing.comment.id}`,
+        "--method",
+        "PATCH",
+        "--raw-field",
+        `body=${body}`
+      ]);
+      return { kind: "updated" };
+    }
+  }
+
+  input.runGh([
+    "api",
+    `repos/${target.owner}/${target.repo}/issues/${target.pullNumber}/comments`,
+    "--method",
+    "POST",
+    "--raw-field",
+    `body=${body}`
+  ]);
+
+  return { kind: "posted" };
+}
+
+export function fetchPacketFromGithubPr(input: FetchPacketInput): OpenRelayPacketComment {
+  const target = parseGithubPrTarget(input.prTarget);
+  const comments = listIssueComments(target, input.runGh);
+  const found = findLatestMatchingOpenRelayPacketComment(comments, {
+    packetType: input.packetType,
+    ...(input.packetVersion ? { packetVersion: input.packetVersion } : {}),
+    author: input.author
+  });
+
+  if (!found) {
+    throw new Error("No matching Open Relay packet comment found.");
+  }
+
+  return found;
+}
+
 function newestFirst(comments: OpenRelayPacketComment[]): OpenRelayPacketComment[] {
   return [...comments].sort((left, right) => {
     const created = right.comment.created_at.localeCompare(left.comment.created_at);
     return created === 0 ? right.comment.id - left.comment.id : created;
   });
+}
+
+function assertPublicConfirmation(target: GithubPrTarget, confirmPublic: boolean, runGh: RunGh): void {
+  const raw = runGh(["repo", "view", target.repository, "--json", "visibility"]);
+  const parsed = JSON.parse(raw) as { visibility?: string };
+  if (String(parsed.visibility ?? "").toLowerCase() === "public" && !confirmPublic) {
+    throw new Error("Public GitHub repository requires --confirm-public.");
+  }
+}
+
+function listIssueComments(target: GithubPrTarget, runGh: RunGh): GithubIssueComment[] {
+  const raw = runGh([
+    "api",
+    `repos/${target.owner}/${target.repo}/issues/${target.pullNumber}/comments?per_page=100`,
+    "--paginate",
+    "--slurp"
+  ]);
+  const parsed = JSON.parse(raw) as unknown;
+  if (Array.isArray(parsed) && parsed.every(Array.isArray)) {
+    return parsed.flat() as GithubIssueComment[];
+  }
+  if (Array.isArray(parsed)) {
+    return parsed as GithubIssueComment[];
+  }
+  return [];
 }
 
 function buildTarget(owner: string, repo: string, pullNumberText: string): GithubPrTarget {
