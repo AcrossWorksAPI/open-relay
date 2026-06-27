@@ -26,8 +26,8 @@ end-to-end. npm registry publishing, global packet storage, external agent
 invocation, review-response storage, native GitHub review import,
 automation, and private redaction rules remain deferred. GitHub PR exact-packet
 transport is merged as the first outward packet boundary. Reviewer-produced
-`review-response` workflow implementation is in progress so the reviewer side
-can create and send response packets without manual copy/paste.
+`review-response` workflow is merged, so the reviewer side can create and send
+response packets without manual copy/paste.
 
 ## Active Work
 
@@ -55,8 +55,8 @@ can create and send response packets without manual copy/paste.
 | Review-response packet planning | Done | PR #33 merged `review-response` 0.1 as the first consumer of the protocol envelope, with top-level verification reuse, outcome/confidence semantics, generic packet rendering direction, and explicit Markdown confidence rendering. |
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
 | GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
-| Reviewer-produced review-response workflow implementation | In progress | Implementation branch adds a pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, and reviewer-produced response implementation are in place on the active branch; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
+| Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, and reviewer-produced response workflow are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -115,10 +115,12 @@ can create and send response packets without manual copy/paste.
 | 2026-06-27 | Claude review fix for PR #38 | Passed | Folded in the draft-key allowlist finding so unknown or misspelled review draft fields are rejected instead of silently dropped; `npm run check` passed with 123 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #38 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/38`; merge commit `df1efbd`; Claude re-review reported the plan merge-ready after the draft-key allowlist fix, and merged-main `npm run check`, `npm run smoke:pack`, and `git diff --check` passed. |
 | 2026-06-28 | Reviewer-produced review-response implementation branch checks | Passed | PR #39: `https://github.com/AcrossWorksAPI/open-relay/pull/39`; branch `codex/review-response-producer-implementation`; `npm run check` passed with 146 tests, `npm run smoke:pack` passed, `git diff --check` passed, generated JSON validated as `review-response/0.1`, Markdown output rendered `# Review Response Relay Packet`, and `respond github-pr --dry-run` emitted the exact marked packet comment without a live GitHub call. |
+| 2026-06-28 | PR #39 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/39`; merge commit `82ff91e`; Claude review reported no findings and dogfooded the producer end-to-end; merged-main `npm run check` passed with 146 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 
 ## Next Step
 
-Run CI for PR #39, then request Claude review.
+Dogfood the merged loop on the next real review by sending a `review-response`
+packet, then plan the next product slice.
 
 ## Owner Decisions Needed
 
