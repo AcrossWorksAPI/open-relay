@@ -13,9 +13,9 @@ Markdown generation is merged so a local user can generate a review-ready
 Markdown packet in one command. Local `handoff review-request` is merged to
 make the review-request path clearer as a workflow command. Repo-local packet
 storage is merged to make saved handoff packets durable without adding global
-storage, hosted sync, or external orchestration. The next planning direction is
-to restore the product brief's review-loop scope: protocol extensibility,
-boundary/transport, richer packet evidence, review-response,
+storage, hosted sync, or external orchestration. Protocol envelope dispatch is
+merged, so the next planning direction is the first `review-response` packet
+type, followed by boundary/transport, richer packet evidence,
 implementation-handoff, resume-project, and agent-ready prompts. The approved
 first runtime direction is a TypeScript CLI on Node.js with npm.
 
@@ -39,8 +39,10 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `src/git.ts` | Active | Local git context collection for base/head commits, diff range, and changed files. |
 | `src/redaction.ts` | Active | Fail-closed remote URL redaction helper. |
 | `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer. |
+| `src/renderPacket.ts` | Active | Generic packet Markdown renderer dispatcher. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
-| `src/schema.ts` | Active | Reusable packet validation module. |
+| `src/schema.ts` | Active | Reusable packet validation module with packet type/version dispatch. |
+| `src/schemaRegistry.ts` | Active | Packet schema registry and review-request semantic checks. |
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
 | `src/cli.ts` | Active | Local CLI entrypoint for `validate`, `generate review-request`, `render review-request`, and `handoff review-request` behavior. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
@@ -49,6 +51,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `tests/git.test.ts` | Active | Git context collector tests. |
 | `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
+| `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
@@ -63,7 +66,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-26-handoff-review-request-design.md` | Active | Design for the Markdown-first `handoff review-request` workflow command. |
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
-| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implementation plan currently executing on `codex/relay-protocol-envelope-implementation` for schema registry, dispatching validator, renderer dispatcher, tests, and closeout. |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Active | Implemented schema registry, dispatching validator, renderer dispatcher, tests, and closeout through PR #31. |
 | `docs/superpowers/plans/2026-06-26-git-state-generator.md` | Active | Implementation plan for git context collection, redaction, packet generation, CLI wiring, tests, and closeout. |
 | `docs/superpowers/plans/2026-06-26-render-review-request.md` | Active | Implementation plan for pure Markdown rendering, CLI route, tests, package export, and closeout. |
 | `docs/superpowers/plans/2026-06-26-package-release-smoke.md` | Active | Implementation plan for package metadata, packlist, tarball install smoke, CI, and closeout. |
@@ -86,7 +89,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Review loop not implemented | High | Roadmap re-anchor restores review-response, implementation-handoff, resume-project, and protocol envelope slices as planned work. |
-| Protocol extensibility missing | High | Current validator supports only `review-request` 0.1; envelope design is active before any new packet type. |
+| Review-response packet type missing | High | Protocol envelope dispatch is merged; `review-response` is the next packet-type spec. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -94,11 +97,9 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Open the protocol envelope and roadmap re-anchor PR for GitHub CI and Claude
-   review.
-2. Implement relay protocol envelope and multi-type validation before any new
-   packet type.
-3. Decide the first packet transport boundary.
+1. Draft the first `review-response` packet spec.
+2. Decide the first packet transport boundary.
+3. Plan packet evidence enrichment for richer diff/test capture.
 4. Decide whether private redaction rule files are needed before package
    publishing.
 5. Define npm publish owner, first semver version, changelog, and tag workflow.

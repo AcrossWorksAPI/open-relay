@@ -24,8 +24,10 @@ or old plan files as inactive until this registry and current code agree.
 | `src/git.ts` | Local git context collector | Active |
 | `src/redaction.ts` | Remote URL redaction helper | Active |
 | `src/renderReviewRequest.ts` | Review-request Markdown renderer | Active |
+| `src/renderPacket.ts` | Generic packet Markdown renderer dispatcher | Active |
 | `src/reviewRequest.ts` | Review-request packet builder | Active |
-| `src/schema.ts` | Packet validation module | Active |
+| `src/schema.ts` | Packet validation module with type/version dispatch | Active |
+| `src/schemaRegistry.ts` | Packet schema registry and semantic checks | Active |
 | `src/cli.ts` | Local CLI entrypoint, validation, and generator routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
@@ -33,6 +35,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/git.test.ts` | Git context collector tests | Active |
 | `tests/redaction.test.ts` | Remote URL redaction tests | Active |
 | `tests/renderReviewRequest.test.ts` | Review-request Markdown renderer tests | Active |
+| `tests/renderPacket.test.ts` | Generic packet renderer dispatcher tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -67,7 +70,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | In progress | Codex | Implementation branch `codex/relay-protocol-envelope-implementation` is executing the schema registry, dispatching validator, renderer dispatcher, tests, and closeout plan. |
+| - | - | - | No active implementation plans; next planned source is the `review-response` packet spec. |
 
 ## Implemented Or Historical Plans
 
@@ -84,6 +87,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-26-direct-markdown-generation.md` | Done | Planned and implemented `generate review-request --format markdown`, parser/CLI tests, package smoke update, review, and merge closeout through PR #23. |
 | `docs/superpowers/plans/2026-06-26-handoff-review-request.md` | Done | Planned and implemented `handoff review-request`, local-only help text, parser/CLI tests, package smoke update, review, and merge closeout through PR #26. |
 | `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md` | Done | Planned and implemented `save review-request`, repo-local bundle storage, CLI/storage tests, cleanup coverage, package smoke update, review, and merge closeout through PR #29. |
+| `docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md` | Done | Planned and implemented packet type/version schema registry dispatch, renderer dispatch, package export, supported-combination errors, test-only second-type proof, review, and merge closeout through PR #31. |
 
 ## Superseded Or Dormant Plans
 

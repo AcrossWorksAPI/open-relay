@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, and review-loop roadmap re-anchoring in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, and review-loop roadmap re-anchored
 Last updated: 2026-06-27
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, and review-loop roadmap re-anchoring in progress
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, and review-loop roadmap re-anchored
 
 ## Project Purpose
 
@@ -29,7 +29,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Direct Markdown generation | Done | Medium | No | Package and release target | docs/superpowers/plans/2026-06-26-direct-markdown-generation.md |
 | Unversioned | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
 | Unversioned | Repo-local packet storage | Done | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
-| Unversioned | Relay protocol envelope and multi-type validation | In progress | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
+| Unversioned | Relay protocol envelope and multi-type validation | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
 | Unversioned | Boundary/transport decision | Planned | High | Required | Repo-local packet storage | - |
 | Unversioned | Packet evidence enrichment | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Review-response packet type | Planned | High | No | Relay protocol envelope and multi-type validation | - |
