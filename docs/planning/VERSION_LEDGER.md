@@ -5,7 +5,7 @@ Last updated: 2026-06-27
 ## Current Version
 
 - Current live version: Unknown; needs owner decision
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage merged, and review-loop roadmap re-anchoring in progress
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage merged, protocol envelope dispatch merged, and review-loop roadmap re-anchored
 - Release/versioning convention: Unknown; needs owner decision
 
 ## Live Evidence Rule
@@ -38,7 +38,7 @@ captured is not alert delivered.
 | Repo-local packet storage planning | Done | 2026-06-27 | Merge commit `bdefbb8` on `main` | PR #28: `https://github.com/AcrossWorksAPI/open-relay/pull/28` | N/A, docs/planning slice only | Design source `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md`; implementation source `docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md`; `npm run check`, `npm run smoke:pack`, and `git diff --check` passed locally; Claude review finding F1 addressed by requiring manifest-last completion semantics and best-effort partial-bundle cleanup; `Governance Checks` passed and Claude re-review reported no remaining findings | Revert merge commit `bdefbb8` if repo-local storage or `save review-request` is rejected. |
 | Repo-local packet storage implementation | Done | 2026-06-27 | Merge commit `87f0bb7` on `main` | PR #29: `https://github.com/AcrossWorksAPI/open-relay/pull/29` | N/A, local CLI only; no global storage or external agent invocation | Adds `src/storage.ts`, `open-relay save review-request`, `.open-relay/` gitignore entry, CLI/storage tests, cleanup regression coverage, and installed-package save smoke; `npm run check` passed with 69 tests, `npm run smoke:pack` verified installed CLI save behavior, `git diff --check` passed, and `Governance Checks` passed | Revert merge commit `87f0bb7` if saved bundle behavior or CLI command shape is rejected. |
 | Review-loop roadmap re-anchor | Done | 2026-06-27 | Merge commit `7f79246` on `main` | PR #30: `https://github.com/AcrossWorksAPI/open-relay/pull/30` | N/A, docs/planning slice only | Adds protocol envelope design and implementation plan, restores roadmap slices for boundary/transport, packet evidence enrichment, review-response, implementation-handoff, resume-project, and agent-ready prompts, limits the shared header to dispatch keys, and requires supported combinations in unsupported-type errors; `Governance Checks` passed and Claude re-review reported merge-ready | Revert merge commit `7f79246` if the envelope-first sequence is rejected. |
-| Protocol envelope implementation | In progress | 2026-06-27 | Branch `codex/relay-protocol-envelope-implementation` | PR #31: `https://github.com/AcrossWorksAPI/open-relay/pull/31` | N/A, local CLI only; no new packet type introduced | Adds schema registry dispatch, minimal header validation, sanitized supported-combination errors, renderer dispatch, package export, and test-only schema/renderer registry proofs; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally | Revert the implementation branch if generic packet dispatch is rejected. |
+| Protocol envelope implementation | Done | 2026-06-27 | Merge commit `5c3b739` on `main` | PR #31: `https://github.com/AcrossWorksAPI/open-relay/pull/31` | N/A, local CLI only; no new packet type introduced | Adds schema registry dispatch, minimal header validation, sanitized supported-combination errors, renderer dispatch, package export, and test-only schema/renderer registry proofs; `npm run check` passed with 77 tests, `npm run smoke:pack` passed, `git diff --check` passed locally, `Governance Checks` passed, and Claude handoff review reported merge-ready with one low command-message follow-up | Revert merge commit `5c3b739` if generic packet dispatch is rejected. |
 
 ## Rollback Notes
 
@@ -68,5 +68,8 @@ captured is not alert delivered.
   external orchestration because they affect only local CLI storage behavior.
 - Review-loop roadmap re-anchor can be reverted independently because it changes
   planning direction only and does not modify runtime behavior.
+- Protocol envelope implementation can be reverted independently from future
+  packet types because it introduces generic dispatch and does not add a new
+  persisted packet type.
 - Product rollback strategy is `Unknown; needs owner decision` because no
   package target, release channel, or persistent data model exists yet.
