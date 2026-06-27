@@ -1,6 +1,6 @@
 # Open Relay Plan Registry
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 This registry classifies active and historical planning sources. Treat unlisted
 or old plan files as inactive until this registry and current code agree.
@@ -30,6 +30,8 @@ or old plan files as inactive until this registry and current code agree.
 | `src/renderPacket.ts` | Generic packet Markdown renderer dispatcher | Active |
 | `src/reviewRequest.ts` | Review-request packet builder | Active |
 | `src/reviewResponse.ts` | Review-response packet type | Active |
+| `src/reviewResponseArgs.ts` | Review-response producer argument parser | Active |
+| `src/reviewResponseProducer.ts` | Review-response producer builder and draft key guards | Active |
 | `src/schema.ts` | Packet validation module with type/version dispatch | Active |
 | `src/schemaRegistry.ts` | Packet schema registry and semantic checks | Active |
 | `src/storage.ts` | Repo-local review-request storage writer | Active |
@@ -45,11 +47,14 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/renderReviewResponse.test.ts` | Review-response Markdown renderer tests | Active |
 | `tests/renderPacket.test.ts` | Generic packet renderer dispatcher tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
+| `tests/reviewResponseArgs.test.ts` | Review-response producer argument parser tests | Active |
+| `tests/reviewResponseProducer.test.ts` | Review-response producer builder and draft key guard tests | Active |
 | `tests/storage.test.ts` | Repo-local storage tests | Active |
 | `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
+| `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
 | `docs/protocol/github-pr-transport.md` | GitHub PR exact-packet transport protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
@@ -88,7 +93,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | In progress | Codex | Planning gate for creating a validated `review-response` from a request packet plus reviewer draft, then optionally sending it through GitHub PR exact-packet transport. |
+| `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | In progress | Codex | Implementation source for creating a validated `review-response` from a request packet plus reviewer draft, then optionally sending it through GitHub PR exact-packet transport. |
 
 ## Implemented Or Historical Plans
 

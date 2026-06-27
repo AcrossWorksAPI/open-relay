@@ -109,6 +109,65 @@ try {
   assert.match(transportDryRun, /payload_base64:/);
   assert.match(transportDryRun, /# Review Request Relay Packet/);
 
+  const responseDraft = join(workspace, "review-response-draft.json");
+  writeFileSync(responseDraft, JSON.stringify({
+    reviewer: {
+      name: "Open Relay Smoke",
+      kind: "agent",
+      tool: "smoke-pack"
+    },
+    outcome: "approved",
+    confidence: "high",
+    summary: "Package smoke found no blocking issues.",
+    findings: [],
+    reviewed_scope: {
+      files: [{
+        path: "README.md",
+        notes: "Reviewed the generated package smoke fixture."
+      }],
+      limitations: []
+    },
+    verification: [{
+      kind: "command",
+      command: "npm run smoke:pack",
+      result: "passed",
+      evidence: "Installed CLI generated and rendered a review-response packet."
+    }],
+    redactions: [],
+    next_action: "Merge after CI passes."
+  }, null, 2), "utf8");
+
+  const responseMarkdown = join(workspace, "review-response.md");
+  runCli(cli, [
+    "generate",
+    "review-response",
+    "--request", generatedPacket,
+    "--review", responseDraft,
+    "--format", "markdown",
+    "--output", responseMarkdown
+  ], {
+    contains: "Wrote review-response Markdown."
+  });
+
+  const response = readFileSync(responseMarkdown, "utf8");
+  assert.match(response, /^# Review Response Relay Packet/);
+  assert.match(response, /## Outcome/);
+  assert.match(response, /## Next Action/);
+
+  const responseDryRun = runCli(cli, [
+    "respond",
+    "github-pr",
+    "--request", generatedPacket,
+    "--review", responseDraft,
+    "--pr", "AcrossWorksAPI/open-relay#34",
+    "--dry-run"
+  ], {
+    contains: "<!-- open-relay-packet"
+  });
+  assert.match(responseDryRun, /packet_type: review-response/);
+  assert.match(responseDryRun, /payload_base64:/);
+  assert.match(responseDryRun, /# Review Response Relay Packet/);
+
   const generatedMarkdown = join(workspace, "generated.md");
   runCli(cli, [
     "generate",

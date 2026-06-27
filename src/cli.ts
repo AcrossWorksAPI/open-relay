@@ -6,7 +6,17 @@ import { join } from "node:path";
 import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
 import { renderPacketMarkdown } from "./renderPacket";
+import {
+  parseGenerateReviewResponseArgs,
+  parseRespondGithubPrArgs
+} from "./reviewResponseArgs";
 import { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
+import type { ReviewResponsePacket } from "./reviewResponse";
+import {
+  buildReviewResponsePacket,
+  validateReviewResponseDraftKeys,
+  type ReviewResponseDraft
+} from "./reviewResponseProducer";
 import { validatePacket, validatePacketFile } from "./schema";
 import { saveReviewRequestBundle } from "./storage";
 import { GH_FAILURE_MESSAGE, runGh } from "./transport/gh";
@@ -21,10 +31,12 @@ const usage = `Open Relay
 Usage:
   open-relay validate <packet.json>
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
+  open-relay generate review-response --request <review-request.json> --review <review-response-draft.json> [--format json|markdown] [--output <path>]
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
   open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--storage-dir <path>]
   open-relay render <packet.json> [--output <relay.md>]
   open-relay render review-request <packet.json> [--output <relay.md>]
+  open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
   open-relay --help
@@ -51,6 +63,10 @@ export async function run(argv: string[]): Promise<number> {
     return generateReviewRequestCommand(args.slice(2));
   }
 
+  if (args[0] === "generate" && args[1] === "review-response") {
+    return generateReviewResponseCommand(args.slice(2));
+  }
+
   if (args[0] === "handoff" && args[1] === "review-request") {
     return handoffReviewRequestCommand(args.slice(2));
   }
@@ -65,6 +81,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "transport" && args[1] === "github-pr" && args[2] === "fetch") {
     return transportGithubPrFetchCommand(args.slice(3));
+  }
+
+  if (args[0] === "respond" && args[1] === "github-pr") {
+    return respondGithubPrCommand(args.slice(2));
   }
 
   if (args[0] === "render") {
@@ -267,6 +287,10 @@ type GithubPrFetchArgs =
     output?: string;
   }
   | { ok: false; message: string };
+
+type BuiltReviewResponsePacket =
+  | { ok: true; packet: ReviewResponsePacket }
+  | { ok: false; exitCode: 1 | 2; message: string; errors?: string[] };
 
 function parseStorageDir(args: string[]): SaveReviewRequestArgs {
   const generatorArgs: string[] = [];
@@ -528,6 +552,200 @@ async function transportGithubPrFetchCommand(args: string[]): Promise<number> {
     process.stderr.write(`${safeTransportError(error, "Could not fetch GitHub PR Open Relay packet.")}\n`);
     return 1;
   }
+}
+
+async function generateReviewResponseCommand(args: string[]): Promise<number> {
+  const parsed = parseGenerateReviewResponseArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  const built = await buildValidatedReviewResponseFromFiles({
+    requestPath: parsed.options.request,
+    reviewPath: parsed.options.review
+  });
+
+  if (!built.ok) {
+    process.stderr.write(`${built.message}\n`);
+    for (const error of built.errors ?? []) {
+      process.stderr.write(`- ${error}\n`);
+    }
+    return built.exitCode;
+  }
+
+  const output = parsed.options.format === "markdown"
+    ? renderPacketMarkdown(built.packet)
+    : `${JSON.stringify(built.packet, null, 2)}\n`;
+  const successMessage = parsed.options.format === "markdown"
+    ? "Wrote review-response Markdown.\n"
+    : "Wrote review-response packet.\n";
+  const writeErrorMessage = parsed.options.format === "markdown"
+    ? "Could not write review-response Markdown.\n"
+    : "Could not write review-response packet.\n";
+
+  if (parsed.options.output) {
+    try {
+      await writeFile(parsed.options.output, output, "utf8");
+    } catch {
+      process.stderr.write(writeErrorMessage);
+      return 1;
+    }
+    process.stdout.write(successMessage);
+  } else {
+    process.stdout.write(output);
+  }
+
+  return 0;
+}
+
+async function respondGithubPrCommand(args: string[]): Promise<number> {
+  const parsed = parseRespondGithubPrArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  const built = await buildValidatedReviewResponseFromFiles({
+    requestPath: parsed.options.request,
+    reviewPath: parsed.options.review
+  });
+
+  if (!built.ok) {
+    process.stderr.write(`${built.message}\n`);
+    for (const error of built.errors ?? []) {
+      process.stderr.write(`- ${error}\n`);
+    }
+    return built.exitCode;
+  }
+
+  try {
+    const markdown = renderPacketMarkdown(built.packet);
+    const sent = sendPacketToGithubPr({
+      prTarget: parsed.options.pr,
+      packet: built.packet,
+      markdown,
+      dryRun: parsed.options.dryRun,
+      update: parsed.options.update,
+      confirmPublic: parsed.options.confirmPublic,
+      runGh
+    });
+
+    if (sent.kind === "dry-run") {
+      process.stdout.write(`Dry run target: ${sent.target}\n\n${sent.body}`);
+    } else if (sent.kind === "updated") {
+      process.stdout.write("Updated GitHub PR Open Relay packet comment.\n");
+    } else {
+      process.stdout.write("Posted GitHub PR Open Relay packet comment.\n");
+    }
+
+    return 0;
+  } catch (error: unknown) {
+    process.stderr.write(`${safeTransportError(error, "Could not send GitHub PR Open Relay packet.")}\n`);
+    return 1;
+  }
+}
+
+async function buildValidatedReviewResponseFromFiles(input: {
+  requestPath: string;
+  reviewPath: string;
+}): Promise<BuiltReviewResponsePacket> {
+  const requestRead = await readJsonFile(input.requestPath, {
+    invalidJsonMessage: "Invalid JSON in review-request file.",
+    readErrorMessage: "Could not read review-request file."
+  });
+  if (!requestRead.ok) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: requestRead.message
+    };
+  }
+
+  const requestValidation = validatePacket(requestRead.value);
+  if (!requestValidation.valid) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Invalid review-request packet.",
+      errors: requestValidation.errors
+    };
+  }
+
+  if (!isRecord(requestRead.value) || requestRead.value.packet_type !== "review-request") {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Expected review-request packet."
+    };
+  }
+
+  const reviewRead = await readJsonFile(input.reviewPath, {
+    invalidJsonMessage: "Invalid JSON in review-response draft file.",
+    readErrorMessage: "Could not read review-response draft file."
+  });
+  if (!reviewRead.ok) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: reviewRead.message
+    };
+  }
+
+  const keyValidation = validateReviewResponseDraftKeys(reviewRead.value);
+  if (!keyValidation.ok) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: keyValidation.reason === "reserved"
+        ? "Review-response draft contains reserved Open Relay fields."
+        : "Review-response draft contains unknown fields."
+    };
+  }
+
+  const draft = isRecord(reviewRead.value)
+    ? reviewRead.value as ReviewResponseDraft
+    : {} as ReviewResponseDraft;
+  const packet = buildReviewResponsePacket({
+    request: requestRead.value as ReviewRequestPacket,
+    draft
+  });
+  const responseValidation = validatePacket(packet);
+  if (!responseValidation.valid) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Generated review-response packet failed validation.",
+      errors: responseValidation.errors
+    };
+  }
+
+  return { ok: true, packet };
+}
+
+type JsonReadResult =
+  | { ok: true; value: unknown }
+  | { ok: false; message: string };
+
+async function readJsonFile(path: string, messages: {
+  invalidJsonMessage: string;
+  readErrorMessage: string;
+}): Promise<JsonReadResult> {
+  try {
+    const raw = await readFile(path, "utf8");
+    return { ok: true, value: JSON.parse(raw) as unknown };
+  } catch (error: unknown) {
+    return {
+      ok: false,
+      message: error instanceof SyntaxError
+        ? messages.invalidJsonMessage
+        : messages.readErrorMessage
+    };
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 function safeTransportError(error: unknown, fallback: string): string {

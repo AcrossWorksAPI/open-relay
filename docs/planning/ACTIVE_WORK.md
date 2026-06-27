@@ -1,6 +1,6 @@
 # Open Relay Active Work
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Current Direction
 
@@ -18,10 +18,10 @@ storage, hosted sync, or external orchestration. Protocol envelope dispatch and
 packet shapes now exist end-to-end. GitHub PR exact-packet transport is merged
 as the first boundary so packets can move between agents without manual
 copy/paste when both sides emit Open Relay packets. Reviewer-produced
-`review-response` packet workflow planning is in progress so the reviewer side
-can create and send response packets without manual copy/paste. Native GitHub
-review import, response storage, fix automation, merge automation, richer
-packet evidence, implementation-handoff, resume-project, and agent-ready
+`review-response` packet workflow implementation is in progress so the reviewer
+side can create and send response packets without manual copy/paste. Native
+GitHub review import, response storage, fix automation, merge automation,
+richer packet evidence, implementation-handoff, resume-project, and agent-ready
 prompts remain later slices. The approved first runtime direction is a
 TypeScript CLI on Node.js with npm.
 
@@ -51,6 +51,8 @@ TypeScript CLI on Node.js with npm.
 | `src/renderPacket.ts` | Active | Generic packet Markdown renderer dispatcher. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/reviewResponse.ts` | Active | Review-response packet type exported through the package entrypoint. |
+| `src/reviewResponseArgs.ts` | Active | Argument parsing for `generate review-response` and `respond github-pr`. |
+| `src/reviewResponseProducer.ts` | Active | Pure builder for validated reviewer-authored `review-response` packets from request packets plus drafts. |
 | `src/schema.ts` | Active | Reusable packet validation module with packet type/version dispatch. |
 | `src/schemaRegistry.ts` | Active | Packet schema registry and review-request semantic checks. |
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
@@ -66,11 +68,14 @@ TypeScript CLI on Node.js with npm.
 | `tests/renderReviewResponse.test.ts` | Active | Review-response Markdown renderer order, snapshot, confidence, escaping, and empty-state tests. |
 | `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
+| `tests/reviewResponseArgs.test.ts` | Active | Review-response producer argument parser tests. |
+| `tests/reviewResponseProducer.test.ts` | Active | Review-response draft key guard, builder, and semantic validation tests. |
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `docs/protocol/review-response-packet.md` | Active | Review-response packet type and required protocol fields. |
+| `docs/protocol/review-response-producer.md` | Active | Producer workflow for turning reviewer-authored drafts into validated response packets. |
 | `docs/protocol/github-pr-transport.md` | Active | GitHub PR exact-packet transport commands, marker contract, `gh` auth model, authorship limits, and non-goals. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
@@ -110,7 +115,7 @@ TypeScript CLI on Node.js with npm.
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
-| Review response production workflow absent | High | Planning is in progress for a local producer that turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
+| Review response production workflow not merged | High | Implementation branch adds a local producer that turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
@@ -118,8 +123,7 @@ TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the reviewer-produced `review-response` workflow plan, then implement
-   it if the planning gate passes.
+1. Watch PR #39 CI, then request Claude review after CI is green.
 2. Decide whether private redaction rule files are needed before package
    publishing.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.
