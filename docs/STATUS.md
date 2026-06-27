@@ -23,8 +23,9 @@ is merged, so new packet types can now be introduced through schema and
 renderer registry entries. The `review-response` packet implementation is
 merged, so request and response packet shapes now validate and render
 end-to-end. npm registry publishing, global packet storage, external agent
-invocation, review-response generation/storage, PR comment posting,
-automation, transport, and private redaction rules remain deferred.
+invocation, review-response generation/storage, native GitHub review import,
+automation, and private redaction rules remain deferred. GitHub PR exact-packet
+transport is in implementation as the first outward packet boundary.
 
 ## Active Work
 
@@ -51,7 +52,8 @@ automation, transport, and private redaction rules remain deferred.
 | Protocol envelope implementation | Done | PR #31 merged schema registry dispatch, renderer dispatch, unsupported-combination errors, package export, and second-type registry proof tests. |
 | Review-response packet planning | Done | PR #33 merged `review-response` 0.1 as the first consumer of the protocol envelope, with top-level verification reuse, outcome/confidence semantics, generic packet rendering direction, and explicit Markdown confidence rendering. |
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, and review-response validation/rendering are merged; transport, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response generation/storage, PR comments, automation, and external orchestration remain unbuilt. |
+| GitHub PR packet transport implementation | In progress | Branch `codex/github-pr-transport-plan` adds `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, and GitHub PR exact-packet transport implementation are in place or in progress; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response generation/storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -102,11 +104,13 @@ automation, transport, and private redaction rules remain deferred.
 | 2026-06-27 | Review-response implementation branch checks | Passed | PR #34: `https://github.com/AcrossWorksAPI/open-relay/pull/34`; branch `codex/review-response-implementation`; `npm run check` passed with 98 tests, `npm run smoke:pack` passed, and `git diff --check` passed locally. Branch adds schema dispatch, outcome semantic checks, renderer dispatch, generic render CLI, neutral validate messages, protocol docs, examples, package exports, installed-package smoke updates, and Claude-review readability polish for block-rendered findings. |
 | 2026-06-27 | PR #34 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/34`; merge commit `ead0c90`; `Governance Checks` passed, Claude review reported merge-ready, and the readability finding was addressed by rendering findings as blocks before merge. |
 | 2026-06-27 | PR #34 merged-main closeout | Passed | Fresh `main` verification after merge: `npm run check` passed with 98 tests, `npm run smoke:pack` passed, `git diff --check` passed, and the placeholder guard found no unresolved marker terms. |
+| 2026-06-27 | GitHub PR packet transport branch checks | Passed | Branch `codex/github-pr-transport-plan`: `npm run check` passed with 123 tests, and `npm run smoke:pack` verified installed CLI transport help plus `transport github-pr send ... --dry-run` without live GitHub calls. |
+| 2026-06-27 | Claude review fixes for PR #36 | Passed | Added safe `gh auth status` first-run hint, scoped `send --update` to the authenticated `gh` user's matching packet comments, and made marker extraction CRLF-tolerant; `npm run check` passed with 123 tests and `git diff --check` passed. |
 
 ## Next Step
 
-Plan and implement the first packet transport boundary so review requests and
-review responses can move between agents without manual copy/paste.
+Review and merge the GitHub PR exact-packet transport implementation so review
+requests and review responses can move between agents without manual copy/paste.
 
 ## Owner Decisions Needed
 
@@ -115,8 +119,8 @@ review responses can move between agents without manual copy/paste.
 - How opinionated should Open Relay be about Codex and Claude specifically?
   The current renderer plan keeps the first template agent-neutral and defers
   agent-specific prompt dialects.
-- Which first transport boundary should move packets between agents: committed
-  file, clipboard, MCP tool, PR comment, or another local mechanism?
+- Native GitHub review import remains a separate future decision after exact
+  packet transport.
 - Should private redaction rule files exist from day one? The generator plan
   starts with fixed fail-closed redaction defaults.
 - What npm account or organization should own the eventual first publish?

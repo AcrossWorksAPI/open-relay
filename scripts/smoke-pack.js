@@ -55,6 +55,8 @@ try {
 
   runCli(cli, ["--help"], { contains: "open-relay render <packet.json>" });
   runCli(cli, ["--help"], { contains: "open-relay render review-request" });
+  runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
+  runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
   runCli(cli, ["validate", join(fixtureDir, "examples", "review-request", "relay.json")], {
     contains: "valid packet"
   });
@@ -93,6 +95,19 @@ try {
   runCli(cli, ["validate", generatedPacket], { contains: "valid packet" });
   runCli(cli, ["render", generatedPacket], { contains: "## Next Action" });
   runCli(cli, ["render", "review-request", generatedPacket], { contains: "## Next Action" });
+  const transportDryRun = runCli(cli, [
+    "transport",
+    "github-pr",
+    "send",
+    generatedPacket,
+    "--pr",
+    "AcrossWorksAPI/open-relay#34",
+    "--dry-run"
+  ], {
+    contains: "<!-- open-relay-packet"
+  });
+  assert.match(transportDryRun, /payload_base64:/);
+  assert.match(transportDryRun, /# Review Request Relay Packet/);
 
   const generatedMarkdown = join(workspace, "generated.md");
   runCli(cli, [
