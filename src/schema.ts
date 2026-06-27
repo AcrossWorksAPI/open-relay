@@ -1,7 +1,10 @@
 import { readFile } from "node:fs/promises";
 import Ajv, { type ErrorObject } from "ajv";
 
-import schema from "../schemas/review-request.schema.json";
+import {
+  lookupPacketSchema,
+  supportedPacketSummary
+} from "./schemaRegistry";
 
 export type ValidationResult = {
   valid: boolean;
@@ -13,12 +16,40 @@ const ajv = new Ajv({
   strict: true
 });
 
-const validateReviewRequest = ajv.compile(schema);
+const validateHeader = ajv.compile({
+  type: "object",
+  required: ["packet_type", "packet_version"],
+  properties: {
+    packet_type: { type: "string", minLength: 1 },
+    packet_version: { type: "string", minLength: 1 }
+  }
+});
 
 export function validatePacket(packet: unknown): ValidationResult {
-  const valid = validateReviewRequest(packet);
-  const schemaErrors = valid ? [] : formatErrors(validateReviewRequest.errors ?? []);
-  const semanticErrors = valid ? validateSemantics(packet) : [];
+  if (!validateHeader(packet)) {
+    return {
+      valid: false,
+      errors: formatErrors(validateHeader.errors ?? [])
+    };
+  }
+
+  const packetRecord = packet as unknown as Record<string, unknown>;
+  const packetType = String(packetRecord.packet_type);
+  const packetVersion = String(packetRecord.packet_version);
+  const entry = lookupPacketSchema(packetType, packetVersion);
+
+  if (!entry) {
+    return {
+      valid: false,
+      errors: [
+        `unsupported packet_type/packet_version: ${packetType}/${packetVersion} (supported: ${supportedPacketSummary()})`
+      ]
+    };
+  }
+
+  const valid = entry.validate(packet);
+  const schemaErrors = valid ? [] : formatErrors(entry.validate.errors ?? []);
+  const semanticErrors = valid && entry.semantics ? entry.semantics(packetRecord) : [];
   const errors = [...schemaErrors, ...semanticErrors];
 
   if (errors.length === 0) {
@@ -46,29 +77,4 @@ function formatErrors(errors: ErrorObject[]): string[] {
     const location = error.instancePath === "" ? "/" : error.instancePath;
     return `${location} ${error.message ?? "is invalid"}`;
   });
-}
-
-function validateSemantics(packet: unknown): string[] {
-  if (!isRecord(packet)) {
-    return [];
-  }
-
-  const changeSummary = packet.change_summary;
-  const changedFiles = packet.changed_files;
-
-  if (!isRecord(changeSummary) || !Array.isArray(changedFiles)) {
-    return [];
-  }
-
-  if (changeSummary.total_files_changed !== changedFiles.length) {
-    return [
-      "/change_summary/total_files_changed must equal changed_files length"
-    ];
-  }
-
-  return [];
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

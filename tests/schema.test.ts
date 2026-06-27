@@ -1,12 +1,18 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
+import Ajv from "ajv";
 
 import { validatePacket } from "../src/schema";
+import { SCHEMA_REGISTRY } from "../src/schemaRegistry";
+
+async function validPacketFixture(): Promise<Record<string, unknown>> {
+  const raw = await readFile("examples/review-request/relay.json", "utf8");
+  return JSON.parse(raw) as Record<string, unknown>;
+}
 
 test("validates the synthetic review-request example", async () => {
-  const raw = await readFile("examples/review-request/relay.json", "utf8");
-  const packet = JSON.parse(raw);
+  const packet = await validPacketFixture();
   const result = validatePacket(packet);
 
   assert.equal(result.valid, true);
@@ -24,9 +30,9 @@ test("rejects a packet with missing required fields", () => {
 });
 
 test("rejects mismatched changed file count", async () => {
-  const raw = await readFile("examples/review-request/relay.json", "utf8");
-  const packet = JSON.parse(raw);
-  packet.change_summary.total_files_changed = 999;
+  const packet = await validPacketFixture();
+  const changeSummary = packet.change_summary as Record<string, unknown>;
+  changeSummary.total_files_changed = 999;
 
   const result = validatePacket(packet);
 
@@ -35,4 +41,92 @@ test("rejects mismatched changed file count", async () => {
     result.errors.join("\n"),
     /total_files_changed must equal changed_files length/
   );
+});
+
+test("rejects unsupported packet types with supported combinations", () => {
+  const packet = {
+    packet_type: "SECRET_PACKET_TYPE_SHOULD_NOT_APPEAR",
+    packet_version: "0.1",
+    created_at: "2026-06-27T00:00:00.000Z",
+    secret: "SECRET_FIELD_SHOULD_NOT_APPEAR"
+  };
+
+  const result = validatePacket(packet);
+  const errors = result.errors.join("\n");
+
+  assert.equal(result.valid, false);
+  assert.match(errors, /unsupported packet_type\/packet_version/);
+  assert.match(errors, /review-request\/0\.1/);
+  assert.doesNotMatch(errors, /SECRET_FIELD_SHOULD_NOT_APPEAR/);
+});
+
+test("rejects unsupported packet versions with supported combinations", async () => {
+  const packet = {
+    ...(await validPacketFixture()),
+    packet_version: "9.9"
+  };
+
+  const result = validatePacket(packet);
+
+  assert.equal(result.valid, false);
+  assert.match(
+    result.errors.join("\n"),
+    /unsupported packet_type\/packet_version: review-request\/9\.9/
+  );
+  assert.match(result.errors.join("\n"), /supported: review-request\/0\.1/);
+});
+
+test("requires packet type before dispatch", () => {
+  const result = validatePacket({ packet_version: "0.1" });
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join("\n"), /must have required property 'packet_type'/);
+});
+
+test("lets review-request schema own created_at validation", async () => {
+  const packet = {
+    ...(await validPacketFixture()),
+    created_at: undefined,
+    goal: ""
+  };
+  delete packet.created_at;
+
+  const result = validatePacket(packet);
+  const errors = result.errors.join("\n");
+
+  assert.equal(result.valid, false);
+  assert.match(errors, /created_at/);
+  assert.match(errors, /goal/);
+});
+
+test("validates a test-only packet type through the registry", () => {
+  const ajv = new Ajv({ allErrors: true, strict: true });
+  SCHEMA_REGISTRY["test-packet"] = {
+    "0.1": {
+      validate: ajv.compile({
+        type: "object",
+        additionalProperties: false,
+        required: ["packet_type", "packet_version", "created_at", "message"],
+        properties: {
+          packet_type: { const: "test-packet" },
+          packet_version: { const: "0.1" },
+          created_at: { type: "string" },
+          message: { type: "string" }
+        }
+      })
+    }
+  };
+
+  try {
+    const result = validatePacket({
+      packet_type: "test-packet",
+      packet_version: "0.1",
+      created_at: "2026-06-27T00:00:00.000Z",
+      message: "hello"
+    });
+
+    assert.equal(result.valid, true);
+  } finally {
+    delete SCHEMA_REGISTRY["test-packet"];
+  }
 });

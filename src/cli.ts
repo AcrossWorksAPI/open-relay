@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
-import { renderReviewRequestMarkdown } from "./renderReviewRequest";
+import { renderPacketMarkdown } from "./renderPacket";
 import { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";
 import { validatePacket, validatePacketFile } from "./schema";
 import { saveReviewRequestBundle } from "./storage";
@@ -80,7 +80,7 @@ async function renderReviewRequestCommand(args: string[]): Promise<number> {
       return 1;
     }
 
-    const markdown = renderReviewRequestMarkdown(packet as ReviewRequestPacket);
+    const markdown = renderPacketMarkdown(packet as Record<string, unknown>);
 
     if (parsed.output) {
       try {
@@ -256,7 +256,7 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
 
     const packet = built.packet;
     const output = parsed.options.format === "markdown"
-      ? renderReviewRequestMarkdown(packet)
+      ? renderPacketMarkdown(packet)
       : `${JSON.stringify(packet, null, 2)}\n`;
     const successMessage = parsed.options.format === "markdown"
       ? "Wrote review-request Markdown.\n"
