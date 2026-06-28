@@ -30,8 +30,13 @@ release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
 or live claim exists yet. Native GitHub review import,
 response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
-agent-ready prompts remain later slices. The approved first runtime direction
-is a TypeScript CLI on Node.js with npm.
+agent-ready prompt runtime behavior remain later slices. Agent-ready prompt
+rendering is now in planning as optional Claude/Codex wrappers around the
+existing validated packet Markdown renderer. Roadmap version labels now use
+PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
+npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
+have a PR. The approved first runtime direction is a TypeScript CLI on Node.js
+with npm.
 
 ## Current Implementation Source
 
@@ -108,8 +113,10 @@ is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
 | `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | Active | Design for 0.1-compatible per-file diff stats in `changed_files[].evidence`. |
 | `docs/superpowers/specs/2026-06-28-private-redaction-rules-design.md` | Active | Design for repo-local private redaction rules before generated review-request output. |
+| `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
+| `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
@@ -136,29 +143,31 @@ is a TypeScript CLI on Node.js with npm.
 | Trusted publishing not configured | Medium | Release workflow implementation uses npm trusted publishing through GitHub Actions OIDC instead of long-lived npm tokens; npm owner/org setup remains required before publishing. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
+| Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
-| Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
+| Agent-specific prompt dialects in planning | Low | Branch `codex/agent-ready-prompt-rendering-plan` proposes optional `render --template claude\|codex` wrappers around validated packet Markdown; runtime behavior remains unmerged. |
 | Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
 ## Next Recommended Work
 
-1. Confirm npm owner/org and trusted publishing setup for
+1. Review the agent-ready prompt rendering planning PR.
+2. If approved, implement `render --template neutral|claude|codex` while
+   preserving neutral Markdown output and avoiding external agent invocation.
+3. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
-2. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
-   ready to publish.
-3. Run post-publish registry-install smoke and record live evidence before
+4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
+   ready to publish, then run post-publish registry-install smoke before
    marking any version `Live`.
-4. Decide whether native GitHub review import and agent-specific prompt
-   dialects belong before or after the first public package release.
 
 ## Current Owner Decisions Needed
 
 - Global packet storage in addition to repo-local storage.
 - GitHub PR comments are the first packet transport boundary; native GitHub
   review import remains a separate future decision.
-- Codex/Claude specificity versus agent-neutral templates. Current plan starts
-  agent-neutral and defers dialects.
+- Codex/Claude specificity versus agent-neutral templates. Current planning
+  branch proposes named Claude/Codex render wrappers but no agent invocation,
+  custom template files, or new packet schemas.
 - npm publish owner/organization, trusted publisher setup, and when to create
   the owner-controlled `v0.1.0` GitHub Release.

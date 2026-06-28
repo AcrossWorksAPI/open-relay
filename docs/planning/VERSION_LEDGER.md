@@ -1,12 +1,17 @@
 # Open Relay Version Ledger
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 ## Current Version
 
 - Current live version: None yet; first public release not published
-- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response packet spec merged, review-response validation/rendering implementation merged, GitHub PR exact-packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, and release workflow implementation merged
-- Release/versioning convention: First public package target is `@acrossworks/open-relay@0.1.0`; live release timing remains owner-controlled
+- Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response packet spec merged, review-response validation/rendering implementation merged, GitHub PR exact-packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, and agent-ready prompt rendering planning in progress
+- Release/versioning convention: First public package target is
+  `@acrossworks/open-relay@0.1.0`; live release timing remains
+  owner-controlled. Before the first public publish, roadmap version cells use
+  `v0.1.0-pre.<PR_NUMBER>` for PR-backed slices and `v0.1.0-pre.next` only for
+  planned slices without a PR. These are roadmap tracking labels, not npm tags,
+  GitHub Releases, or live package versions.
 
 ## Live Evidence Rule
 
@@ -50,6 +55,9 @@ captured is not alert delivered.
 | Private redaction rules implementation | Done | 2026-06-28 | Merge commit `2b50762` on `main` | PR #45: `https://github.com/AcrossWorksAPI/open-relay/pull/45` | N/A, local CLI only; no packet-version bump, regex support, global config, environment reads, raw-diff scanning, remote rule loading, registry publish, or hosted deploy | Adds strict private rule parsing, case-insensitive literal replacement, allowlisted review-request string-field redaction, `--redaction-rules` for generate/handoff/save, fail-closed invalid-rule handling, docs, and installed-package smoke coverage; PR review fix rejects rule names containing private match text and asserts `redactions[]` audit records do not re-leak matches; branch `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `Governance Checks` passed, Claude re-review reported merge-ready, and fresh merged-main `npm run check` with 169 tests, `npm run smoke:pack`, and `git diff --check` passed | Revert merge commit `2b50762` if private redaction rule behavior or CLI flag shape is rejected; packet schemas, renderers, transport, and storage remain independent. |
 | Release workflow planning | Done | 2026-06-28 | Merge commit `235656c` on `main` | PR #47: `https://github.com/AcrossWorksAPI/open-relay/pull/47` | N/A, planning only; no tag, GitHub Release, npm publish, registry package, or live version claim | Adds release workflow design and implementation plan for recommended `@acrossworks/open-relay@0.1.0`, changelog/tag flow, release preflight, GitHub Actions trusted publishing, npm provenance, post-publish registry smoke, and no-live-claim closeout; branch `npm run check` passed with 169 tests, `npm run smoke:pack` passed, and `git diff --check` passed before PR; review feedback folded in committed `private: true`, release-job-only `npm pkg delete private`, explicit prerelease skip, and no-CI-token fallback wording, then `npm run check` passed with 169 tests, `npm run smoke:pack` passed, and `git diff --check` passed again; `Governance Checks` passed before merge | Revert merge commit `235656c` if the first release boundary, version, or trusted publishing approach is rejected. |
 | Release workflow implementation | Done | 2026-06-28 | Merge commit `a8f5f0a` on `main` | PR #48: `https://github.com/AcrossWorksAPI/open-relay/pull/48` | N/A, release workflow only; no tag, GitHub Release, npm publish, registry package, or live version claim | Adds `CHANGELOG.md`, `scripts/release-preflight.js`, package metadata for `0.1.0` while retaining committed `private: true`, `.github/workflows/release.yml`, and `docs/release/npm-release.md`; branch `npm run check` passed with 169 tests, `npm run smoke:pack` passed, normal `npm run release:preflight -- 0.1.0` passed, publish-context preflight passed in a temporary worktree after `npm pkg delete private`, `git diff --check` passed, `package.json` still reports `private: true`, and `git tag --list 'v0.1.0'` returned no tag before PR; fresh merged-main verification passed `npm run check` with 169 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`, with no `v0.1.0` tag and committed `private: true` retained | Revert merge commit `a8f5f0a` before publish if release metadata, preflight, workflow, or runbook behavior is rejected; after any real publish, correct with npm deprecation and a patch release rather than rewriting history. |
+| Agent-ready prompt rendering planning | In progress | 2026-06-28 | Branch `codex/agent-ready-prompt-rendering-plan` | PR #51: `https://github.com/AcrossWorksAPI/open-relay/pull/51` | N/A, docs/planning only; no prompt runtime behavior, agent invocation, GitHub posting, merge, publish, or live version claim | Branch adds `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` and `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md`; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed | Revert the planning commit if optional render prompt templates are rejected. |
+| Agent-ready prompt rendering review fix | In progress | 2026-06-29 | Branch `codex/agent-ready-prompt-rendering-plan` | PR #51: `https://github.com/AcrossWorksAPI/open-relay/pull/51` | N/A, docs/planning only; no prompt runtime behavior, agent invocation, GitHub posting, merge, publish, or live version claim | Follow-up reframes prompt-injection mitigation as syntactic fence containment plus best-effort semantic mitigation, with human-in-loop/no-auto-act as the safety model; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed | Revert the review-fix commit if the prompt-injection framing is rejected. |
+| Roadmap PR-indexed pre-release tracking | In progress | 2026-06-28 | Branch `codex/agent-ready-prompt-rendering-plan` | PR #51: `https://github.com/AcrossWorksAPI/open-relay/pull/51` | N/A, roadmap governance only; no npm tag, GitHub Release, registry publish, or live package version claim | `docs/planning/ROADMAP.md` now assigns historical and planned slices `v0.1.0-pre.<PR_NUMBER>` or `v0.1.0-pre.next`; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, `git diff --check` passed, and a scan found no remaining `Baseline` or `Unversioned` roadmap version rows | Revert the roadmap version-label commit if the PR-indexed pre-release convention is rejected. |
 
 ## Rollback Notes
 
@@ -119,6 +127,13 @@ captured is not alert delivered.
   not create tags, create GitHub Releases, publish packages, or mark a live
   version. After a real public publish, corrections must use deprecation plus a
   patch release rather than history rewrites.
+- Agent-ready prompt rendering planning can be reverted independently because
+  it changes planning docs only and does not add command behavior, packet schema
+  changes, external agent invocation, GitHub posting, package publishing, or
+  live release claims.
+- Roadmap PR-indexed pre-release tracking can be reverted independently because
+  it changes roadmap/ledger labels only and does not create npm tags, GitHub
+  Releases, registry packages, runtime behavior, or live release claims.
 - Product rollback before the first public publish is normal merge reverts for
   local CLI and release-workflow changes. After a real npm publish, corrections
   must use npm deprecation plus a patch release rather than history rewrites.
