@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, and packet evidence enrichment merged
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules planning in progress
 Last updated: 2026-06-28
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, and packet evidence enrichment merged
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules planning in progress
 
 ## Project Purpose
 
@@ -32,6 +32,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Relay protocol envelope and multi-type validation | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
 | Unversioned | Boundary/transport decision | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-github-pr-transport.md |
 | Unversioned | Packet evidence enrichment | Done | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md |
+| Unversioned | Private redaction rules | Planned | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
 | Unversioned | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
 | Unversioned | Reviewer-produced review-response workflow | Done | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
 | Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
@@ -45,6 +46,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Relay protocol envelope and multi-type validation | Feature 5: support review loops by making additional packet types possible. |
 | Boundary/transport decision | Product thesis and Feature 5: define how packets move between agents/workspaces. |
 | Packet evidence enrichment | Feature 2: include diff summary and tests run. |
+| Private redaction rules | Feature 2 and product thesis: make generated review context safer to share by scrubbing repository-specific private metadata before packet output. |
 | Review-response packet type | Feature 5: support review response. |
 | Reviewer-produced review-response workflow | Feature 5: close the review loop by letting reviewers create and send response packets without manual copy/paste. |
 | Implementation-handoff packet type | Feature 5: support implementation handoff. |
@@ -57,7 +59,6 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | --- | --- | --- | --- | --- | --- |
 | Protocol | Packet-version migrators | After a second packet version exists | Candidate | A breaking packet version ships and old stored bundles must still load | - |
 | Security | Non-GitHub remote allowlist | When non-GitHub users appear | Candidate | Target users report dropped safe GitLab, Codeberg, or GitHub Enterprise remotes | - |
-| Security | Private redaction rule files | Before packets include sensitive data beyond git metadata | Candidate | Fixed generator redaction defaults are insufficient | - |
 | Runtime | Publish to npm registry | Before first public live release | Candidate | Package smoke passes and publish authority is approved | - |
 | Release | Version, tag, changelog, and publish workflow | Before live claims | Candidate | Package smoke passes and publish authority is approved | - |
 

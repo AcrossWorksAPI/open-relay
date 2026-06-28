@@ -21,7 +21,9 @@ copy/paste when both sides emit Open Relay packets. Reviewer-produced
 `review-response` packet workflow is merged, so the reviewer side can create
 and send response packets without manual copy/paste. Packet evidence enrichment
 is merged, so generated request packets include per-file churn evidence without
-embedding raw diffs. Native GitHub review import, response storage, fix
+embedding raw diffs. Private redaction rules are in planning before npm
+publishing so repository-specific private terms can be scrubbed from generated
+packet metadata. Native GitHub review import, response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompts remain later slices. The approved first runtime direction
 is a TypeScript CLI on Node.js with npm.
@@ -92,7 +94,9 @@ is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
 | `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | Active | Design for 0.1-compatible per-file diff stats in `changed_files[].evidence`. |
+| `docs/superpowers/specs/2026-06-28-private-redaction-rules-design.md` | Active | Design for repo-local private redaction rules before generated review-request output. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
+| `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
@@ -122,13 +126,13 @@ is a TypeScript CLI on Node.js with npm.
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
-| Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
+| Private redaction rules planned but unimplemented | Low | Planning branch defines repo-local ignored literal rule files plus explicit `--redaction-rules`; implementation remains unbuilt until the planning PR is reviewed. |
 
 ## Next Recommended Work
 
-1. Use the packet-native review-response flow on the next implementation PR.
-2. Decide whether private redaction rule files are needed before package
-   publishing.
+1. Review the private redaction rules planning PR.
+2. Implement private redaction rules and use packet-native `review-response` on
+   that implementation PR.
 3. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
@@ -138,5 +142,4 @@ is a TypeScript CLI on Node.js with npm.
   review import remains a separate future decision.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
-- Redaction rules from day one.
 - npm publish owner/organization and first released semver version.
