@@ -21,9 +21,9 @@ copy/paste when both sides emit Open Relay packets. Reviewer-produced
 `review-response` packet workflow is merged, so the reviewer side can create
 and send response packets without manual copy/paste. Packet evidence enrichment
 is merged, so generated request packets include per-file churn evidence without
-embedding raw diffs. Private redaction rules are in implementation before npm
-publishing so repository-specific private terms can be scrubbed from generated
-packet metadata. Native GitHub review import, response storage, fix
+embedding raw diffs. Private redaction rules are merged before npm publishing,
+so repository-specific private terms can be scrubbed from generated packet
+metadata. Native GitHub review import, response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompts remain later slices. The approved first runtime direction
 is a TypeScript CLI on Node.js with npm.
@@ -68,7 +68,7 @@ is a TypeScript CLI on Node.js with npm.
 | `tests/args.test.ts` | Active | Generator argument parser tests. |
 | `tests/git.test.ts` | Active | Git context collector tests. |
 | `tests/redaction.test.ts` | Active | Remote URL redaction tests. |
-| `tests/privateRedactionRules.test.ts` | Active | Private redaction rule validation, case-insensitive replacement, schema validity, and field allowlist coverage tests. |
+| `tests/privateRedactionRules.test.ts` | Active | Private redaction rule validation, case-insensitive replacement, audit no-leak, schema validity, and field allowlist coverage tests. |
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/renderReviewResponse.test.ts` | Active | Review-response Markdown renderer order, snapshot, confidence, escaping, and empty-state tests. |
 | `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
@@ -128,14 +128,15 @@ is a TypeScript CLI on Node.js with npm.
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
-| Private redaction rules implementation pending review | Low | Implementation branch adds repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
+| Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
 ## Next Recommended Work
 
-1. Review the private redaction rules implementation PR using packet-native
-   `review-response`.
-2. Merge private redaction rules after review and CI.
-3. Define npm publish owner, first semver version, changelog, and tag workflow.
+1. Define npm publish owner, first semver version, changelog, and tag workflow.
+2. Decide whether native GitHub review import belongs before the first package
+   publish or after the first public release.
+3. Decide whether agent-specific prompt dialects should be planned before or
+   after npm publishing.
 
 ## Current Owner Decisions Needed
 
