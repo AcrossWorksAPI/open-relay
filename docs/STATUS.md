@@ -33,6 +33,9 @@ packet-version bump. Private redaction rules are merged, so
 repository-specific private terms can be scrubbed before generated packet
 output without adding a packet-version bump, regex support, global config,
 environment reads, raw-diff scanning, or remote rule loading.
+Release workflow planning is now in progress to define the first npm publish
+gate, recommended `0.1.0` version, changelog/tag workflow, and trusted
+publishing path without publishing yet.
 
 ## Active Work
 
@@ -63,6 +66,7 @@ environment reads, raw-diff scanning, or remote rule loading.
 | Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
 | Packet evidence enrichment implementation | Done | PR #42 merged 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`; no raw diff embedding, automatic test execution, synthetic verification entry, or packet-version bump was added. Merged-main `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | Private redaction rules implementation | Done | PR #45 merged repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict case-insensitive literal JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, audit no-leak guards, and installed-package smoke coverage before npm publishing. |
+| Release workflow planning | In progress | Branch `codex/release-workflow-plan` defines the recommended `@acrossworks/open-relay@0.1.0` first release gate, changelog/tag workflow, npm trusted publishing path, release preflight, and no-live-claim closeout rules. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -131,7 +135,8 @@ environment reads, raw-diff scanning, or remote rule loading.
 
 ## Next Step
 
-Define npm publish owner, first semver version, changelog, and tag workflow.
+Review the release workflow planning PR, then implement the publish-ready
+workflow once npm owner/trusted-publisher setup is confirmed.
 
 ## Owner Decisions Needed
 
@@ -142,5 +147,5 @@ Define npm publish owner, first semver version, changelog, and tag workflow.
   agent-specific prompt dialects.
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
-- What npm account or organization should own the eventual first publish?
-- What first published version should be used when the CLI is ready to release?
+- Can the Across Works npm org/account publish `@acrossworks/open-relay`?
+- Should the first public version be `0.1.0` as recommended?
