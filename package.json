@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.json",
     "check": "npm test",
     "prepack": "npm run build",
-    "smoke:pack": "node scripts/smoke-pack.js"
+    "smoke:pack": "node scripts/smoke-pack.js",
+    "release:preflight": "node scripts/release-preflight.js"
   },
   "repository": {
     "type": "git",
