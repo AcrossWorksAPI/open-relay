@@ -99,7 +99,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | Planning branch `codex/release-workflow-plan` defines the publish gate, release preflight, changelog/tag workflow, and trusted publishing path before implementation. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #47 defines the publish gate, release preflight, changelog/tag workflow, and trusted publishing path before implementation. |
 
 ## Implemented Or Historical Plans
 
