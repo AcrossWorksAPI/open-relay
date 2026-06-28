@@ -20,33 +20,48 @@ export type GitContext = {
   changedFiles: ChangedFile[];
 };
 
+export type GitRunner = (cwd: string, args: string[]) => string;
+
 export type CollectGitContextOptions = {
   cwd: string;
   baseRef: string;
   headRef: string;
   includeLocalPath: boolean;
+  gitRunner?: GitRunner;
 };
 
+type DiffStat =
+  | { kind: "text"; added: number; deleted: number }
+  | { kind: "binary" };
+
 export function collectGitContext(options: CollectGitContextOptions): GitContext {
-  const root = git(options.cwd, ["rev-parse", "--show-toplevel"]).trim();
-  const baseCommit = git(root, ["rev-parse", "--verify", options.baseRef]).trim();
-  const headCommit = git(root, ["rev-parse", "--verify", options.headRef]).trim();
+  const runGit = options.gitRunner ?? git;
+  const root = runGit(options.cwd, ["rev-parse", "--show-toplevel"]).trim();
+  const baseCommit = runGit(root, ["rev-parse", "--verify", options.baseRef]).trim();
+  const headCommit = runGit(root, ["rev-parse", "--verify", options.headRef]).trim();
   // V1 records and generates the exact endpoint diff. Three-dot PR semantics are deferred.
   const diffRange = `${baseCommit}..${headCommit}`;
-  const changedFiles = parseNameStatus(git(root, [
+  const diffStats = parseNumstat(optionalGit(runGit, root, [
+    "diff",
+    "--numstat",
+    "-z",
+    "--find-renames",
+    diffRange
+  ], false) ?? "");
+  const changedFiles = parseNameStatus(runGit(root, [
     "diff",
     "-z",
     "--name-status",
     "--find-renames",
     diffRange
-  ]));
+  ]), diffStats);
 
   if (changedFiles.length === 0) {
     throw new Error(`No changed files found for ${diffRange}`);
   }
 
-  const remoteUrl = optionalGit(root, ["remote", "get-url", "origin"]);
-  const currentBranch = optionalGit(root, ["branch", "--show-current"]);
+  const remoteUrl = optionalGit(runGit, root, ["remote", "get-url", "origin"]);
+  const currentBranch = optionalGit(runGit, root, ["branch", "--show-current"]);
 
   return {
     repositoryName: repositoryNameFromRemote(remoteUrl) ?? repositoryNameFromPath(root),
@@ -61,7 +76,7 @@ export function collectGitContext(options: CollectGitContextOptions): GitContext
   };
 }
 
-function parseNameStatus(raw: string): ChangedFile[] {
+function parseNameStatus(raw: string, diffStats = new Map<string, DiffStat>()): ChangedFile[] {
   const parts = raw.split("\0").filter((part) => part.length > 0);
   const files: ChangedFile[] = [];
 
@@ -77,17 +92,112 @@ function parseNameStatus(raw: string): ChangedFile[] {
 
     const path = parts[index];
     index += 1;
+    const evidence = combineEvidence([
+      ...(previousPath ? [`Renamed from ${previousPath}.`] : []),
+      ...(diffStats.has(path) ? [formatDiffStat(diffStats.get(path)!)] : [])
+    ]);
 
     files.push({
       path,
       status,
       role: roleForStatus(status),
       review_priority: priorityForPath(path),
-      ...(previousPath ? { evidence: `Renamed from ${previousPath}` } : {})
+      ...(evidence ? { evidence } : {})
     });
   }
 
   return files;
+}
+
+function parseNumstat(raw: string): Map<string, DiffStat> {
+  const stats = new Map<string, DiffStat>();
+  if (raw.length === 0) {
+    return stats;
+  }
+
+  const parts = raw.endsWith("\0") ? raw.slice(0, -1).split("\0") : raw.split("\0");
+
+  for (let index = 0; index < parts.length; index += 1) {
+    const header = parts[index];
+    if (!header) {
+      continue;
+    }
+
+    const parsedHeader = parseNumstatHeader(header);
+    if (!parsedHeader) {
+      continue;
+    }
+
+    const { addedRaw, deletedRaw, path } = parsedHeader;
+    const stat = parseDiffStat(addedRaw, deletedRaw);
+    if (!stat) {
+      if (path === "" && index + 2 < parts.length) {
+        index += 2;
+      }
+      continue;
+    }
+
+    if (path === "") {
+      const newPath = parts[index + 2];
+      index += 2;
+      if (newPath) {
+        stats.set(newPath, stat);
+      }
+      continue;
+    }
+
+    stats.set(path, stat);
+  }
+
+  return stats;
+}
+
+function parseNumstatHeader(header: string): { addedRaw: string; deletedRaw: string; path: string } | undefined {
+  const firstTab = header.indexOf("\t");
+  if (firstTab === -1) {
+    return undefined;
+  }
+
+  const secondTab = header.indexOf("\t", firstTab + 1);
+  if (secondTab === -1) {
+    return undefined;
+  }
+
+  return {
+    addedRaw: header.slice(0, firstTab),
+    deletedRaw: header.slice(firstTab + 1, secondTab),
+    path: header.slice(secondTab + 1)
+  };
+}
+
+function parseDiffStat(addedRaw: string | undefined, deletedRaw: string | undefined): DiffStat | undefined {
+  if (addedRaw === "-" && deletedRaw === "-") {
+    return { kind: "binary" };
+  }
+
+  if (!isNonNegativeInteger(addedRaw) || !isNonNegativeInteger(deletedRaw)) {
+    return undefined;
+  }
+
+  return {
+    kind: "text",
+    added: Number.parseInt(addedRaw, 10),
+    deleted: Number.parseInt(deletedRaw, 10)
+  };
+}
+
+function isNonNegativeInteger(value: string | undefined): value is string {
+  return value !== undefined && /^\d+$/.test(value);
+}
+
+function formatDiffStat(stat: DiffStat): string {
+  return stat.kind === "binary"
+    ? "Diff stats: binary file."
+    : `Diff stats: +${stat.added} -${stat.deleted}.`;
+}
+
+function combineEvidence(parts: string[]): string | undefined {
+  return parts.length > 0 ? parts.join(" ") : undefined;
 }
 
 function mapStatus(statusCode: string): ChangedFile["status"] {
@@ -166,9 +276,15 @@ function repositoryNameFromPath(path: string): string {
   return path.split(/[\\/]/).pop() ?? "unknown-repository";
 }
 
-function optionalGit(cwd: string, args: string[]): string | undefined {
+function optionalGit(
+  runGit: GitRunner,
+  cwd: string,
+  args: string[],
+  trimOutput = true
+): string | undefined {
   try {
-    return git(cwd, args).trim();
+    const output = runGit(cwd, args);
+    return trimOutput ? output.trim() : output;
   } catch {
     return undefined;
   }

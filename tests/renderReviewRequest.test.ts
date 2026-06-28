@@ -42,7 +42,7 @@ test("renders review-request markdown in protocol order", () => {
   assert.match(markdown, /- Packet version: `0\.1`/);
   assert.match(markdown, /- Audience: Claude Code/);
   assert.match(markdown, /- Behavioral intent: Improve open-source readiness without changing product behavior\./);
-  assert.match(markdown, /\| `SECURITY\.md` \| added \| Vulnerability reporting and security policy \| high \|/);
+  assert.match(markdown, /\| `SECURITY\.md` \| added \| Vulnerability reporting and security policy \| high \| Diff stats: \+10 -0\. \|/);
   assert.match(markdown, /Review whether this packet provides enough context/);
   assert.ok(markdown.endsWith("\n"));
 });
@@ -54,7 +54,8 @@ test("escapes markdown table cells", () => {
       path: "docs/a|b.md",
       status: "modified",
       role: "Line one\nLine two",
-      review_priority: "high"
+      review_priority: "high",
+      evidence: "Evidence | line\nTwo"
     }],
     verification: [{
       kind: "command",
@@ -66,7 +67,7 @@ test("escapes markdown table cells", () => {
 
   const markdown = renderReviewRequestMarkdown(packet);
 
-  assert.match(markdown, /\| `docs\/a\\\|b\.md` \| modified \| Line one Line two \| high \|/);
+  assert.match(markdown, /\| `docs\/a\\\|b\.md` \| modified \| Line one Line two \| high \| Evidence \\\| line Two \|/);
   assert.match(markdown, /\| `npm \\\| test` \| passed \| Line one Line two \|/);
 });
 
@@ -94,7 +95,7 @@ test("removes backticks from code-span values", () => {
   const markdown = renderReviewRequestMarkdown(packet);
 
   assert.match(markdown, /- Working branch: `fix-branch`/);
-  assert.match(markdown, /\| `docs\/name\.md` \| modified \| Backtick path \| medium \|/);
+  assert.match(markdown, /\| `docs\/name\.md` \| modified \| Backtick path \| medium \|  \|/);
   assert.match(markdown, /\| `npm run check` \| passed \| Backtick command \|/);
 });
 

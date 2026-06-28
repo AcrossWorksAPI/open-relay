@@ -20,7 +20,7 @@ as the first boundary so packets can move between agents without manual
 copy/paste when both sides emit Open Relay packets. Reviewer-produced
 `review-response` packet workflow is merged, so the reviewer side can create
 and send response packets without manual copy/paste. Packet evidence enrichment
-planning is in progress to add per-file churn evidence to request packets
+implementation is in progress to add per-file churn evidence to request packets
 without embedding raw diffs. Native GitHub review import, response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompts remain later slices. The approved first runtime direction
@@ -38,16 +38,16 @@ is a TypeScript CLI on Node.js with npm.
 | `CONTRIBUTING.md` | Active | Contribution workflow and review expectations. |
 | `package.json` | Active | npm package metadata and build/test/check scripts. |
 | `package-lock.json` | Active | Locked npm dependency graph. |
-| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball and installed CLI. |
+| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, and generated review-request evidence. |
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
 | `schemas/review-response.schema.json` | Active | Formal JSON Schema for the first review-response packet. |
 | `src/index.ts` | Active | Runtime exports. |
 | `src/args.ts` | Active | Generator command argument parsing. |
-| `src/git.ts` | Active | Local git context collection for base/head commits, diff range, and changed files. |
+| `src/git.ts` | Active | Local git context collection for base/head commits, diff range, changed files, and best-effort diff-stat evidence. |
 | `src/redaction.ts` | Active | Fail-closed remote URL redaction helper. |
 | `src/renderMarkdown.ts` | Active | Shared Markdown escaping, code-span, list, and label helpers. |
-| `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer. |
+| `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer, including changed-file evidence. |
 | `src/renderReviewResponse.ts` | Active | Pure review-response JSON-to-Markdown renderer. |
 | `src/renderPacket.ts` | Active | Generic packet Markdown renderer dispatcher. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
@@ -119,21 +119,20 @@ is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
-| Packet evidence is thinner than brief | Medium | Diff summary capture is planned through packet evidence enrichment; test capture remains explicit `--verification` input rather than automatic command execution. |
+| Packet evidence is thinner than brief | Low | Diff summary capture is implemented on branch `codex/review-request-evidence-enrichment`; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Review PR #41's packet evidence enrichment planning package.
-2. Implement packet evidence enrichment from
-   `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md`.
-3. Dogfood the merged loop on the packet evidence enrichment PR by sending a
-   `review-response` packet.
-4. Decide whether private redaction rule files are needed before package
+1. Re-run CI/review on PR #42 after the tab-path parser polish from the first
+   packet-native Claude dogfood review.
+2. Dogfood the merged loop on the packet evidence enrichment PR by sending a
+   `review-response` packet when the branch is ready to merge.
+3. Decide whether private redaction rule files are needed before package
    publishing.
-5. Define npm publish owner, first semver version, changelog, and tag workflow.
+4. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
 

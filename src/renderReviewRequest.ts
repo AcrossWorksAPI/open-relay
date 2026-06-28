@@ -87,10 +87,10 @@ function renderChangedFiles(packet: ReviewRequestPacket): string {
   }
 
   return [
-    "| File | Status | Role | Review priority |",
-    "| --- | --- | --- | --- |",
+    "| File | Status | Role | Review priority | Evidence |",
+    "| --- | --- | --- | --- | --- |",
     ...packet.changed_files.map((file) =>
-      `| \`${escapeCodeSpanTableCell(file.path)}\` | ${escapeTableCell(file.status)} | ${escapeTableCell(file.role)} | ${escapeTableCell(file.review_priority)} |`
+      `| \`${escapeCodeSpanTableCell(file.path)}\` | ${escapeTableCell(file.status)} | ${escapeTableCell(file.role)} | ${escapeTableCell(file.review_priority)} | ${escapeTableCell(file.evidence ?? "")} |`
     )
   ].join("\n");
 }

@@ -38,103 +38,120 @@
       "path": "SECURITY.md",
       "status": "added",
       "role": "Vulnerability reporting and security policy",
-      "review_priority": "high"
+      "review_priority": "high",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": "CONTRIBUTING.md",
       "status": "added",
       "role": "Contribution workflow and review expectations",
-      "review_priority": "high"
+      "review_priority": "high",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": "CODE_OF_CONDUCT.md",
       "status": "added",
       "role": "Community conduct standard",
-      "review_priority": "high"
+      "review_priority": "high",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/PULL_REQUEST_TEMPLATE.md",
       "status": "added",
       "role": "Pull request review checklist",
-      "review_priority": "high"
+      "review_priority": "high",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
       "status": "added",
       "role": "Bug report intake form",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/ISSUE_TEMPLATE/feature_request.yml",
       "status": "added",
       "role": "Feature request intake form",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/ISSUE_TEMPLATE/question.yml",
       "status": "added",
       "role": "Question intake form",
-      "review_priority": "low"
+      "review_priority": "low",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
       "status": "added",
       "role": "Issue template chooser settings",
-      "review_priority": "low"
+      "review_priority": "low",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/workflows/ci.yml",
       "status": "added",
       "role": "Governance CI checks",
-      "review_priority": "high"
+      "review_priority": "high",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": ".github/dependabot.yml",
       "status": "added",
       "role": "GitHub Actions dependency updates",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +10 -0."
     },
     {
       "path": "README.md",
       "status": "modified",
       "role": "Public project links and community references",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "AGENTS.md",
       "status": "modified",
       "role": "Repository agent workflow guidance",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "docs/STATUS.md",
       "status": "modified",
       "role": "Owner-readable hardening status",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "docs/planning/ROADMAP.md",
       "status": "modified",
       "role": "Roadmap status for hardening slice",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "docs/planning/ACTIVE_WORK.md",
       "status": "modified",
       "role": "Active work and risk updates",
-      "review_priority": "medium"
+      "review_priority": "medium",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "docs/planning/PLAN_REGISTRY.md",
       "status": "modified",
       "role": "Plan-source classification updates",
-      "review_priority": "low"
+      "review_priority": "low",
+      "evidence": "Diff stats: +3 -1."
     },
     {
       "path": "docs/planning/VERSION_LEDGER.md",
       "status": "modified",
       "role": "Commit, PR, and smoke evidence updates",
-      "review_priority": "low"
+      "review_priority": "low",
+      "evidence": "Diff stats: +3 -1."
     }
   ],
   "verification": [

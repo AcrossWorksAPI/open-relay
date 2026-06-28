@@ -52,6 +52,14 @@ test("collects repository commits and changed files", () => {
       context.changedFiles.find((file) => file.path === "README.md")?.review_priority,
       "medium"
     );
+    assert.match(
+      context.changedFiles.find((file) => file.path === "src/index.ts")?.evidence ?? "",
+      /^Diff stats: \+\d+ -\d+\.$/
+    );
+    assert.match(
+      context.changedFiles.find((file) => file.path === "README.md")?.evidence ?? "",
+      /^Diff stats: \+\d+ -\d+\.$/
+    );
   } finally {
     rmSync(repo, { recursive: true, force: true });
   }
@@ -85,16 +93,45 @@ test("maps deleted and renamed files", () => {
         path: "delete.txt",
         status: "deleted",
         role: "Deleted file in review range.",
-        review_priority: "low"
+        review_priority: "low",
+        evidence: "Diff stats: +0 -1."
       },
       {
         path: "new.txt",
         status: "renamed",
         role: "Renamed file in review range.",
         review_priority: "low",
-        evidence: "Renamed from old.txt"
+        evidence: "Renamed from old.txt. Diff stats: +0 -0."
       }
     ]);
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
+test("records binary diff stats as changed-file evidence", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, ".gitattributes"), "*.bin binary\n", "utf8");
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    writeFileSync(join(repo, "image.bin"), Buffer.from([0, 1, 2, 3, 4]));
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "add binary");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false
+    });
+
+    assert.equal(context.changedFiles[0]?.path, "image.bin");
+    assert.equal(context.changedFiles[0]?.evidence, "Diff stats: binary file.");
   } finally {
     rmSync(repo, { recursive: true, force: true });
   }
@@ -140,6 +177,102 @@ test("keeps non-ascii paths from nul-delimited name-status output", () => {
     });
 
     assert.equal(context.changedFiles[0]?.path, "cafe-accent-\u00e9.txt");
+    assert.equal(context.changedFiles[0]?.evidence, "Diff stats: +1 -0.");
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
+test("keeps diff stats for paths containing literal tabs", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    const tabbedPath = "tab\tpath.txt";
+    writeFileSync(join(repo, tabbedPath), "tabbed\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "add tabbed path");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false
+    });
+
+    assert.equal(context.changedFiles[0]?.path, tabbedPath);
+    assert.equal(context.changedFiles[0]?.evidence, "Diff stats: +1 -0.");
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
+test("continues without diff-stat evidence when numstat collection fails", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    writeFileSync(join(repo, "README.md"), "# Repo\n\nUpdated.\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "update readme");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false,
+      gitRunner: (cwd, args) => {
+        if (args[0] === "diff" && args.includes("--numstat")) {
+          throw new Error("synthetic numstat failure");
+        }
+        return git(cwd, ...args);
+      }
+    });
+
+    assert.deepEqual(context.changedFiles, [{
+      path: "README.md",
+      status: "modified",
+      role: "Modified file in review range.",
+      review_priority: "medium"
+    }]);
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
+test("keeps name-status collection strict when changed-file collection fails", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    writeFileSync(join(repo, "README.md"), "# Repo\n\nUpdated.\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "update readme");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    assert.throws(() => collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false,
+      gitRunner: (cwd, args) => {
+        if (args[0] === "diff" && args.includes("--name-status")) {
+          throw new Error("Could not read git diff.");
+        }
+        return git(cwd, ...args);
+      }
+    }), /Could not read git diff/);
   } finally {
     rmSync(repo, { recursive: true, force: true });
   }

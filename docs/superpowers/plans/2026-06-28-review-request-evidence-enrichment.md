@@ -90,12 +90,12 @@ name-status file list and no diff-stat evidence.
 
 ### Task 1: Add Git Collector Tests First
 
-- [ ] Extend `tests/git.test.ts` with a text-file stat test:
+- [x] Extend `tests/git.test.ts` with a text-file stat test:
   - create a repo with a base commit;
   - add or modify a text file;
   - call `collectGitContext`;
   - assert the file has `evidence` matching `Diff stats: +<N> -<M>.`.
-- [ ] Update the existing deleted/renamed test so the renamed file now expects
+- [x] Update the existing deleted/renamed test so the renamed file now expects
   rename evidence plus stats, for example:
 
 ```ts
@@ -105,16 +105,18 @@ evidence: "Renamed from old.txt. Diff stats: +0 -0."
 Use the actual stat values produced by git for the test fixture. If a pure
 rename reports `+0 -0`, assert that exact value.
 
-- [ ] Add a binary-file test:
+- [x] Add a binary-file test:
   - commit `.gitattributes` with `*.bin binary` in the base commit so git
     treats the fixture deterministically as binary;
   - change or add a `.bin` file in the review range;
   - assert `evidence: "Diff stats: binary file."`.
-- [ ] Strengthen the non-ASCII path test so it asserts both the raw path and
+- [x] Strengthen the non-ASCII path test so it asserts both the raw path and
   its stat evidence. This proves `--numstat -z --find-renames` matches the
   existing `--name-status -z --find-renames` key instead of losing C-quoted
   paths.
-- [ ] Add a best-effort numstat failure test by adding an injectable git runner
+- [x] Add a literal-tab path regression so the numstat parser treats everything
+  after the second tab as the path instead of truncating legal git filenames.
+- [x] Add a best-effort numstat failure test by adding an injectable git runner
   to `collectGitContext`:
 
 ```ts
@@ -135,7 +137,7 @@ const context = collectGitContext({
 Assert packet generation still returns the changed file list and omits
 diff-stat evidence for ordinary files.
 
-- [ ] Add a name-status failure regression test only if the new injection seam
+- [x] Add a name-status failure regression test only if the new injection seam
   makes it easy. It should prove name-status still fails closed instead of
   being swallowed by the best-effort numstat path.
 
@@ -145,7 +147,7 @@ diff-stat evidence.
 
 ### Task 2: Add A Small Git Runner Seam
 
-- [ ] In `src/git.ts`, add an internal runner type and optional test seam:
+- [x] In `src/git.ts`, add an internal runner type and optional test seam:
 
 ```ts
 type GitRunner = (cwd: string, args: string[]) => string;
@@ -159,7 +161,7 @@ export type CollectGitContextOptions = {
 };
 ```
 
-- [ ] In `collectGitContext`, use:
+- [x] In `collectGitContext`, use:
 
 ```ts
 const runGit = options.gitRunner ?? git;
@@ -167,9 +169,9 @@ const runGit = options.gitRunner ?? git;
 
 for root/ref/diff/remote/branch commands.
 
-- [ ] Keep production behavior unchanged. The default runner remains the
+- [x] Keep production behavior unchanged. The default runner remains the
   existing sanitized `git()` wrapper.
-- [ ] Update `optionalGit` to accept a runner:
+- [x] Update `optionalGit` to accept a runner:
 
 ```ts
 function optionalGit(runGit: GitRunner, cwd: string, args: string[]): string | undefined
@@ -179,7 +181,7 @@ and keep it swallowing only optional-command failures.
 
 ### Task 3: Parse `--numstat -z --find-renames`
 
-- [ ] Add narrow internal types in `src/git.ts`:
+- [x] Add narrow internal types in `src/git.ts`:
 
 ```ts
 type DiffStat =
@@ -187,14 +189,14 @@ type DiffStat =
   | { kind: "binary" };
 ```
 
-- [ ] Add `parseNumstat(raw: string): Map<string, DiffStat>`.
-- [ ] Parse by splitting on NUL while preserving meaningful empty fields:
+- [x] Add `parseNumstat(raw: string): Map<string, DiffStat>`.
+- [x] Parse by splitting on NUL while preserving meaningful empty fields:
 
 ```ts
 const parts = raw.endsWith("\0") ? raw.slice(0, -1).split("\0") : raw.split("\0");
 ```
 
-- [ ] For ordinary rows, parse headers like:
+- [x] For ordinary rows, parse headers like:
 
 ```text
 42\t7\tsrc/cli.ts
@@ -203,7 +205,7 @@ const parts = raw.endsWith("\0") ? raw.slice(0, -1).split("\0") : raw.split("\0"
 
 and key the map by the path field.
 
-- [ ] For rename/copy rows, parse headers whose path field is empty:
+- [x] For rename/copy rows, parse headers whose path field is empty:
 
 ```text
 3\t1\t\0src/old.ts\0src/new.ts\0
@@ -212,16 +214,16 @@ and key the map by the path field.
 Read the following old-path and new-path parts, ignore the old path for the
 lookup key, and key the map by the new path so it joins to name-status output.
 
-- [ ] Treat `-`/`-` as `{ kind: "binary" }`.
-- [ ] Treat non-negative decimal counts as text stats.
-- [ ] Skip malformed rows instead of failing generation.
-- [ ] Do not implement brace-notation parsing. The design intentionally uses
+- [x] Treat `-`/`-` as `{ kind: "binary" }`.
+- [x] Treat non-negative decimal counts as text stats.
+- [x] Skip malformed rows instead of failing generation.
+- [x] Do not implement brace-notation parsing. The design intentionally uses
   `--numstat -z --find-renames` to avoid quoted paths and brace-normalized
   renames.
 
 ### Task 4: Join Stats Onto Changed Files
 
-- [ ] In `collectGitContext`, collect stats after `diffRange` is known:
+- [x] In `collectGitContext`, collect stats after `diffRange` is known:
 
 ```ts
 const diffStats = parseNumstat(optionalGit(runGit, root, [
@@ -233,11 +235,11 @@ const diffStats = parseNumstat(optionalGit(runGit, root, [
 ]) ?? "");
 ```
 
-- [ ] Pass `diffStats` into `parseNameStatus`.
-- [ ] Change `parseNameStatus(raw, diffStats)` so it still owns status, role,
+- [x] Pass `diffStats` into `parseNameStatus`.
+- [x] Change `parseNameStatus(raw, diffStats)` so it still owns status, role,
   priority, and rename evidence, then appends stats when `diffStats.get(path)`
   exists.
-- [ ] Add a formatting helper:
+- [x] Add a formatting helper:
 
 ```ts
 function formatDiffStat(stat: DiffStat): string {
@@ -247,7 +249,7 @@ function formatDiffStat(stat: DiffStat): string {
 }
 ```
 
-- [ ] Add an evidence combiner that preserves punctuation:
+- [x] Add an evidence combiner that preserves punctuation:
 
 ```ts
 function combineEvidence(parts: string[]): string | undefined {
@@ -261,30 +263,30 @@ For a rename with text stats, the final evidence should be:
 Renamed from old.txt. Diff stats: +0 -0.
 ```
 
-- [ ] Keep unmatched stats rows harmless. They should not add files, change
+- [x] Keep unmatched stats rows harmless. They should not add files, change
   counts, or fail validation.
 
 ### Task 5: Verify Packet And Renderer Behavior Through Existing Commands
 
-- [ ] Add or update a CLI test in `tests/cli.test.ts` that generates a real
+- [x] Add or update a CLI test in `tests/cli.test.ts` that generates a real
   `review-request` JSON packet and asserts:
   - it validates successfully;
   - at least one changed file contains `Diff stats: +`;
   - `verification` remains `[]` when no `--verification` flags are supplied.
-- [ ] Add a Markdown-format CLI test or extend an existing one so direct
+- [x] Add a Markdown-format CLI test or extend an existing one so direct
   Markdown generation shows the diff-stat evidence in the changed-files table.
-- [ ] Confirm `handoff review-request` and `save review-request` need no
+- [x] Confirm `handoff review-request` and `save review-request` need no
   command-specific code because they reuse the validated generator path.
 
 ### Task 6: Update Examples And Snapshot-Bound Markdown
 
-- [ ] Update `examples/review-request/relay.json` so representative
+- [x] Update `examples/review-request/relay.json` so representative
   `changed_files[]` entries include diff-stat evidence:
   - text file: `Diff stats: +N -M.`;
   - renamed file, if present: `Renamed from <old>. Diff stats: +N -M.`;
   - binary file only if the example already has one or if adding one improves
     the fixture without bloating it.
-- [ ] Regenerate `examples/review-request/relay.md` from the JSON fixture using
+- [x] Regenerate `examples/review-request/relay.md` from the JSON fixture using
   the built CLI renderer:
 
 ```bash
@@ -292,13 +294,13 @@ npm run build
 node dist/src/cli.js render examples/review-request/relay.json --output examples/review-request/relay.md
 ```
 
-- [ ] Run the renderer snapshot tests and update only intentional snapshot
+- [x] Run the renderer snapshot tests and update only intentional snapshot
   churn. The committed Markdown must remain byte-for-byte bound to the JSON
   fixture.
 
 ### Task 7: Update Package Smoke
 
-- [ ] Extend `scripts/smoke-pack.js` so the installed CLI path proves the new
+- [x] Extend `scripts/smoke-pack.js` so the installed CLI path proves the new
   behavior:
   - run installed `open-relay generate review-request` in the temp git repo;
   - parse the generated JSON;
@@ -306,30 +308,30 @@ node dist/src/cli.js render examples/review-request/relay.json --output examples
     `Diff stats: +<number> -<number>.`;
   - assert `verification` is still an empty array when no verification flags
     were supplied.
-- [ ] Keep the smoke free of raw diff assertions and free of command execution
+- [x] Keep the smoke free of raw diff assertions and free of command execution
   beyond the existing package/generator smoke setup.
 
 ### Task 8: Update Protocol And Public Docs
 
-- [ ] Update `docs/protocol/review-request-packet.md` to note that the
+- [x] Update `docs/protocol/review-request-packet.md` to note that the
   generator may populate `changed_files[].evidence` with git-derived diff
   stats, while the schema remains `review-request/0.1`.
-- [ ] Update `README.md` only where user-facing generator behavior is already
+- [x] Update `README.md` only where user-facing generator behavior is already
   described. Keep the wording modest: packets include file-level churn evidence
   when git can provide it.
-- [ ] Do not claim registry publishing, live deployment, automation, raw diff
+- [x] Do not claim registry publishing, live deployment, automation, raw diff
   support, or auto-run test capture.
 
 ### Task 9: Close Out Governance For The Implementation PR
 
-- [ ] Update `docs/STATUS.md` after implementation with the exact test count
+- [x] Update `docs/STATUS.md` after implementation with the exact test count
   and smoke evidence.
 - [ ] Update `docs/planning/ROADMAP.md` by moving Packet evidence enrichment to
   `Done` only after implementation merges.
-- [ ] Update `docs/planning/ACTIVE_WORK.md`, `PLAN_REGISTRY.md`,
+- [x] Update `docs/planning/ACTIVE_WORK.md`, `PLAN_REGISTRY.md`,
   `VERSION_LEDGER.md`, `ENTITY_LIFECYCLE_SCOPE_MATRIX.md`, and
   `master_build.md` with implementation evidence.
-- [ ] Record that no packet version bump occurred and no raw diffs or automatic
+- [x] Record that no packet version bump occurred and no raw diffs or automatic
   test execution were added.
 
 ## Verification Commands

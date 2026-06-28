@@ -113,10 +113,15 @@ turn these into machine-validated requirements.
 | `status` | string | Yes | `added`, `modified`, `deleted`, `renamed`, or `unknown`. |
 | `role` | string | Yes | Why the file matters to the review. |
 | `review_priority` | string | Yes | `high`, `medium`, or `low`. |
-| `evidence` | string | No | Inline evidence when the file role is not obvious. |
+| `evidence` | string | No | Inline evidence when the file role is not obvious; generators may use this for safe diff-stat notes. |
 
 `changed_files` must be exhaustive for the diff range. Review priority can help
 the reviewer start in the right place, but it must not hide lower-priority files.
+Generated packets may populate `changed_files[].evidence` with git-derived
+line-count evidence such as `Diff stats: +12 -3.` or
+`Diff stats: binary file.`. These counts help triage review effort without
+embedding raw diff hunks or file contents. If git cannot provide stats safely,
+omit the stat evidence for that file.
 
 ### `verification[]`
 
@@ -180,6 +185,8 @@ redacted, and use `sensitive_data` for optional exclusion notes.
 - `repository.base_commit` and `repository.head_commit` must pin a reproducible
   diff when git history is available.
 - `changed_files[].review_priority` should be `high`, `medium`, or `low`.
+- `changed_files[].evidence` should stay compact and must not include raw diff
+  hunks or file contents.
 - `verification[].result` should be `passed`, `failed`, `not_run`, or
   `unknown`.
 - `risks[].severity` should be `high`, `medium`, `low`, or `info`.
