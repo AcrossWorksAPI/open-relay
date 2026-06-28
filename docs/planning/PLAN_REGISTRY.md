@@ -97,7 +97,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Planned | Codex | Planning branch defines strict repo-local literal redaction rules before implementation. |
+| `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | In progress | Codex | Implementation branch `codex/private-redaction-rules` follows the merged plan for strict repo-local case-insensitive literal redaction rules. |
 
 ## Implemented Or Historical Plans
 

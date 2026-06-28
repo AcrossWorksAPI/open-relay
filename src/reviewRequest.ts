@@ -4,6 +4,10 @@ import type {
   VerificationInput
 } from "./args";
 import type { ChangedFile, GitContext } from "./git";
+import {
+  applyPrivateRedactionRules,
+  type PrivateRedactionRule
+} from "./privateRedactionRules";
 import { sanitizeRemoteUrl, type Redaction } from "./redaction";
 
 export type ReviewRequestPacket = {
@@ -56,6 +60,7 @@ export type BuildReviewRequestPacketInput = {
   options: GenerateReviewRequestOptions;
   git: GitContext;
   createdAt?: string;
+  privateRedactionRules?: PrivateRedactionRule[];
 };
 
 export function buildReviewRequestPacket(
@@ -96,7 +101,7 @@ export function buildReviewRequestPacket(
     });
   }
 
-  return {
+  const packet: ReviewRequestPacket = {
     packet_version: "0.1",
     packet_type: "review-request",
     created_at: input.createdAt ?? new Date().toISOString(),
@@ -139,4 +144,8 @@ export function buildReviewRequestPacket(
     },
     next_action: "Review the packet, inspect the referenced diff range, and return findings first."
   };
+
+  return input.privateRedactionRules && input.privateRedactionRules.length > 0
+    ? applyPrivateRedactionRules(packet, input.privateRedactionRules)
+    : packet;
 }

@@ -112,6 +112,37 @@ try {
   assert.match(transportDryRun, /payload_base64:/);
   assert.match(transportDryRun, /# Review Request Relay Packet/);
 
+  const rulesPath = join(workspace, "redaction-rules.json");
+  writeFileSync(rulesPath, JSON.stringify({
+    version: 1,
+    rules: [{
+      name: "customer",
+      match: "PrivateCustomerName",
+      replacement: "[private-customer]",
+      reason: "Private customer name."
+    }]
+  }, null, 2), "utf8");
+
+  const redactedPacket = join(workspace, "generated-redacted.json");
+  runCli(cli, [
+    "generate",
+    "review-request",
+    "--base", base,
+    "--head", head,
+    "--goal", "Smoke PrivateCustomerName package install",
+    "--summary", "PrivateCustomerName verifies installed CLI private redaction.",
+    "--behavioral-intent", "PrivateCustomerName proves package tarball redacts private terms.",
+    "--redaction-rules", rulesPath,
+    "--output", redactedPacket
+  ], {
+    cwd: gitRepo,
+    contains: "Wrote review-request packet."
+  });
+
+  const redactedJson = readFileSync(redactedPacket, "utf8");
+  assert.doesNotMatch(redactedJson, /PrivateCustomerName/i);
+  assert.match(redactedJson, /\[private-customer\]/);
+
   const responseDraft = join(workspace, "review-response-draft.json");
   writeFileSync(responseDraft, JSON.stringify({
     reviewer: {

@@ -24,6 +24,7 @@ test("prints generate review-request in help", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay generate review-request/);
+  assert.match(result.stdout, /--redaction-rules <path>/);
 });
 
 test("prints render review-request in help", () => {
@@ -834,6 +835,133 @@ test("generates explicit json format to stdout", () => {
   }
 });
 
+test("generate review-request applies explicit redaction rules without leaking match text", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    const rulesPath = writePrivateRules(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review privatecustomername changes",
+      "--summary", "PRIVATECUSTOMERNAME summary",
+      "--behavioral-intent", "PrivateCustomerName intent",
+      "--redaction-rules", rulesPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, "");
+    assert.doesNotMatch(result.stdout, /PrivateCustomerName/i);
+    const packet = JSON.parse(result.stdout);
+    assert.equal(packet.goal, "Review [private-customer] changes");
+    assert.equal(packet.change_summary.summary, "[private-customer] summary");
+    assert.equal(packet.redactions.some((entry: { field: string }) => entry.field === "goal"), true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-request rejects invalid explicit redaction rules without echoing path or contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+  const rulesPath = join(directory, "SECRET_RULE_PATH.json");
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    writeFileSync(rulesPath, "{\"match\":\"SECRET_SHOULD_NOT_APPEAR\"}", "utf8");
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review",
+      "--summary", "Summary",
+      "--behavioral-intent", "Intent",
+      "--redaction-rules", rulesPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid redaction rules/);
+    assert.doesNotMatch(result.stderr, /SECRET_RULE_PATH|SECRET_SHOULD_NOT_APPEAR/);
+    assert.equal(result.stdout, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-request ignores a missing default redaction file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review",
+      "--summary", "Summary",
+      "--behavioral-intent", "Intent"
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).packet_type, "review-request");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate review-request fails closed for an invalid default redaction file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    mkdirSync(join(directory, ".open-relay"), { recursive: true });
+    writeFileSync(join(directory, ".open-relay", "redaction-rules.json"), "{\"version\":1,\"rules\":[]}", "utf8");
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "generate",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review",
+      "--summary", "Summary",
+      "--behavioral-intent", "Intent"
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid redaction rules/);
+    assert.equal(result.stdout, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test("generates review-request markdown to stdout", () => {
   const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
   const absoluteCliPath = join(process.cwd(), cliPath);
@@ -927,6 +1055,37 @@ test("handoff review-request writes markdown to stdout", () => {
     assert.match(result.stdout, /## Next Action/);
     assert.doesNotMatch(result.stdout, /^\{/);
     assert.equal(result.stderr, "");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("handoff review-request applies explicit redaction rules", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    const rulesPath = writePrivateRules(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "handoff",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review PrivateCustomerName changes",
+      "--summary", "PrivateCustomerName summary",
+      "--behavioral-intent", "PrivateCustomerName intent",
+      "--redaction-rules", rulesPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /\[private-customer\]/);
+    assert.doesNotMatch(result.stdout, /PrivateCustomerName/i);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -1092,6 +1251,39 @@ test("saves review-request bundle to repo-local storage", () => {
     assert.match(readFileSync(join(bundleDir, "relay.md"), "utf8"), /^# Review Request Relay Packet/);
     assert.equal(JSON.parse(readFileSync(join(bundleDir, "relay.json"), "utf8")).packet_type, "review-request");
     assert.equal(JSON.parse(readFileSync(join(bundleDir, "manifest.json"), "utf8")).storage_id, storageId);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("save review-request applies explicit redaction rules to saved bundle", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-cli-git-"));
+  const absoluteCliPath = join(process.cwd(), cliPath);
+
+  try {
+    const { base, head } = createChangedGitRepo(directory);
+    const rulesPath = writePrivateRules(directory);
+
+    const result = spawnSync(process.execPath, [
+      absoluteCliPath,
+      "save",
+      "review-request",
+      "--base", base,
+      "--head", head,
+      "--goal", "Review PrivateCustomerName changes",
+      "--summary", "PrivateCustomerName summary",
+      "--behavioral-intent", "PrivateCustomerName intent",
+      "--redaction-rules", rulesPath
+    ], {
+      cwd: directory,
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    const saved = readSavedBundle(directory);
+    assert.doesNotMatch(saved.json, /PrivateCustomerName/i);
+    assert.doesNotMatch(saved.markdown, /PrivateCustomerName/i);
+    assert.match(saved.markdown, /\[private-customer\]/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -1495,6 +1687,33 @@ function createChangedGitRepo(directory: string): { base: string; head: string }
   runGit(directory, "commit", "-m", "change readme");
   const head = runGit(directory, "rev-parse", "HEAD").trim();
   return { base, head };
+}
+
+function writePrivateRules(directory: string): string {
+  const rulesPath = join(directory, "redaction-rules.json");
+  writeFileSync(rulesPath, JSON.stringify({
+    version: 1,
+    rules: [{
+      name: "customer",
+      match: "PrivateCustomerName",
+      replacement: "[private-customer]",
+      reason: "Private customer name."
+    }]
+  }, null, 2), "utf8");
+  return rulesPath;
+}
+
+function readSavedBundle(directory: string): { json: string; markdown: string } {
+  const root = join(directory, ".open-relay", "review-requests");
+  const storageId = execFileSync("ls", [root], { encoding: "utf8" }).trim().split("\n")[0];
+  if (!storageId) {
+    throw new Error("expected saved bundle");
+  }
+
+  return {
+    json: readFileSync(join(root, storageId, "relay.json"), "utf8"),
+    markdown: readFileSync(join(root, storageId, "relay.md"), "utf8")
+  };
 }
 
 function stripCreatedAt(markdown: string): string {

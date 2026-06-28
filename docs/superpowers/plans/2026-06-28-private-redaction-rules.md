@@ -1,6 +1,6 @@
 # Private Redaction Rules Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add optional repo-local private redaction rules so generated `review-request/0.1` packets can scrub repository-specific private terms before output without changing packet schema.
 
@@ -122,7 +122,7 @@ before building any `RegExp`; rule authors do not get regex semantics.
 - Modify: `src/args.ts`
 - Modify: `tests/args.test.ts`
 
-- [ ] Add `redactionRules?: string` to `GenerateReviewRequestOptions`.
+- [x] Add `redactionRules?: string` to `GenerateReviewRequestOptions`.
 
 ```ts
 export type GenerateReviewRequestOptions = {
@@ -146,7 +146,7 @@ export type GenerateReviewRequestOptions = {
 };
 ```
 
-- [ ] Add `"--redaction-rules"` to `allowedValueFlags`, not to
+- [x] Add `"--redaction-rules"` to `allowedValueFlags`, not to
   `repeatableValueFlags`.
 
 ```ts
@@ -170,13 +170,13 @@ const allowedValueFlags = new Set([
 ]);
 ```
 
-- [ ] Set the parsed option in the success result.
+- [x] Set the parsed option in the success result.
 
 ```ts
 redactionRules: first(values, "--redaction-rules"),
 ```
 
-- [ ] Add parser tests.
+- [x] Add parser tests.
 
 ```ts
 test("parses redaction-rules path", () => {
@@ -210,7 +210,7 @@ test("rejects duplicate redaction-rules flag", () => {
 });
 ```
 
-- [ ] Run parser tests.
+- [x] Run parser tests.
 
 ```bash
 npm run build
@@ -225,7 +225,7 @@ Expected: parser tests pass after implementation.
 - Create: `src/privateRedactionRules.ts`
 - Create: `tests/privateRedactionRules.test.ts`
 
-- [ ] Create public types and a validation result.
+- [x] Create public types and a validation result.
 
 ```ts
 import type { Redaction } from "./redaction";
@@ -248,7 +248,7 @@ export type PrivateRedactionRulesValidation =
   | { ok: false };
 ```
 
-- [ ] Add `parsePrivateRedactionRules(value: unknown)`.
+- [x] Add `parsePrivateRedactionRules(value: unknown)`.
 
 ```ts
 export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRulesValidation {
@@ -301,7 +301,7 @@ export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRule
 }
 ```
 
-- [ ] Add private helpers.
+- [x] Add private helpers.
 
 ```ts
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -326,7 +326,7 @@ function containsIgnoreCase(value: string, literal: string): boolean {
 }
 ```
 
-- [ ] Add validation tests for accepted and rejected files.
+- [x] Add validation tests for accepted and rejected files.
 
 ```ts
 test("accepts strict literal private redaction rules", () => {
@@ -370,7 +370,7 @@ test("rejects unknown keys and unsafe reasons", () => {
 });
 ```
 
-- [ ] Run the new tests.
+- [x] Run the new tests.
 
 ```bash
 npm run build
@@ -385,7 +385,7 @@ Expected: validation tests pass.
 - Modify: `src/privateRedactionRules.ts`
 - Modify: `tests/privateRedactionRules.test.ts`
 
-- [ ] Add `applyPrivateRedactionRules`.
+- [x] Add `applyPrivateRedactionRules`.
 
 ```ts
 export function applyPrivateRedactionRules(
@@ -434,7 +434,7 @@ export function applyPrivateRedactionRules(
 }
 ```
 
-- [ ] Add helper functions for literal replacement and redaction record
+- [x] Add helper functions for literal replacement and redaction record
   de-duplication.
 
 ```ts
@@ -519,7 +519,7 @@ function escapeRegExp(value: string): string {
 }
 ```
 
-- [ ] Add transformation tests.
+- [x] Add transformation tests.
 
 ```ts
 test("applies private rules only to allowlisted packet fields", () => {
@@ -546,7 +546,7 @@ test("applies private rules only to allowlisted packet fields", () => {
 });
 ```
 
-- [ ] Export private-redaction string-field coverage constants and add a test
+- [x] Export private-redaction string-field coverage constants and add a test
   that couples the allowlist to the current packet shape.
 
 ```ts
@@ -637,7 +637,7 @@ optional string, and at least one item in each string-bearing array, including
 `redactions[]`, so the coverage check cannot pass by omitting part of the
 packet shape.
 
-- [ ] Add a test that validates the final packet.
+- [x] Add a test that validates the final packet.
 
 ```ts
 test("private-redacted packets remain schema valid", () => {
@@ -656,7 +656,7 @@ test("private-redacted packets remain schema valid", () => {
 });
 ```
 
-- [ ] Run the targeted tests.
+- [x] Run the targeted tests.
 
 ```bash
 npm run build
@@ -671,7 +671,7 @@ Expected: packet transformation and schema validation pass.
 - Modify: `src/reviewRequest.ts`
 - Modify: `tests/reviewRequest.test.ts`
 
-- [ ] Extend `BuildReviewRequestPacketInput`.
+- [x] Extend `BuildReviewRequestPacketInput`.
 
 ```ts
 import {
@@ -687,7 +687,7 @@ export type BuildReviewRequestPacketInput = {
 };
 ```
 
-- [ ] Build the existing packet, then apply private rules if present.
+- [x] Build the existing packet, then apply private rules if present.
 
 ```ts
 const packet: ReviewRequestPacket = {
@@ -702,7 +702,7 @@ return input.privateRedactionRules && input.privateRedactionRules.length > 0
   : packet;
 ```
 
-- [ ] Add a builder test proving built-in redactions and private redactions
+- [x] Add a builder test proving built-in redactions and private redactions
   coexist.
 
 ```ts
@@ -726,7 +726,7 @@ test("applies private redactions after built-in redactions", () => {
 });
 ```
 
-- [ ] Run review-request builder tests.
+- [x] Run review-request builder tests.
 
 ```bash
 npm run build
@@ -741,7 +741,7 @@ Expected: builder tests pass.
 - Modify: `src/cli.ts`
 - Modify: `tests/cli.test.ts`
 
-- [ ] Add sanitized load helpers in `src/cli.ts`.
+- [x] Add sanitized load helpers in `src/cli.ts`.
 
 ```ts
 import { access, readFile } from "node:fs/promises";
@@ -784,7 +784,7 @@ async function loadPrivateRedactionRules(options: GenerateReviewRequestOptions):
 }
 ```
 
-- [ ] Change `buildValidatedReviewRequestPacket` to become async and load
+- [x] Change `buildValidatedReviewRequestPacket` to become async and load
   rules before calling `buildReviewRequestPacket`.
 
 ```ts
@@ -811,10 +811,10 @@ async function buildValidatedReviewRequestPacket(
 }
 ```
 
-- [ ] Update callers to `await buildValidatedReviewRequestPacket(...)` in
+- [x] Update callers to `await buildValidatedReviewRequestPacket(...)` in
   `generateReviewRequestCommand` and `saveReviewRequestCommand`.
 
-- [ ] Add CLI tests:
+- [x] Add CLI tests:
 
 ```ts
 test("generate review-request applies explicit redaction rules without leaking match text", () => {
@@ -876,7 +876,7 @@ test("generate review-request rejects invalid explicit redaction rules without e
 });
 ```
 
-- [ ] Add default-file tests:
+- [x] Add default-file tests:
 
 ```ts
 test("generate review-request ignores a missing default redaction file", () => {
@@ -896,7 +896,7 @@ test("generate review-request fails closed for an invalid default redaction file
 });
 ```
 
-- [ ] Run CLI tests.
+- [x] Run CLI tests.
 
 ```bash
 npm run build
@@ -911,7 +911,7 @@ Expected: CLI tests pass and no error output leaks rule path or content.
 - Modify: `tests/cli.test.ts`
 - Modify: `scripts/smoke-pack.js`
 
-- [ ] Add a handoff parity assertion that explicit rules affect Markdown.
+- [x] Add a handoff parity assertion that explicit rules affect Markdown.
 
 ```ts
 test("handoff review-request applies explicit redaction rules", () => {
@@ -935,7 +935,7 @@ test("handoff review-request applies explicit redaction rules", () => {
 });
 ```
 
-- [ ] Add a save assertion that saved JSON and Markdown are redacted.
+- [x] Add a save assertion that saved JSON and Markdown are redacted.
 
 ```ts
 test("save review-request applies explicit redaction rules to saved bundle", () => {
@@ -961,7 +961,7 @@ test("save review-request applies explicit redaction rules to saved bundle", () 
 });
 ```
 
-- [ ] Extend `scripts/smoke-pack.js` after the generated packet smoke:
+- [x] Extend `scripts/smoke-pack.js` after the generated packet smoke:
 
 ```js
 const rulesPath = join(workspace, "redaction-rules.json");
@@ -996,7 +996,7 @@ assert.doesNotMatch(redactedJson, /PrivateCustomerName/);
 assert.match(redactedJson, /\[private-customer\]/);
 ```
 
-- [ ] Run CLI tests and package smoke.
+- [x] Run CLI tests and package smoke.
 
 ```bash
 npm run check
@@ -1011,7 +1011,7 @@ Expected: full tests and package smoke pass.
 - Modify: `README.md`
 - Modify: `docs/protocol/review-request-packet.md`
 
-- [ ] Document the user-facing CLI flag in `README.md`.
+- [x] Document the user-facing CLI flag in `README.md`.
 
 ```md
 Private redaction rules can be provided with `--redaction-rules <path>`.
@@ -1023,7 +1023,7 @@ private. Formatting variants still need their own rules, and redacting file
 paths can make those paths less useful for direct review navigation.
 ```
 
-- [ ] Document the rule file shape and security posture in
+- [x] Document the rule file shape and security posture in
   `docs/protocol/review-request-packet.md`.
 
 ```md
@@ -1034,7 +1034,7 @@ records should name generic fields such as `changed_files[].path` and must not
 reveal the matched private value.
 ```
 
-- [ ] Confirm docs do not claim global profiles, regex support, registry
+- [x] Confirm docs do not claim global profiles, regex support, registry
   publishing, live deployment, or automated secret scanning.
 
 ```bash
@@ -1054,23 +1054,24 @@ Expected: any hits are explicit deferrals or existing unrelated roadmap text.
 - Modify: `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 - Modify: `master_build.md`
 
-- [ ] Update `docs/STATUS.md` with implementation evidence: test count,
+- [x] Update `docs/STATUS.md` with implementation evidence: test count,
   package smoke, and private-rule behavior.
 - [ ] Move `Private redaction rules` from `In progress` to `Done` only after
   the implementation PR merges.
 - [ ] Update `docs/planning/ACTIVE_WORK.md` to remove "private redaction rule
   files undefined" from current gaps after merge.
-- [ ] Update `PLAN_REGISTRY.md` with this plan as active during implementation
+- [x] Update `PLAN_REGISTRY.md` with this plan as active during implementation
   and historical after merge closeout.
-- [ ] Add `VERSION_LEDGER.md` evidence for the implementation PR and rollback
+- [x] Add `VERSION_LEDGER.md` evidence for the implementation PR and rollback
   note.
-- [ ] Update lifecycle/scope matrix for the new local config surface:
+- [x] Update lifecycle/scope matrix for the implementation branch local config
+  surface; flip to `Shipped` only after the implementation PR merges:
 
 ```md
-| Private redaction rules | Shipped | N/A | Shipped | N/A | N/A | N/A | Shipped | Shipped | Shipped | N/A | N/A | Shipped | Repo-local ignored JSON rule files are validated fail-closed before generated packet output; global profiles and regex rules are deferred. |
+| Private redaction rules | In progress | N/A | In progress | N/A | N/A | N/A | In progress | In progress | In progress | N/A | N/A | In progress | Repo-local ignored JSON rule files are validated fail-closed before generated packet output; global profiles and regex rules are deferred. |
 ```
 
-- [ ] Record that no packet version bump, regex support, global config,
+- [x] Record that no packet version bump, regex support, global config,
   environment reads, raw-diff scanning, or remote rule loading were added.
 
 ## Verification Commands

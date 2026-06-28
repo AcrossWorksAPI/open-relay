@@ -5,6 +5,10 @@ import { join } from "node:path";
 
 import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
+import {
+  parsePrivateRedactionRules,
+  type PrivateRedactionRule
+} from "./privateRedactionRules";
 import { renderPacketMarkdown } from "./renderPacket";
 import {
   parseGenerateReviewResponseArgs,
@@ -30,10 +34,10 @@ const usage = `Open Relay
 
 Usage:
   open-relay validate <packet.json>
-  open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--output <path>]
+  open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--redaction-rules <path>] [--output <path>]
   open-relay generate review-response --request <review-request.json> --review <review-response-draft.json> [--format json|markdown] [--output <path>]
-  open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--output <relay.md>]
-  open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--storage-dir <path>]
+  open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--output <relay.md>]
+  open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--storage-dir <path>]
   open-relay render <packet.json> [--output <relay.md>]
   open-relay render review-request <packet.json> [--output <relay.md>]
   open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
@@ -235,14 +239,14 @@ async function saveReviewRequestCommand(args: string[]): Promise<number> {
   }
 
   try {
-    const built = buildValidatedReviewRequestPacket(parsed.options);
+    const built = await buildValidatedReviewRequestPacket(parsed.options);
 
     if (!built.ok) {
-      process.stderr.write("Generated review-request packet failed validation.\n");
-      for (const error of built.errors) {
+      process.stderr.write(`${built.message}\n`);
+      for (const error of built.errors ?? []) {
         process.stderr.write(`- ${error}\n`);
       }
-      return 1;
+      return built.exitCode;
     }
 
     const saved = await saveReviewRequestBundle({
@@ -780,14 +784,14 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
   }
 
   try {
-    const built = buildValidatedReviewRequestPacket(parsed.options);
+    const built = await buildValidatedReviewRequestPacket(parsed.options);
 
     if (!built.ok) {
-      process.stderr.write("Generated review-request packet failed validation.\n");
-      for (const error of built.errors) {
+      process.stderr.write(`${built.message}\n`);
+      for (const error of built.errors ?? []) {
         process.stderr.write(`- ${error}\n`);
       }
-      return 1;
+      return built.exitCode;
     }
 
     const packet = built.packet;
@@ -823,25 +827,76 @@ async function generateReviewRequestCommand(args: string[]): Promise<number> {
 
 type BuiltReviewRequestPacket =
   | { ok: true; packet: ReviewRequestPacket }
-  | { ok: false; errors: string[] };
+  | { ok: false; exitCode: 1; message: string; errors?: string[] };
 
-function buildValidatedReviewRequestPacket(
+async function buildValidatedReviewRequestPacket(
   options: GenerateReviewRequestOptions
-): BuiltReviewRequestPacket {
+): Promise<BuiltReviewRequestPacket> {
+  const rules = await loadPrivateRedactionRules(options);
+  if (!rules.ok) {
+    return { ok: false, exitCode: 1, message: rules.message };
+  }
+
   const git = collectGitContext({
     cwd: process.cwd(),
     baseRef: options.base,
     headRef: options.head,
     includeLocalPath: options.includeLocalPath
   });
-  const packet = buildReviewRequestPacket({ options, git });
+  const packet = buildReviewRequestPacket({
+    options,
+    git,
+    privateRedactionRules: rules.rules
+  });
   const result = validatePacket(packet);
 
   if (!result.valid) {
-    return { ok: false, errors: result.errors };
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Generated review-request packet failed validation.",
+      errors: result.errors
+    };
   }
 
   return { ok: true, packet };
+}
+
+type PrivateRulesLoadResult =
+  | { ok: true; rules: PrivateRedactionRule[] }
+  | { ok: false; message: string };
+
+async function loadPrivateRedactionRules(
+  options: GenerateReviewRequestOptions
+): Promise<PrivateRulesLoadResult> {
+  const path = options.redactionRules ?? join(process.cwd(), ".open-relay", "redaction-rules.json");
+  const explicit = Boolean(options.redactionRules);
+
+  let raw: string;
+  try {
+    raw = await readFile(path, "utf8");
+  } catch (error: unknown) {
+    if (!explicit && isNodeErrorCode(error, "ENOENT")) {
+      return { ok: true, rules: [] };
+    }
+    return { ok: false, message: "Could not read redaction rules." };
+  }
+
+  try {
+    const parsed = parsePrivateRedactionRules(JSON.parse(raw) as unknown);
+    return parsed.ok
+      ? { ok: true, rules: parsed.rules }
+      : { ok: false, message: "Invalid redaction rules." };
+  } catch {
+    return { ok: false, message: "Invalid redaction rules." };
+  }
+}
+
+function isNodeErrorCode(error: unknown, code: string): boolean {
+  return error !== null &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error as { code?: unknown }).code === code;
 }
 
 async function validateCommand(path: string | undefined): Promise<number> {

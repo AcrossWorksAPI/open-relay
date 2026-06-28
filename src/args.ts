@@ -21,6 +21,7 @@ export type GenerateReviewRequestOptions = {
   behavioralIntent: string;
   format: GenerateReviewRequestFormat;
   output?: string;
+  redactionRules?: string;
   audience: string;
   focus: string[];
   requestedOutput: string;
@@ -63,6 +64,7 @@ const allowedValueFlags = new Set([
   "--behavioral-intent",
   "--format",
   "--output",
+  "--redaction-rules",
   "--audience",
   "--focus",
   "--requested-output",
@@ -152,6 +154,7 @@ export function parseGenerateReviewRequestArgs(args: string[]): ParseResult {
       behavioralIntent: required(values, "--behavioral-intent"),
       format,
       output: first(values, "--output"),
+      redactionRules: first(values, "--redaction-rules"),
       audience: first(values, "--audience") ?? "Claude Code",
       focus: values.get("--focus") ?? defaultFocus,
       requestedOutput: first(values, "--requested-output") ?? defaultRequestedOutput,
