@@ -16,9 +16,9 @@ change packet semantics.
 
 ## Decision
 
-Use `git diff --numstat <base_commit>..<head_commit>` to collect per-file added
-and deleted line counts for the same two-dot diff range already recorded in
-`repository.diff_range`.
+Use `git diff --numstat -z --find-renames <base_commit>..<head_commit>` to
+collect per-file added and deleted line counts for the same two-dot diff range
+already recorded in `repository.diff_range`.
 
 Populate the existing optional `changed_files[].evidence` string with a compact
 diff-stat note:
@@ -33,7 +33,8 @@ For renamed files, preserve the existing rename evidence and append the stats:
 Renamed from src/old.ts. Diff stats: +12 -3.
 ```
 
-For binary files, where `git diff --numstat` emits `-\t-`, render:
+For binary files, where `git diff --numstat -z --find-renames` emits `-\t-`,
+render:
 
 ```text
 Diff stats: binary file.
@@ -71,11 +72,11 @@ This slice keeps the generator behavior unchanged for verification.
 Use:
 
 ```bash
-git diff --numstat <base_commit>..<head_commit>
+git diff --numstat -z --find-renames <base_commit>..<head_commit>
 ```
 
-This must use the same endpoint two-dot range as the existing name-status
-collector:
+This must use the same endpoint two-dot range, rename detection, and
+NUL-delimited path handling as the existing name-status collector:
 
 ```bash
 git diff -z --name-status --find-renames <base_commit>..<head_commit>
@@ -86,38 +87,33 @@ explicit diff-mode or PR-provider integration.
 
 ## Numstat Parsing
 
-`git diff --numstat` emits tab-separated rows:
+`git diff --numstat -z --find-renames` emits tab-separated stats with
+NUL-delimited paths:
 
 ```text
-<added>\t<deleted>\t<path>
+<added>\t<deleted>\t<path>\0
 ```
 
 Examples:
 
 ```text
-42	7	src/cli.ts
--	-	assets/logo.png
-3	1	src/{old.ts => new.ts}
+42	7	src/cli.ts\0
+-	-	assets/logo.png\0
+3	1	\0src/old.ts\0src/new.ts\0
 ```
 
 Parser rules:
 
-- Split rows on newline.
-- Split each row into at most three tab-separated fields.
+- Split entries on NUL, preserving raw path bytes decoded as UTF-8.
+- Split each stats header into tab-separated added, deleted, and optional path
+  fields.
 - Treat `-`/`-` added and deleted counts as a binary file.
 - Parse decimal counts as non-negative integers.
-- Use the path field as the lookup key after normalizing git rename brace
-  notation to the new path when possible.
-- If parsing fails for a row, skip that row rather than failing the whole
-  generator.
-
-Rename path normalization should support common git brace notation:
-
-| Raw numstat path | Lookup path |
-| --- | --- |
-| `src/{old.ts => new.ts}` | `src/new.ts` |
-| `{old => new}/file.ts` | `new/file.ts` |
-| `old name.txt => new name.txt` | `new name.txt` |
+- Use the path field as the lookup key for ordinary rows.
+- For rename/copy rows where the header path field is empty, read the following
+  old-path and new-path NUL fields and use the new path as the lookup key.
+- If parsing fails for a row, skip that row rather than failing packet
+  generation.
 
 The existing `--name-status -z --find-renames` output remains the source of
 truth for file identity and status. Numstat only enriches evidence when it can
@@ -150,11 +146,11 @@ This slice must not include:
 Line counts and binary markers are acceptable because they reveal size/churn,
 not content.
 
-Error messages must remain sanitized. If numstat collection fails, the
-generator should continue using name-status evidence only or fail with the
-existing safe git-diff message if the implementation cannot distinguish the
-failure safely. The preferred implementation is to keep name-status collection
-strict and make numstat enrichment best-effort.
+Error messages must remain sanitized. Name-status collection remains strict
+because it is the authoritative changed-file list. Numstat collection is always
+best-effort: if the whole `--numstat -z --find-renames` command fails, packet
+generation continues with no diff-stat evidence instead of failing the
+generator.
 
 ## Renderer And Examples
 
@@ -192,10 +188,14 @@ This churn is expected and should be called out in the implementation PR.
 
 Implementation should prove:
 
-- text-file numstat rows populate `changed_files[].evidence`;
+- text-file `--numstat -z --find-renames` rows populate
+  `changed_files[].evidence`;
 - binary rows render as `Diff stats: binary file.`;
 - renamed files preserve rename evidence and append stats;
 - unmatched numstat rows do not break packet generation;
+- whole numstat command failure does not break packet generation;
+- non-ASCII paths still receive stats because name-status and numstat both use
+  raw NUL-delimited paths;
 - no synthetic verification entry appears when no `--verification` is supplied;
 - generated packets remain schema-valid `review-request/0.1`;
 - Markdown snapshots update in lockstep with JSON examples;
@@ -207,8 +207,8 @@ Ask reviewers to check:
 
 - Is using `changed_files[].evidence` the right 0.1-compatible place for churn
   evidence?
-- Is best-effort numstat enrichment acceptable, or should numstat failure fail
-  the generator?
+- Does best-effort `--numstat -z --find-renames` enrichment preserve enough
+  evidence while keeping packet generation reliable?
 - Are binary and rename cases represented honestly?
 - Does this avoid premature `review-request/0.2` version churn?
 - Does the design keep the line bright against raw diff embedding and automatic

@@ -27,7 +27,7 @@ invocation, review-response storage, native GitHub review import,
 automation, and private redaction rules remain deferred. GitHub PR exact-packet
 transport is merged as the first outward packet boundary. Reviewer-produced
 `review-response` workflow is merged, so the reviewer side can create and send
-response packets without manual copy/paste. Packet evidence enrichment design
+response packets without manual copy/paste. Packet evidence enrichment planning
 is in progress so generated request packets can expose per-file churn evidence
 without a packet-version bump.
 
@@ -58,7 +58,7 @@ without a packet-version bump.
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
 | GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
 | Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
-| Packet evidence enrichment design | In progress | PR #41 defines 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from `git diff --numstat`, with no raw diff embedding and no automatic test execution. |
+| Packet evidence enrichment planning | In progress | PR #41 defines and plans 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`, with no raw diff embedding, no automatic test execution, and no synthetic verification entry. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, and reviewer-produced response workflow are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |

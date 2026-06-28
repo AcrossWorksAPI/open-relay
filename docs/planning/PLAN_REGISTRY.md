@@ -70,6 +70,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Relay protocol envelope and multi-type extensibility design | Active |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Review-response packet design | Active |
 | `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | Review-request evidence enrichment design | Active |
+| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Review-request evidence enrichment implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Review-response packet implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | GitHub PR exact-packet transport implementation plan | Active |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Reviewer-produced review-response workflow implementation plan | Active |
@@ -94,7 +95,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | In progress | Codex | Design gate for adding 0.1-compatible per-file diff stats to generated review-request packets. |
+| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | In progress | Codex | Implementation plan for adding best-effort `--numstat -z --find-renames` diff stats to generated review-request packets. |
 
 ## Implemented Or Historical Plans
 
