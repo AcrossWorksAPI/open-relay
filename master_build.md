@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, and packet evidence enrichment implementation in progress | PR #39 merge commit `82ff91e`; evidence enrichment implementation branch `codex/review-request-evidence-enrichment` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, and merged packet evidence enrichment | PR #42 merge commit `26c2a10`; merged-main `npm run check`, `npm run smoke:pack`, and `git diff --check` passed |
 
 ## Scope
 
@@ -50,7 +50,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - review-response packet design, merged spec, validation/rendering implementation, examples, and package smoke
 - merged GitHub PR exact-packet transport implementation
 - merged reviewer-produced review-response workflow implementation
-- packet evidence enrichment design, implementation plan, and implementation branch
+- packet evidence enrichment design, implementation plan, and merged implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -96,7 +96,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement review-response packet type | Done | No |
 | P1 | Implement first packet transport boundary | Done | No |
 | P1 | Implement reviewer-produced review-response workflow | Done | No |
-| P1 | Implement packet evidence enrichment | In progress | No |
+| P1 | Implement packet evidence enrichment | Done | No |
 
 ## Known Gaps
 
@@ -110,14 +110,13 @@ Current scope is the first local protocol and validation CLI baseline:
 - Repo-local packet storage is merged as explicit `.open-relay/review-requests`
   bundles; global storage, list/read/delete/archive, retention, and hosted sync
   remain deferred.
-- The product brief's review loop, agent-ready prompts, diff summary, and test
-  evidence items are not fully implemented yet; protocol extensibility, the
-  `review-response` validation/rendering implementation, and GitHub PR
-  exact-packet transport and reviewer-side response packet production are
-  merged, so the request/response loop can move as packets without manual
-  copy/paste when both sides emit Open Relay packet drafts. Packet evidence
-  enrichment implementation is in progress to improve changed-file triage
-  without embedding raw diffs.
+- The product brief's review loop, agent-ready prompts, and test evidence
+  items are not fully implemented yet; protocol extensibility, the
+  `review-response` validation/rendering implementation, GitHub PR
+  exact-packet transport, reviewer-side response packet production, and
+  per-file diff-stat evidence enrichment are merged, so the request/response
+  loop can move as packets with changed-file churn evidence and without manual
+  copy/paste when both sides emit Open Relay packet drafts.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
