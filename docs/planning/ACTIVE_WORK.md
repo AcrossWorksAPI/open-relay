@@ -23,10 +23,11 @@ and send response packets without manual copy/paste. Packet evidence enrichment
 is merged, so generated request packets include per-file churn evidence without
 embedding raw diffs. Private redaction rules are merged before npm publishing,
 so repository-specific private terms can be scrubbed from generated packet
-metadata. Release workflow planning is merged, and release workflow
-implementation is in progress to prepare the first public npm publish gate,
-recommended `0.1.0` version, changelog/tag flow, trusted publishing path, and
-no-live-claim closeout before any live release claim. Native GitHub review import,
+metadata. Release workflow implementation is merged, so the first public npm
+publish gate, `0.1.0` package metadata, changelog/tag flow, trusted publishing
+path, release preflight, and no-live-claim runbook are in place before any live
+release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
+or live claim exists yet. Native GitHub review import,
 response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompts remain later slices. The approved first runtime direction
@@ -130,8 +131,8 @@ is a TypeScript CLI on Node.js with npm.
 
 | Risk or gap | Severity | Current handling |
 | --- | --- | --- |
-| Package publishing target not implemented | Medium | npm is the first package target, `private: true` is retained on `main`, release workflow implementation is in progress, and registry publish is deferred until release authority and trusted publisher setup are complete. |
-| Release publish authority undecided | Medium | Local tarball install smoke is merged; release workflow implementation targets `0.1.0`; registry publish remains deferred until npm owner, trusted publisher, tag, GitHub Release, and post-publish smoke are approved. |
+| Registry publish not executed | Medium | npm is the first package target, `private: true` is retained on `main`, release workflow implementation is merged, and registry publish is deferred until owner-controlled release authority and trusted publisher setup are complete. |
+| Release publish authority pending owner action | Medium | Local tarball install smoke and the release workflow are merged; package metadata targets `0.1.0`; registry publish remains deferred until npm owner, trusted publisher, tag, GitHub Release, and post-publish smoke are approved. |
 | Trusted publishing not configured | Medium | Release workflow implementation uses npm trusted publishing through GitHub Actions OIDC instead of long-lived npm tokens; npm owner/org setup remains required before publishing. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
@@ -143,13 +144,14 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review PR #48 for release workflow implementation.
-2. Confirm npm owner/org and trusted publishing setup for
+1. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
-3. Decide whether native GitHub review import belongs before the first package
-   publish or after the first public release.
-4. Decide whether agent-specific prompt dialects should be planned before or
-   after npm publishing.
+2. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
+   ready to publish.
+3. Run post-publish registry-install smoke and record live evidence before
+   marking any version `Live`.
+4. Decide whether native GitHub review import and agent-specific prompt
+   dialects belong before or after the first public package release.
 
 ## Current Owner Decisions Needed
 
