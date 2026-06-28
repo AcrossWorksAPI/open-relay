@@ -1,6 +1,6 @@
 {
   "name": "@acrossworks/open-relay",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Local-first AI handoff and review protocol CLI",
   "main": "dist/src/index.js",
   "directories": {
@@ -12,14 +12,21 @@
     "build": "tsc -p tsconfig.json",
     "check": "npm test",
     "prepack": "npm run build",
-    "smoke:pack": "node scripts/smoke-pack.js"
+    "smoke:pack": "node scripts/smoke-pack.js",
+    "release:preflight": "node scripts/release-preflight.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AcrossWorksAPI/open-relay.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ai",
+    "handoff",
+    "code-review",
+    "cli",
+    "protocol"
+  ],
+  "author": "Across Works",
   "license": "MIT",
   "type": "commonjs",
   "bugs": {

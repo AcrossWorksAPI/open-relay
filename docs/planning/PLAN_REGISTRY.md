@@ -14,9 +14,11 @@ or old plan files as inactive until this registry and current code agree.
 | `README.md` | Public project summary | Active |
 | `SECURITY.md` | Security policy and reporting process | Active |
 | `CONTRIBUTING.md` | Contribution workflow and review expectations | Active |
+| `CHANGELOG.md` | First release changelog | Active |
 | `package.json` | npm package metadata and runtime scripts | Active |
 | `package-lock.json` | Locked npm dependency graph | Active |
 | `scripts/smoke-pack.js` | Package tarball install smoke | Active |
+| `scripts/release-preflight.js` | Release preflight gate | Active |
 | `tsconfig.json` | TypeScript compiler configuration | Active |
 | `schemas/review-request.schema.json` | Formal review-request packet schema | Active |
 | `schemas/review-response.schema.json` | Formal review-response packet schema | Active |
@@ -52,6 +54,8 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/storage.test.ts` | Repo-local storage tests | Active |
 | `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
+| `.github/workflows/release.yml` | GitHub Release-triggered npm publish workflow | Active |
+| `docs/release/npm-release.md` | npm release runbook | Active |
 | `docs/superpowers/specs/2026-06-28-release-workflow-design.md` | Release workflow and first npm publish gate design | Active |
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Release workflow and first npm publish gate implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -99,7 +103,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #47 defines the publish gate, release preflight, changelog/tag workflow, and trusted publishing path before implementation. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #48 adds the changelog, release preflight, GitHub Release publish workflow, npm release runbook, and governance closeout without publishing. |
 
 ## Implemented Or Historical Plans
 
