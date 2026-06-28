@@ -134,13 +134,16 @@ permissions:
 The job should:
 
 1. Check out the release tag.
-2. Set up Node.js 22 with the npm registry URL.
-3. Run `npm ci`.
-4. Run `npm run check`.
-5. Run `npm run smoke:pack`.
-6. Run `npm pkg delete private` in the release checkout.
-7. Run `OPEN_RELAY_PUBLISH_CONTEXT=1 npm run release:preflight -- <tag-version>`.
-8. Publish with `npm publish --access public --provenance`.
+2. Set up Node.js 24 with the npm registry URL and
+   `package-manager-cache: false`.
+3. Print and guard the npm CLI version required by trusted publishing
+   (`11.5.1` or newer).
+4. Run `npm ci`.
+5. Run `npm run check`.
+6. Run `npm run smoke:pack`.
+7. Run `npm pkg delete private` in the release checkout.
+8. Run `OPEN_RELAY_PUBLISH_CONTEXT=1 npm run release:preflight -- <tag-version>`.
+9. Publish with `npm publish --access public --provenance`.
 
 The workflow must not publish on pull request, push to `main`, or arbitrary
 manual dispatch. A release is a deliberate outward action, so the outward event
@@ -163,6 +166,12 @@ The script should fail closed if:
 - outside publish context, `private` is not `true`;
 - inside publish context, `private` is still `true`;
 - `publishConfig.access` is not `public`;
+- the release workflow stops requesting `id-token: write`;
+- the release workflow references `NPM_TOKEN`;
+- the release workflow stops using Node.js 24;
+- the release workflow enables package-manager caching;
+- the release workflow stops checking for npm CLI `11.5.1` or newer;
+- the release workflow stops publishing with provenance;
 - `CHANGELOG.md` does not contain a heading for the expected version;
 - `package-lock.json` does not carry the same package version;
 - `npm pack --dry-run --json` omits required runtime files;
