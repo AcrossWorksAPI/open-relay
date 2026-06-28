@@ -58,10 +58,17 @@ The rule file is strict JSON:
 }
 ```
 
-Rules use literal substring replacement only in this slice. Regex, glob, and
-path-pattern syntax are deferred. Literal matching keeps the first release easy
-to reason about and avoids regex escaping mistakes or catastrophic backtracking
-risks in a privacy-sensitive feature.
+Rules use case-insensitive literal substring replacement only in this slice.
+Regex, glob, and path-pattern syntax are deferred. Literal matching keeps the
+first release easy to reason about and avoids regex escaping mistakes or
+catastrophic backtracking risks in a privacy-sensitive feature.
+
+Case-insensitive matching is the safer default because under-redaction can leak
+private terms into public PR comments, while occasional over-redaction is only a
+review-utility cost. Implementations should escape the literal match string and
+replace matched spans case-insensitively; rule authors do not get regex syntax.
+Literal still means exact spelling apart from case, so formatting variants such
+as `Acme Corp`, `Acme-Corp`, and `AcmeCorp` need separate rules.
 
 Validation rules:
 
@@ -72,13 +79,18 @@ Validation rules:
   `reason`;
 - all rule fields must be non-empty strings;
 - `match` must be at least three characters after trimming whitespace;
-- `replacement` must not contain `match`;
-- `reason` must not contain `match`;
+- `replacement` must not contain `match`, case-insensitively;
+- `reason` must not contain `match`, case-insensitively;
 - duplicate `name` values are rejected;
-- duplicate `match` values are rejected.
+- duplicate `match` values are rejected case-insensitively;
+- no rule's `replacement` or `reason` may contain any rule's `match`,
+  case-insensitively.
 
 The `reason` and `replacement` guards prevent the generated `redactions[]`
-records from reintroducing the sensitive value they are meant to hide.
+records from reintroducing the sensitive value they are meant to hide. The
+cross-rule guard keeps one rule's placeholder or audit reason from becoming a
+leak for another rule; replacements should be inert placeholders, not private
+terms.
 
 ## Application Scope
 
@@ -107,6 +119,17 @@ timestamps, commit SHAs, `repository.diff_range`, `change_summary.total_files_ch
 enums, risk severities, provenance types, or the `redactions[]` array itself.
 
 The result must still validate as `review-request/0.1`.
+
+Because this allowlist is packet-version-coupled, implementation tests must
+assert that every current `review-request/0.1` string field is either in the
+private-redaction allowlist or in an explicit excluded-field set with a reason.
+Any future packet version or new string field must revisit that test and this
+allowlist so a new free-text field cannot silently bypass private redaction.
+
+Redacting `changed_files[].path` can make a packet less directly navigable for a
+reviewer because the redacted path may no longer correspond to a repository
+path. That is an intentional user opt-in tradeoff when a path itself contains a
+private term.
 
 ## Redaction Records
 
@@ -211,11 +234,14 @@ Implementation should prove:
   values;
 - missing default `.open-relay/redaction-rules.json` preserves current behavior;
 - valid default and explicit rule files redact generated packet strings;
+- matching is case-insensitive while remaining literal-only;
 - invalid default and explicit rule files fail closed before output;
 - errors do not echo rule file paths, match strings, replacement strings, or
   file contents;
 - redaction entries identify generic fields and safe replacement text;
 - rule application does not mutate protocol fields or enum values;
+- every current `review-request/0.1` string field is either allowlisted for
+  private redaction or explicitly excluded;
 - generated packets remain schema-valid `review-request/0.1`;
 - `handoff review-request` and `save review-request` inherit the generator
   behavior;
@@ -228,7 +254,10 @@ Implementation should prove:
 Ask reviewers to check:
 
 - Is repo-local ignored JSON the right first private-rule storage boundary?
-- Should v1 stay literal-only, or is regex needed before npm publish?
+- Should v1 stay case-insensitive literal-only, or is regex needed before npm
+  publish?
 - Is fail-closed behavior correct for present/explicit invalid rule files?
 - Is the allowlisted field set broad enough without risking protocol mutation?
+- Does the allowlist coverage test protect future string fields from silent
+  bypass?
 - Do redaction records provide enough evidence without leaking private terms?

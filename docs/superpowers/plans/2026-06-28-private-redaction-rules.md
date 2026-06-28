@@ -4,7 +4,7 @@
 
 **Goal:** Add optional repo-local private redaction rules so generated `review-request/0.1` packets can scrub repository-specific private terms before output without changing packet schema.
 
-**Architecture:** Reuse the existing generator pipeline and `redactions[]` packet field. Parse a strict literal-only JSON rule file, apply rules through an allowlisted packet-field walker after built-in redactions and before validation, and fail closed for present or explicitly supplied invalid rule files.
+**Architecture:** Reuse the existing generator pipeline and `redactions[]` packet field. Parse a strict case-insensitive literal-only JSON rule file, apply rules through an allowlisted packet-field walker after built-in redactions and before validation, and fail closed for present or explicitly supplied invalid rule files.
 
 **Tech Stack:** TypeScript, Node.js 22, existing CLI argument parser, existing review-request builder, existing JSON Schema validation through Ajv, Node's built-in test runner, and the existing `npm run check`, `npm run smoke:pack`, and `git diff --check` verification commands.
 
@@ -85,13 +85,16 @@ Validation:
 - rule keys are exactly `name`, `match`, `replacement`, and `reason`;
 - each rule field is a non-empty string;
 - trimmed `match` length is at least three;
-- `replacement` does not contain `match`;
-- `reason` does not contain `match`;
+- `replacement` does not contain `match`, case-insensitively;
+- `reason` does not contain `match`, case-insensitively;
 - rule names are unique;
-- match strings are unique.
+- match strings are unique case-insensitively;
+- no replacement or reason contains any configured match string
+  case-insensitively.
 
-Rules perform literal substring replacement across an allowlisted set of packet
-string fields.
+Rules perform case-insensitive literal substring replacement across an
+allowlisted set of packet string fields. Implementations must escape the literal
+before building any `RegExp`; rule authors do not get regex semantics.
 
 ## Files
 
@@ -257,7 +260,7 @@ export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRule
   }
 
   const names = new Set<string>();
-  const matches = new Set<string>();
+  const normalizedMatches = new Set<string>();
   const rules: PrivateRedactionRule[] = [];
 
   for (const candidate of value.rules) {
@@ -272,17 +275,26 @@ export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRule
       !isNonEmptyString(replacement) ||
       !isNonEmptyString(reason) ||
       match.trim().length < 3 ||
-      replacement.includes(match) ||
-      reason.includes(match) ||
       names.has(name) ||
-      matches.has(match)
+      normalizedMatches.has(normalizeLiteral(match))
     ) {
       return { ok: false };
     }
 
     names.add(name);
-    matches.add(match);
+    normalizedMatches.add(normalizeLiteral(match));
     rules.push({ name, match, replacement, reason });
+  }
+
+  for (const rule of rules) {
+    if (
+      rules.some((candidate) =>
+        containsIgnoreCase(rule.replacement, candidate.match) ||
+        containsIgnoreCase(rule.reason, candidate.match)
+      )
+    ) {
+      return { ok: false };
+    }
   }
 
   return { ok: true, rules };
@@ -303,6 +315,14 @@ function hasExactKeys(value: Record<string, unknown>, expected: string[]): boole
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function normalizeLiteral(value: string): string {
+  return value.toLowerCase();
+}
+
+function containsIgnoreCase(value: string, literal: string): boolean {
+  return normalizeLiteral(value).includes(normalizeLiteral(literal));
 }
 ```
 
@@ -465,10 +485,11 @@ function redactString(
 ): string {
   let next = value;
   for (const rule of rules) {
-    if (!next.includes(rule.match)) {
+    const result = replaceLiteralIgnoreCase(next, rule.match, rule.replacement);
+    if (!result.changed) {
       continue;
     }
-    next = next.split(rule.match).join(rule.replacement);
+    next = result.value;
     const key = `${field}\0${rule.name}\0${rule.replacement}`;
     redactions.set(key, {
       field,
@@ -478,6 +499,24 @@ function redactString(
   }
   return next;
 }
+
+function replaceLiteralIgnoreCase(
+  value: string,
+  match: string,
+  replacement: string
+): { value: string; changed: boolean } {
+  let changed = false;
+  const pattern = new RegExp(escapeRegExp(match), "gi");
+  const next = value.replace(pattern, () => {
+    changed = true;
+    return replacement;
+  });
+  return { value: next, changed };
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 ```
 
 - [ ] Add transformation tests.
@@ -485,7 +524,7 @@ function redactString(
 ```ts
 test("applies private rules only to allowlisted packet fields", () => {
   const packet = reviewRequestFixture({
-    goal: "Review PrivateCustomerName changes.",
+    goal: "Review privatecustomername and PRIVATECUSTOMERNAME changes.",
     repositoryName: "PrivateCustomerName/open-relay",
     changedPath: "src/PrivateCustomerName.ts"
   });
@@ -497,7 +536,7 @@ test("applies private rules only to allowlisted packet fields", () => {
     reason: "Private customer name."
   }]);
 
-  assert.equal(redacted.goal, "Review [private-customer] changes.");
+  assert.equal(redacted.goal, "Review [private-customer] and [private-customer] changes.");
   assert.equal(redacted.repository.name, "[private-customer]/open-relay");
   assert.equal(redacted.changed_files[0]?.path, "src/[private-customer].ts");
   assert.equal(redacted.packet_type, "review-request");
@@ -506,6 +545,97 @@ test("applies private rules only to allowlisted packet fields", () => {
   assert.equal(JSON.stringify(redacted).includes("PrivateCustomerName"), false);
 });
 ```
+
+- [ ] Export private-redaction string-field coverage constants and add a test
+  that couples the allowlist to the current packet shape.
+
+```ts
+export const PRIVATE_REDACTION_STRING_FIELDS = [
+  "goal",
+  "requested_review.audience",
+  "requested_review.focus[]",
+  "requested_review.requested_output",
+  "repository.name",
+  "repository.remote_url",
+  "repository.local_path",
+  "repository.base_branch",
+  "repository.working_branch",
+  "repository.pull_request_url",
+  "repository.reviewer_access",
+  "change_summary.summary",
+  "change_summary.behavioral_intent",
+  "change_summary.excluded_scope[]",
+  "changed_files[].path",
+  "changed_files[].role",
+  "changed_files[].evidence",
+  "verification[].command",
+  "verification[].evidence",
+  "risks[].description",
+  "risks[].handling",
+  "provenance[].reference",
+  "provenance[].supports",
+  "sensitive_data.notes",
+  "next_action"
+] as const;
+
+// Excluded fields are protocol identity, dispatch, enum, checksum/range, or
+// existing audit-output strings. They are intentionally not private free text.
+export const PRIVATE_REDACTION_EXCLUDED_STRING_FIELDS = [
+  "packet_type",
+  "packet_version",
+  "created_at",
+  "repository.base_commit",
+  "repository.head_commit",
+  "repository.diff_range",
+  "changed_files[].status",
+  "changed_files[].review_priority",
+  "verification[].kind",
+  "verification[].result",
+  "risks[].severity",
+  "provenance[].type",
+  "redactions[].field",
+  "redactions[].reason",
+  "redactions[].replacement"
+] as const;
+```
+
+```ts
+test("private redaction allowlist accounts for every review-request string field", () => {
+  const packet = reviewRequestFixtureWithAllStringFields();
+
+  const packetStringPaths = [...new Set(collectStringPaths(packet))].sort();
+  const accountedStringPaths = [
+    ...PRIVATE_REDACTION_STRING_FIELDS,
+    ...PRIVATE_REDACTION_EXCLUDED_STRING_FIELDS
+  ].sort();
+
+  assert.deepEqual(packetStringPaths, accountedStringPaths);
+});
+
+function collectStringPaths(value: unknown, prefix = ""): string[] {
+  if (typeof value === "string") {
+    return [prefix];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => collectStringPaths(item, `${prefix}[]`));
+  }
+  if (value && typeof value === "object") {
+    return Object.entries(value as Record<string, unknown>).flatMap(([key, child]) =>
+      collectStringPaths(child, prefix ? `${prefix}.${key}` : key)
+    );
+  }
+  return [];
+}
+```
+
+This test is intentionally coupled to `review-request/0.1`: when the packet
+schema grows, it must fail until the new string field is either redacted or
+explicitly excluded.
+
+`reviewRequestFixtureWithAllStringFields()` must include every optional object,
+optional string, and at least one item in each string-bearing array, including
+`redactions[]`, so the coverage check cannot pass by omitting part of the
+packet shape.
 
 - [ ] Add a test that validates the final packet.
 
@@ -888,7 +1018,9 @@ Private redaction rules can be provided with `--redaction-rules <path>`.
 When no explicit path is supplied, Open Relay looks for
 `.open-relay/redaction-rules.json` in the current repository. Missing default
 rules are ignored; invalid present or explicit rules fail closed before packet
-output. Rule files are literal-only JSON and should stay private.
+output. Rule files are case-insensitive literal-only JSON and should stay
+private. Formatting variants still need their own rules, and redacting file
+paths can make those paths less useful for direct review navigation.
 ```
 
 - [ ] Document the rule file shape and security posture in
@@ -897,8 +1029,9 @@ output. Rule files are literal-only JSON and should stay private.
 ```md
 Generators may apply private redaction rules before output. A redaction rule
 file must not be embedded in the packet; only the resulting `redactions[]`
-records should appear. Redaction records should name generic fields such as
-`changed_files[].path` and must not reveal the matched private value.
+records should appear. Matching is case-insensitive and literal-only. Redaction
+records should name generic fields such as `changed_files[].path` and must not
+reveal the matched private value.
 ```
 
 - [ ] Confirm docs do not claim global profiles, regex support, registry
@@ -995,9 +1128,12 @@ Inspect generated files for:
 Ask reviewers to check:
 
 - Is `.open-relay/redaction-rules.json` the right first storage boundary?
-- Is literal-only matching enough for the first npm-ready security posture?
+- Is case-insensitive literal-only matching enough for the first npm-ready
+  security posture?
 - Does invalid present or explicit config fail closed without leaking contents?
 - Does the field allowlist cover useful packet metadata without mutating
   protocol fields or enums?
+- Does the allowlist coverage test protect future string fields from silent
+  bypass?
 - Do `redactions[]` records provide enough audit evidence without revealing the
   matched private term?
