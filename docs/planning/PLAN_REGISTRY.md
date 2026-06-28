@@ -1,6 +1,6 @@
 # Open Relay Plan Registry
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This registry classifies active and historical planning sources. Treat unlisted
 or old plan files as inactive until this registry and current code agree.
@@ -30,6 +30,7 @@ or old plan files as inactive until this registry and current code agree.
 | `src/renderReviewRequest.ts` | Review-request Markdown renderer | Active |
 | `src/renderReviewResponse.ts` | Review-response Markdown renderer | Active |
 | `src/renderPacket.ts` | Generic packet Markdown renderer dispatcher | Active |
+| `src/renderPrompt.ts` | Neutral/Claude/Codex prompt renderer | Active |
 | `src/reviewRequest.ts` | Review-request packet builder | Active |
 | `src/reviewResponse.ts` | Review-response packet type | Active |
 | `src/reviewResponseArgs.ts` | Review-response producer argument parser | Active |
@@ -48,6 +49,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/renderReviewRequest.test.ts` | Review-request Markdown renderer tests | Active |
 | `tests/renderReviewResponse.test.ts` | Review-response Markdown renderer tests | Active |
 | `tests/renderPacket.test.ts` | Generic packet renderer dispatcher tests | Active |
+| `tests/renderPrompt.test.ts` | Prompt renderer tests | Active |
 | `tests/reviewRequest.test.ts` | Review-request packet builder tests | Active |
 | `tests/reviewResponseArgs.test.ts` | Review-response producer argument parser tests | Active |
 | `tests/reviewResponseProducer.test.ts` | Review-response producer builder and draft key guard tests | Active |
@@ -64,6 +66,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
 | `docs/protocol/github-pr-transport.md` | GitHub PR exact-packet transport protocol | Active |
+| `docs/protocol/agent-ready-prompt-rendering.md` | Agent-ready prompt rendering protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `examples/review-response/relay.md` | Human-readable synthetic review-response packet | Active |
@@ -105,7 +108,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | In progress | Codex | Planning branch `codex/agent-ready-prompt-rendering-plan` defines optional `render --template neutral\|claude\|codex` prompt wrappers; implementation pending review. |
+| - | - | - | No active implementation plans; agent-ready prompt rendering is in PR review. |
 
 ## Implemented Or Historical Plans
 
@@ -130,6 +133,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Done | Planned and implemented 0.1-compatible `changed_files[].evidence` diff stats from best-effort `--numstat -z --find-renames`, including binary, rename, non-ASCII, literal-tab path, package smoke, and merge closeout through PR #42. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Done | Planned and implemented repo-local ignored case-insensitive literal private redaction rules, explicit `--redaction-rules`, fail-closed invalid config, allowlisted packet-field redaction, audit no-leak guards, package smoke, Claude review fix, and merge closeout through PR #45. |
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Done | Planned and implemented the `0.1.0` changelog, dual-mode release preflight, GitHub Release-triggered trusted-publishing workflow, npm release runbook, package metadata, verification, and merge closeout through PR #48 without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
+| `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Done | Planned and implemented `render --template neutral\|claude\|codex`, pure prompt rendering, parser/CLI tests, package exports, README and protocol docs, installed-package smoke coverage, and governance closeout without agent invocation, packet schema changes, GitHub posting, merge, publish, or live release claims. |
 
 ## Superseded Or Dormant Plans
 

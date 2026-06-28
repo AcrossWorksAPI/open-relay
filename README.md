@@ -42,6 +42,7 @@ The first loop uses two packet types plus exact-packet transport:
 - Review response spec: `docs/protocol/review-response-packet.md`
 - Review response producer: `docs/protocol/review-response-producer.md`
 - GitHub PR exact-packet transport: `docs/protocol/github-pr-transport.md`
+- Agent-ready prompt rendering: `docs/protocol/agent-ready-prompt-rendering.md`
 - Review request example: `examples/review-request/relay.json`
 - Review response example: `examples/review-response/relay.json`
 
@@ -120,6 +121,26 @@ output. Rule files are case-insensitive literal-only JSON and should stay
 private. Formatting variants still need their own rules, and redacting file
 paths can make those paths less useful for direct review navigation. Rule
 names, reasons, and replacements must not contain the private match text.
+
+## Render Agent Prompts
+
+Render a Claude-oriented review prompt from a request packet:
+
+```bash
+open-relay render relay.json --template claude --output claude-review.md
+```
+
+Render a Codex-oriented follow-up prompt from a response packet:
+
+```bash
+open-relay render review-response.json --template codex --output codex-follow-up.md
+```
+
+Templates wrap the validated packet as untrusted context. They do not call an
+agent, post to GitHub, merge, publish, or run commands. Fencing prevents
+syntactic break-out from the packet block, but it does not eliminate semantic
+prompt-injection risk; a human or surrounding tool must still evaluate the
+agent response before authorizing side effects.
 
 ## Close A Review Loop
 

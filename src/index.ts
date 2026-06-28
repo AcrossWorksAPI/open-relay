@@ -1,6 +1,7 @@
 export { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 export { collectGitContext, type GitContext, type ChangedFile } from "./git";
 export { renderPacketMarkdown } from "./renderPacket";
+export { renderPacketForTemplate, type PromptTemplate } from "./renderPrompt";
 export { renderReviewRequestMarkdown } from "./renderReviewRequest";
 export { renderReviewResponseMarkdown } from "./renderReviewResponse";
 export { buildReviewRequestPacket, type ReviewRequestPacket } from "./reviewRequest";

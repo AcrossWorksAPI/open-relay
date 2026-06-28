@@ -10,9 +10,10 @@ protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
 review handoffs. The first runtime direction is approved as a TypeScript CLI on
 Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. The first package
-version target is `0.1.0`; live release timing remains owner-controlled. The neutral
-`review-request` JSON-to-Markdown renderer is merged for Codex, Claude, or
-another reviewer without introducing agent-specific prompt dialects yet. npm
+version target is `0.1.0`; live release timing remains owner-controlled. The
+neutral `review-request` JSON-to-Markdown renderer is merged for Codex, Claude,
+or another reviewer, and this branch adds optional Claude/Codex prompt wrappers
+without changing neutral packet Markdown. npm
 package metadata, an allowlisted package packlist, and local tarball install
 smoke are merged as the release-readiness gate before publishing. Direct
 Markdown generation is merged so the generator can emit review-ready Markdown
@@ -37,11 +38,14 @@ Release workflow implementation is merged, so `main` now has the first npm
 publish gate, `0.1.0` package metadata, changelog/tag workflow, trusted
 publishing path, release preflight, and npm release runbook. No `v0.1.0` tag,
 GitHub Release, npm publish, registry package, or live claim exists yet.
-Agent-ready prompt rendering is now in planning for optional Claude/Codex
-wrappers around validated packet Markdown; no prompt runtime behavior is merged
-yet. Roadmap version tracking is now moving to PR-indexed pre-release labels
-(`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap views can track changes by
-version without implying an npm publish or live release.
+Agent-ready prompt rendering is implemented on branch
+`codex/agent-ready-prompt-rendering-implementation` as optional
+`render --template neutral|claude|codex` wrappers around validated packet
+Markdown; it does not invoke agents, post to GitHub, merge, publish, run
+commands, or change packet schemas. Roadmap version tracking now uses
+PR-indexed pre-release labels (`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap
+views can track changes by version without implying an npm publish or live
+release.
 
 ## Active Work
 
@@ -74,9 +78,10 @@ version without implying an npm publish or live release.
 | Private redaction rules implementation | Done | PR #45 merged repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict case-insensitive literal JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, audit no-leak guards, and installed-package smoke coverage before npm publishing. |
 | Release workflow planning | Done | PR #47 defined the recommended `@acrossworks/open-relay@0.1.0` first release gate, changelog/tag workflow, npm trusted publishing path, release preflight, no-live-claim closeout rules, committed `private: true` safety, and release-job-only private-field removal. |
 | Release workflow implementation | Done | PR #48 merged `CHANGELOG.md`, `scripts/release-preflight.js`, `.github/workflows/release.yml`, `docs/release/npm-release.md`, package metadata for `0.1.0`, and governance closeout without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
-| Agent-ready prompt rendering planning | In progress | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` wrappers while preserving neutral Markdown output and avoiding agent invocation, GitHub posting, merge, publish, or schema changes. |
-| Roadmap PR-indexed pre-release tracking | In progress | PR #51 updates the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompt runtime behavior, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
+| Agent-ready prompt rendering planning | Done | PR #51 merged the design and implementation plan for optional `render --template neutral\|claude\|codex` wrappers while preserving neutral Markdown output and avoiding agent invocation, GitHub posting, merge, publish, or schema changes. |
+| Roadmap PR-indexed pre-release tracking | Done | PR #51 updated the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
+| Agent-ready prompt rendering implementation | Done | Branch `codex/agent-ready-prompt-rendering-implementation` adds pure prompt rendering, `render --template neutral\|claude\|codex`, package exports, installed-package smoke, README docs, and a protocol doc without agent invocation or schema changes. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, private redaction rules, and agent-ready prompt rendering are in place; native GitHub review import, implementation-handoff, resume-project, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, external agent invocation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -84,6 +89,7 @@ version without implying an npm publish or live release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-29 | Agent-ready prompt rendering implementation branch checks | Passed | Branch `codex/agent-ready-prompt-rendering-implementation` adds `render --template neutral\|claude\|codex`; targeted RED/GREEN tests were run for pure prompt rendering and CLI parsing, `npm run check` passed with 178 tests, `npm run smoke:pack` passed with installed Claude/Codex prompt checks, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-29 | Agent-ready prompt rendering review fix | Passed | PR #51 follow-up reframed prompt-injection language: dynamic fences prevent syntactic packet-block break-out, while untrusted-context prompt text is best-effort semantic mitigation, not a security boundary; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-28 | Roadmap PR-indexed pre-release tracking branch checks | Passed | PR #51 updates `docs/planning/ROADMAP.md` version cells to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for planned slices without a PR; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, `git diff --check` passed, and a scan found no remaining `Baseline` or `Unversioned` roadmap version rows. |
 | 2026-06-28 | Agent-ready prompt rendering planning branch checks | Passed | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
@@ -149,19 +155,17 @@ version without implying an npm publish or live release.
 
 ## Next Step
 
-Review the agent-ready prompt rendering planning PR, then implement
-`render --template neutral|claude|codex` if the plan is approved. The first npm
-publish remains owner-controlled and should happen only after npm trusted
-publishing is configured and the owner is ready to create the non-prerelease
-`v0.1.0` GitHub Release.
+Review the agent-ready prompt rendering implementation PR, then merge if CI
+and review are green. The first npm publish remains owner-controlled and should
+happen only after npm trusted publishing is configured and the owner is ready to
+create the non-prerelease `v0.1.0` GitHub Release.
 
 ## Owner Decisions Needed
 
 - Should global user packet storage be added in addition to repo-local
   `.open-relay/review-requests` storage?
-- How opinionated should Open Relay be about Codex and Claude specifically?
-  The current planning slice proposes named Claude/Codex prompt wrappers but no
-  external agent invocation or custom template system.
+- Should Open Relay add custom user-authored prompt templates later, or keep
+  only the built-in neutral/Claude/Codex render templates for `0.1.x`?
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
 - Can the Across Works npm org/account publish `@acrossworks/open-relay`?

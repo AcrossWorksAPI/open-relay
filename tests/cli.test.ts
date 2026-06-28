@@ -1481,6 +1481,98 @@ test("renders a review-response packet to a file through generic render", () => 
   }
 });
 
+test("renders a neutral packet template by default", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "render",
+    "examples/review-request/relay.json",
+    "--template",
+    "neutral"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Review Request Relay Packet/);
+  assert.doesNotMatch(result.stdout, /^# Claude Review Prompt/);
+  assert.equal(result.stderr, "");
+});
+
+test("renders a claude prompt template to stdout", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "render",
+    "examples/review-request/relay.json",
+    "--template",
+    "claude"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Claude Review Prompt/);
+  assert.match(result.stdout, /# Review Request Relay Packet/);
+  assert.equal(result.stderr, "");
+});
+
+test("renders a codex prompt template to a file", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-prompt-"));
+  const outputPath = join(directory, "codex.md");
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "render",
+      "examples/review-response/relay.json",
+      "--template",
+      "codex",
+      "--output",
+      outputPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0);
+    assert.equal(result.stdout, "Wrote packet prompt.\n");
+    assert.equal(result.stderr, "");
+    const output = readFileSync(outputPath, "utf8");
+    assert.match(output, /^# Codex Follow-Up Prompt/);
+    assert.match(output, /# Review Response Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("rejects invalid render template flags", () => {
+  const invalid = spawnSync(process.execPath, [
+    cliPath,
+    "render",
+    "examples/review-request/relay.json",
+    "--template",
+    "html"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(invalid.status, 2);
+  assert.match(invalid.stderr, /Invalid template: html/);
+
+  const duplicate = spawnSync(process.execPath, [
+    cliPath,
+    "render",
+    "examples/review-request/relay.json",
+    "--template",
+    "claude",
+    "--template",
+    "codex"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(duplicate.status, 2);
+  assert.match(duplicate.stderr, /Duplicate flag: --template/);
+});
+
 test("rejects render review-request with missing path", () => {
   const result = spawnSync(process.execPath, [cliPath, "render", "review-request"], {
     encoding: "utf8"
@@ -1515,12 +1607,12 @@ test("does not add a render review-response subcommand", () => {
 test("rejects render review-request with unknown flags", () => {
   const result = spawnSync(
     process.execPath,
-    [cliPath, "render", "review-request", "examples/review-request/relay.json", "--template", "claude"],
+    [cliPath, "render", "review-request", "examples/review-request/relay.json", "--unknown"],
     { encoding: "utf8" }
   );
 
   assert.equal(result.status, 2);
-  assert.match(result.stderr, /Unknown flag: --template/);
+  assert.match(result.stderr, /Unknown flag: --unknown/);
   assert.doesNotMatch(result.stdout, /^# Review Request Relay Packet/m);
 });
 

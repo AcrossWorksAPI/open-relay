@@ -11,6 +11,10 @@ import {
 } from "./privateRedactionRules";
 import { renderPacketMarkdown } from "./renderPacket";
 import {
+  renderPacketForTemplate,
+  type PromptTemplate
+} from "./renderPrompt";
+import {
   parseGenerateReviewResponseArgs,
   parseRespondGithubPrArgs
 } from "./reviewResponseArgs";
@@ -38,8 +42,8 @@ Usage:
   open-relay generate review-response --request <review-request.json> --review <review-response-draft.json> [--format json|markdown] [--output <path>]
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--output <relay.md>]
   open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--storage-dir <path>]
-  open-relay render <packet.json> [--output <relay.md>]
-  open-relay render review-request <packet.json> [--output <relay.md>]
+  open-relay render <packet.json> [--template neutral|claude|codex] [--output <relay.md>]
+  open-relay render review-request <packet.json> [--template neutral|claude|codex] [--output <relay.md>]
   open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
@@ -97,6 +101,7 @@ export async function run(argv: string[]): Promise<number> {
         invalidMessage: "Invalid review-request packet",
         writeErrorMessage: "Could not write review-request Markdown.",
         writeSuccessMessage: "Wrote review-request Markdown.",
+        writePromptSuccessMessage: "Wrote review-request prompt.",
         renderErrorMessage: "Could not render review-request packet."
       });
     }
@@ -105,6 +110,7 @@ export async function run(argv: string[]): Promise<number> {
       invalidMessage: "Invalid packet",
       writeErrorMessage: "Could not write packet Markdown.",
       writeSuccessMessage: "Wrote packet Markdown.",
+      writePromptSuccessMessage: "Wrote packet prompt.",
       renderErrorMessage: "Could not render packet."
     });
   }
@@ -114,13 +120,14 @@ export async function run(argv: string[]): Promise<number> {
 }
 
 type RenderArgs =
-  | { ok: true; packetPath: string; output?: string }
+  | { ok: true; packetPath: string; output?: string; template: PromptTemplate }
   | { ok: false; message: string };
 
 type RenderMessages = {
   invalidMessage: string;
   writeErrorMessage: string;
   writeSuccessMessage: string;
+  writePromptSuccessMessage: string;
   renderErrorMessage: string;
 };
 
@@ -144,7 +151,10 @@ async function renderPacketCommand(args: string[], messages: RenderMessages): Pr
       return 1;
     }
 
-    const markdown = renderPacketMarkdown(packet as Record<string, unknown>);
+    const markdown = renderPacketForTemplate({
+      packet: packet as Record<string, unknown>,
+      template: parsed.template
+    });
 
     if (parsed.output) {
       try {
@@ -153,7 +163,10 @@ async function renderPacketCommand(args: string[], messages: RenderMessages): Pr
         process.stderr.write(`${messages.writeErrorMessage}\n`);
         return 1;
       }
-      process.stdout.write(`${messages.writeSuccessMessage}\n`);
+      const successMessage = parsed.template === "neutral"
+        ? messages.writeSuccessMessage
+        : messages.writePromptSuccessMessage;
+      process.stdout.write(`${successMessage}\n`);
     } else {
       process.stdout.write(markdown);
     }
@@ -172,6 +185,7 @@ async function renderPacketCommand(args: string[], messages: RenderMessages): Pr
 function parseRenderArgs(args: string[]): RenderArgs {
   const packetPath = args[0];
   let output: string | undefined;
+  let templateValue: string | undefined;
 
   if (!packetPath) {
     return { ok: false, message: "Missing packet path." };
@@ -180,27 +194,56 @@ function parseRenderArgs(args: string[]): RenderArgs {
   for (let index = 1; index < args.length; index += 1) {
     const arg = args[index];
 
-    if (arg !== "--output") {
+    if (arg !== "--output" && arg !== "--template") {
       return {
         ok: false,
         message: arg.startsWith("--") ? `Unknown flag: ${arg}` : `Unexpected argument: ${arg}`
       };
     }
 
-    if (output) {
-      return { ok: false, message: "Duplicate flag: --output" };
-    }
+    const isOutput = arg === "--output";
+    const flag = isOutput ? "--output" : "--template";
 
     const value = args[index + 1];
     if (!value || value.startsWith("--")) {
-      return { ok: false, message: "Missing value for --output" };
+      return { ok: false, message: `Missing value for ${flag}` };
     }
 
-    output = value;
+    if (isOutput) {
+      if (output) {
+        return { ok: false, message: "Duplicate flag: --output" };
+      }
+
+      output = value;
+    } else {
+      if (templateValue) {
+        return { ok: false, message: "Duplicate flag: --template" };
+      }
+
+      templateValue = value;
+    }
+
     index += 1;
   }
 
-  return { ok: true, packetPath, ...(output ? { output } : {}) };
+  const template = parsePromptTemplate(templateValue);
+  if (!template) {
+    return { ok: false, message: `Invalid template: ${templateValue}` };
+  }
+
+  return { ok: true, packetPath, template, ...(output ? { output } : {}) };
+}
+
+function parsePromptTemplate(value: string | undefined): PromptTemplate | undefined {
+  if (value === undefined) {
+    return "neutral";
+  }
+
+  if (value === "neutral" || value === "claude" || value === "codex") {
+    return value;
+  }
+
+  return undefined;
 }
 
 async function handoffReviewRequestCommand(args: string[]): Promise<number> {

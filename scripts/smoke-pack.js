@@ -69,6 +69,29 @@ try {
   runCli(cli, ["render", join(fixtureDir, "examples", "review-response", "relay.json")], {
     contains: "# Review Response Relay Packet"
   });
+  const claudePromptPath = join(workspace, "claude-prompt.md");
+  runCli(cli, [
+    "render",
+    join(fixtureDir, "examples", "review-request", "relay.json"),
+    "--template", "claude",
+    "--output", claudePromptPath
+  ], {
+    contains: "Wrote packet prompt."
+  });
+  assert.match(readFileSync(claudePromptPath, "utf8"), /^# Claude Review Prompt/);
+  assert.match(readFileSync(claudePromptPath, "utf8"), /# Review Request Relay Packet/);
+
+  const codexPromptPath = join(workspace, "codex-prompt.md");
+  runCli(cli, [
+    "render",
+    join(fixtureDir, "examples", "review-response", "relay.json"),
+    "--template", "codex",
+    "--output", codexPromptPath
+  ], {
+    contains: "Wrote packet prompt."
+  });
+  assert.match(readFileSync(codexPromptPath, "utf8"), /^# Codex Follow-Up Prompt/);
+  assert.match(readFileSync(codexPromptPath, "utf8"), /# Review Response Relay Packet/);
 
   createGitFixture(gitRepo);
   const base = runGit(gitRepo, "rev-parse", "HEAD").trim();
