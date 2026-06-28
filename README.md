@@ -41,14 +41,17 @@ The first loop uses two packet types plus exact-packet transport:
 - Review request spec: `docs/protocol/review-request-packet.md`
 - Review response spec: `docs/protocol/review-response-packet.md`
 - Review response producer: `docs/protocol/review-response-producer.md`
+- Resume project spec: `docs/protocol/resume-project-packet.md`
 - GitHub PR exact-packet transport: `docs/protocol/github-pr-transport.md`
 - Agent-ready prompt rendering: `docs/protocol/agent-ready-prompt-rendering.md`
 - Review request example: `examples/review-request/relay.json`
 - Review response example: `examples/review-response/relay.json`
+- Resume project example: `examples/resume-project/relay.json`
 
 The packets are intentionally narrow. A `review-request` asks another reviewer
 to inspect a fixed diff. A `review-response` records reviewer-authored outcome,
-findings, scope, verification, and next action.
+findings, scope, verification, and next action. A `resume-project` turns a
+validated response into a continuation record for the implementer.
 
 ## CLI
 
@@ -141,6 +144,24 @@ agent, post to GitHub, merge, publish, or run commands. Fencing prevents
 syntactic break-out from the packet block, but it does not eliminate semantic
 prompt-injection risk; a human or surrounding tool must still evaluate the
 agent response before authorizing side effects.
+
+## Resume From A Review Response
+
+Create a local continuation packet from a validated review response:
+
+```bash
+open-relay generate resume-project \
+  --response review-response.json \
+  --format markdown \
+  --output resume.md
+
+open-relay render resume-project.json --template codex \
+  --output codex-resume.md
+```
+
+The resume packet maps reviewer findings into continuation tasks, preserves
+prior verification context, and carries explicit safety gates. It does not
+apply fixes, run commands, invoke agents, merge, or publish.
 
 ## Close A Review Loop
 

@@ -69,6 +69,12 @@ try {
   runCli(cli, ["render", join(fixtureDir, "examples", "review-response", "relay.json")], {
     contains: "# Review Response Relay Packet"
   });
+  runCli(cli, ["validate", join(fixtureDir, "examples", "resume-project", "relay.json")], {
+    contains: "valid packet"
+  });
+  runCli(cli, ["render", join(fixtureDir, "examples", "resume-project", "relay.json")], {
+    contains: "# Resume Project Relay Packet"
+  });
   const claudePromptPath = join(workspace, "claude-prompt.md");
   runCli(cli, [
     "render",
@@ -92,6 +98,18 @@ try {
   });
   assert.match(readFileSync(codexPromptPath, "utf8"), /^# Codex Follow-Up Prompt/);
   assert.match(readFileSync(codexPromptPath, "utf8"), /# Review Response Relay Packet/);
+
+  const resumePromptPath = join(workspace, "resume-codex-prompt.md");
+  runCli(cli, [
+    "render",
+    join(fixtureDir, "examples", "resume-project", "relay.json"),
+    "--template", "codex",
+    "--output", resumePromptPath
+  ], {
+    contains: "Wrote packet prompt."
+  });
+  assert.match(readFileSync(resumePromptPath, "utf8"), /^# Codex Follow-Up Prompt/);
+  assert.match(readFileSync(resumePromptPath, "utf8"), /# Resume Project Relay Packet/);
 
   createGitFixture(gitRepo);
   const base = runGit(gitRepo, "rev-parse", "HEAD").trim();
@@ -225,6 +243,42 @@ try {
   assert.match(responseDryRun, /payload_base64:/);
   assert.match(responseDryRun, /# Review Response Relay Packet/);
 
+  const responsePacket = join(workspace, "review-response.json");
+  const resumePacket = join(workspace, "resume-project.json");
+  const resumeMarkdown = join(workspace, "resume-project.md");
+  runCli(cli, [
+    "generate",
+    "review-response",
+    "--request", generatedPacket,
+    "--review", responseDraft,
+    "--output", responsePacket
+  ], {
+    contains: "Wrote review-response packet."
+  });
+  runCli(cli, [
+    "generate",
+    "resume-project",
+    "--response", responsePacket,
+    "--output", resumePacket
+  ], {
+    contains: "Wrote resume-project packet."
+  });
+  const resumeJson = JSON.parse(readFileSync(resumePacket, "utf8"));
+  assert.equal(resumeJson.packet_type, "resume-project");
+  assert.equal(resumeJson.resume_status, "owner_decision");
+  assert.equal(resumeJson.tasks.length, 0);
+  runCli(cli, [
+    "generate",
+    "resume-project",
+    "--response", responsePacket,
+    "--format", "markdown",
+    "--output", resumeMarkdown
+  ], {
+    contains: "Wrote resume-project Markdown."
+  });
+  assert.match(readFileSync(resumeMarkdown, "utf8"), /^# Resume Project Relay Packet/);
+  assert.match(readFileSync(resumeMarkdown, "utf8"), /## Safety Gates/);
+
   const generatedMarkdown = join(workspace, "generated.md");
   runCli(cli, [
     "generate",
@@ -318,8 +372,13 @@ function assertPackageContents(packManifest) {
     paths.includes("dist/schemas/review-response.schema.json"),
     "tarball is missing dist/schemas/review-response.schema.json"
   );
+  assert.ok(
+    paths.includes("dist/schemas/resume-project.schema.json"),
+    "tarball is missing dist/schemas/resume-project.schema.json"
+  );
   assert.ok(paths.includes("schemas/review-request.schema.json"), "tarball is missing public schema");
   assert.ok(paths.includes("schemas/review-response.schema.json"), "tarball is missing public review-response schema");
+  assert.ok(paths.includes("schemas/resume-project.schema.json"), "tarball is missing public resume-project schema");
   assert.ok(paths.includes("README.md"), "tarball is missing README.md");
   assert.ok(paths.includes("LICENSE"), "tarball is missing LICENSE");
 

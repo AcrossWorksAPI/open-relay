@@ -28,10 +28,14 @@ owner instructions when they exist.
 - Prompt rendering behavior: `open-relay render <packet.json> --template
   neutral|claude|codex` preserves neutral Markdown by default and can wrap
   validated packet Markdown in deterministic Claude/Codex prompt instructions.
+- Resume behavior: `open-relay generate resume-project` creates a local
+  continuation packet from a validated `review-response` without applying fixes
+  or invoking agents.
 - Non-goals for the current runtime slice: MCP server support, package
   registry publishing, hosted deployment, external agent invocation,
-  custom prompt-template systems, global packet storage, storage
-  list/read/delete/archive commands, retention policies, and hosted sync.
+  automatic fixes, automatic merge or publish, custom prompt-template systems,
+  global packet storage, storage list/read/delete/archive commands, retention
+  policies, and hosted sync.
 
 ## Required Starting Point
 
