@@ -93,6 +93,9 @@ try {
   });
 
   runCli(cli, ["validate", generatedPacket], { contains: "valid packet" });
+  const generatedJson = JSON.parse(readFileSync(generatedPacket, "utf8"));
+  assert.match(generatedJson.changed_files[0].evidence, /^Diff stats: \+\d+ -\d+\.$/);
+  assert.deepEqual(generatedJson.verification, []);
   runCli(cli, ["render", generatedPacket], { contains: "## Next Action" });
   runCli(cli, ["render", "review-request", generatedPacket], { contains: "## Next Action" });
   const transportDryRun = runCli(cli, [
@@ -186,6 +189,7 @@ try {
 
   const markdown = readFileSync(generatedMarkdown, "utf8");
   assert.match(markdown, /^# Review Request Relay Packet/);
+  assert.match(markdown, /Diff stats: \+\d+ -\d+\./);
   assert.match(markdown, /## Next Action/);
 
   const handoffMarkdown = join(workspace, "handoff.md");
@@ -205,6 +209,7 @@ try {
 
   const handoff = readFileSync(handoffMarkdown, "utf8");
   assert.match(handoff, /^# Review Request Relay Packet/);
+  assert.match(handoff, /Diff stats: \+\d+ -\d+\./);
   assert.match(handoff, /## Next Action/);
 
   runCli(cli, [
@@ -224,7 +229,10 @@ try {
   const [savedId] = readdirSync(savedRoot);
   const savedDir = join(savedRoot, savedId);
   assert.match(readFileSync(join(savedDir, "relay.md"), "utf8"), /^# Review Request Relay Packet/);
-  assert.equal(JSON.parse(readFileSync(join(savedDir, "relay.json"), "utf8")).packet_type, "review-request");
+  assert.match(readFileSync(join(savedDir, "relay.md"), "utf8"), /Diff stats: \+\d+ -\d+\./);
+  const savedJson = JSON.parse(readFileSync(join(savedDir, "relay.json"), "utf8"));
+  assert.equal(savedJson.packet_type, "review-request");
+  assert.match(savedJson.changed_files[0].evidence, /^Diff stats: \+\d+ -\d+\.$/);
   assert.equal(JSON.parse(readFileSync(join(savedDir, "manifest.json"), "utf8")).storage_id, savedId);
 
   const badJson = join(workspace, "bad.json");

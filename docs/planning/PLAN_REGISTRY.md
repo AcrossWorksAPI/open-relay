@@ -95,7 +95,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | In progress | Codex | Implementation plan for adding best-effort `--numstat -z --find-renames` diff stats to generated review-request packets. |
+| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | In progress | Codex | Implementation branch adds best-effort `--numstat -z --find-renames` diff stats to generated review-request packets. |
 
 ## Implemented Or Historical Plans
 

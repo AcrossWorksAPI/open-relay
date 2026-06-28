@@ -88,6 +88,10 @@ node dist/src/cli.js generate review-request \
 ```
 
 Markdown rendering is also available through `open-relay render <packet.json>`.
+Generated review-request packets include per-file churn evidence when git can
+provide it, such as `Diff stats: +12 -3.` or `Diff stats: binary file.`. Open
+Relay records counts, not raw diff hunks, and it does not run test commands
+automatically; checks belong in explicit verification entries.
 
 ## Close A Review Loop
 

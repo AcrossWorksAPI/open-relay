@@ -795,6 +795,9 @@ test("generates a schema-valid review-request packet to a file", () => {
     });
 
     assert.equal(validateResult.status, 0);
+    const packet = JSON.parse(readFileSync(outputPath, "utf8"));
+    assert.equal(packet.verification.length, 0);
+    assert.match(packet.changed_files[0]?.evidence ?? "", /^Diff stats: \+\d+ -\d+\.$/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -856,6 +859,7 @@ test("generates review-request markdown to stdout", () => {
     assert.equal(result.status, 0);
     assert.match(result.stdout, /^# Review Request Relay Packet/);
     assert.match(result.stdout, /## Next Action/);
+    assert.match(result.stdout, /Diff stats: \+\d+ -\d+\./);
     assert.doesNotMatch(result.stdout, /^\{/);
     assert.equal(result.stderr, "");
   } finally {

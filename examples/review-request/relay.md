@@ -36,25 +36,25 @@ Adds community and safety documents, issue and PR templates, Dependabot configur
 
 ## Changed Files
 
-| File | Status | Role | Review priority |
-| --- | --- | --- | --- |
-| `SECURITY.md` | added | Vulnerability reporting and security policy | high |
-| `CONTRIBUTING.md` | added | Contribution workflow and review expectations | high |
-| `CODE_OF_CONDUCT.md` | added | Community conduct standard | high |
-| `.github/PULL_REQUEST_TEMPLATE.md` | added | Pull request review checklist | high |
-| `.github/ISSUE_TEMPLATE/bug_report.yml` | added | Bug report intake form | medium |
-| `.github/ISSUE_TEMPLATE/feature_request.yml` | added | Feature request intake form | medium |
-| `.github/ISSUE_TEMPLATE/question.yml` | added | Question intake form | low |
-| `.github/ISSUE_TEMPLATE/config.yml` | added | Issue template chooser settings | low |
-| `.github/workflows/ci.yml` | added | Governance CI checks | high |
-| `.github/dependabot.yml` | added | GitHub Actions dependency updates | medium |
-| `README.md` | modified | Public project links and community references | medium |
-| `AGENTS.md` | modified | Repository agent workflow guidance | medium |
-| `docs/STATUS.md` | modified | Owner-readable hardening status | medium |
-| `docs/planning/ROADMAP.md` | modified | Roadmap status for hardening slice | medium |
-| `docs/planning/ACTIVE_WORK.md` | modified | Active work and risk updates | medium |
-| `docs/planning/PLAN_REGISTRY.md` | modified | Plan-source classification updates | low |
-| `docs/planning/VERSION_LEDGER.md` | modified | Commit, PR, and smoke evidence updates | low |
+| File | Status | Role | Review priority | Evidence |
+| --- | --- | --- | --- | --- |
+| `SECURITY.md` | added | Vulnerability reporting and security policy | high | Diff stats: +10 -0. |
+| `CONTRIBUTING.md` | added | Contribution workflow and review expectations | high | Diff stats: +10 -0. |
+| `CODE_OF_CONDUCT.md` | added | Community conduct standard | high | Diff stats: +10 -0. |
+| `.github/PULL_REQUEST_TEMPLATE.md` | added | Pull request review checklist | high | Diff stats: +10 -0. |
+| `.github/ISSUE_TEMPLATE/bug_report.yml` | added | Bug report intake form | medium | Diff stats: +10 -0. |
+| `.github/ISSUE_TEMPLATE/feature_request.yml` | added | Feature request intake form | medium | Diff stats: +10 -0. |
+| `.github/ISSUE_TEMPLATE/question.yml` | added | Question intake form | low | Diff stats: +10 -0. |
+| `.github/ISSUE_TEMPLATE/config.yml` | added | Issue template chooser settings | low | Diff stats: +10 -0. |
+| `.github/workflows/ci.yml` | added | Governance CI checks | high | Diff stats: +10 -0. |
+| `.github/dependabot.yml` | added | GitHub Actions dependency updates | medium | Diff stats: +10 -0. |
+| `README.md` | modified | Public project links and community references | medium | Diff stats: +3 -1. |
+| `AGENTS.md` | modified | Repository agent workflow guidance | medium | Diff stats: +3 -1. |
+| `docs/STATUS.md` | modified | Owner-readable hardening status | medium | Diff stats: +3 -1. |
+| `docs/planning/ROADMAP.md` | modified | Roadmap status for hardening slice | medium | Diff stats: +3 -1. |
+| `docs/planning/ACTIVE_WORK.md` | modified | Active work and risk updates | medium | Diff stats: +3 -1. |
+| `docs/planning/PLAN_REGISTRY.md` | modified | Plan-source classification updates | low | Diff stats: +3 -1. |
+| `docs/planning/VERSION_LEDGER.md` | modified | Commit, PR, and smoke evidence updates | low | Diff stats: +3 -1. |
 
 ## Verification
 
