@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, roadmap pre-release tracking merged, and agent-ready prompt rendering implementation in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, roadmap pre-release tracking merged, agent-ready prompt rendering merged, and resume-project packet planning in progress
 Last updated: 2026-06-29
 Current live version: None yet; first public release not published
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, PR-indexed pre-release roadmap tracking, and agent-ready prompt rendering implementation in progress
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, and resume-project packet planning in progress
 
 ## Project Purpose
 
@@ -38,7 +38,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | v0.1.0-pre.48 | Release workflow and first npm publish gate | Done | High | No | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
 | v0.1.0-pre.52 | Agent-ready prompt rendering | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
 | v0.1.0-pre.next | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
-| v0.1.0-pre.next | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
+| v0.1.0-pre.next | Resume-project packet type | In progress | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-29-resume-project-packet.md |
 
 ## Brief MVP Mapping For Planned Slices
 

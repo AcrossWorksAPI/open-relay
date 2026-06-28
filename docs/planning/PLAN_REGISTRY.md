@@ -61,7 +61,9 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-28-release-workflow-design.md` | Release workflow and first npm publish gate design | Active |
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Release workflow and first npm publish gate implementation plan | Active |
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Agent-ready prompt rendering design | Active |
+| `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Resume-project packet design | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
+| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
@@ -108,7 +110,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans; agent-ready prompt rendering is in PR review. |
+| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | In progress | Codex | Defines the next packet-native continuation slice: `generate resume-project` from a validated `review-response`, without agent invocation, fix application, GitHub posting, merge, publish, or packet-version bump. |
 
 ## Implemented Or Historical Plans
 

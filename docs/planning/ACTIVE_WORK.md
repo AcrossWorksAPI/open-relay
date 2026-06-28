@@ -30,14 +30,14 @@ release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
 or live claim exists yet. Native GitHub review import, response storage, fix
 automation, merge automation, implementation-handoff, resume-project, external
 agent invocation, and custom prompt-template systems remain later slices.
-Agent-ready prompt rendering is implemented on branch
-`codex/agent-ready-prompt-rendering-implementation` as optional Claude/Codex
-wrappers around the existing validated packet Markdown renderer. Roadmap
-version labels now use
+Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
+the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
-have a PR. The approved first runtime direction is a TypeScript CLI on Node.js
-with npm.
+have a PR. Resume-project packet planning is active on branch
+`codex/resume-project-plan` to turn validated `review-response` packets into
+local continuation packets without invoking agents or applying fixes. The
+approved first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -118,9 +118,11 @@ with npm.
 | `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | Active | Design for 0.1-compatible per-file diff stats in `changed_files[].evidence`. |
 | `docs/superpowers/specs/2026-06-28-private-redaction-rules-design.md` | Active | Design for repo-local private redaction rules before generated review-request output. |
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
+| `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
+| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Active | Implementation plan for `resume-project/0.1` schema, producer, renderer, CLI, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
@@ -148,7 +150,7 @@ with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
+| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project planning is active; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
@@ -156,8 +158,9 @@ with npm.
 
 ## Next Recommended Work
 
-1. Review the agent-ready prompt rendering implementation PR.
-2. If approved, merge it after CI and review are green.
+1. Review the resume-project packet planning PR.
+2. If approved, implement `generate resume-project` as a packet-native
+   continuation producer.
 3. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
 4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
