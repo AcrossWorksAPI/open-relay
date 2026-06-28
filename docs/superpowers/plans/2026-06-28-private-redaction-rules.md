@@ -1060,7 +1060,7 @@ Expected: any hits are explicit deferrals or existing unrelated roadmap text.
   package smoke, and private-rule behavior.
 - [ ] Move `Private redaction rules` from `In progress` to `Done` only after
   the implementation PR merges.
-- [ ] Update `docs/planning/ACTIVE_WORK.md` to remove "private redaction rule
+- [x] Update `docs/planning/ACTIVE_WORK.md` to remove "private redaction rule
   files undefined" from current gaps after merge.
 - [x] Update `PLAN_REGISTRY.md` with this plan as active during implementation
   and historical after merge closeout.
@@ -1070,7 +1070,7 @@ Expected: any hits are explicit deferrals or existing unrelated roadmap text.
   surface; flip to `Shipped` only after the implementation PR merges:
 
 ```md
-| Private redaction rules | In progress | N/A | In progress | N/A | N/A | N/A | In progress | In progress | In progress | N/A | N/A | In progress | Repo-local ignored JSON rule files are validated fail-closed before generated packet output; global profiles and regex rules are deferred. |
+| Private redaction rules | Shipped | N/A | Shipped | N/A | N/A | N/A | Shipped | Shipped | Shipped | N/A | N/A | Shipped | Repo-local ignored JSON rule files are validated fail-closed before generated packet output; global profiles and regex rules are deferred. |
 ```
 
 - [x] Record that no packet version bump, regex support, global config,

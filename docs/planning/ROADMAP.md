@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation in progress
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation merged
 Last updated: 2026-06-28
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation in progress
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation merged
 
 ## Project Purpose
 
@@ -32,7 +32,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Relay protocol envelope and multi-type validation | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
 | Unversioned | Boundary/transport decision | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-github-pr-transport.md |
 | Unversioned | Packet evidence enrichment | Done | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md |
-| Unversioned | Private redaction rules | In progress | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
+| Unversioned | Private redaction rules | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
 | Unversioned | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
 | Unversioned | Reviewer-produced review-response workflow | Done | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
 | Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |

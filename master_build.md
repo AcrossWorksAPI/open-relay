@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | Unknown; needs owner decision | No release history found |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, and private redaction rules implementation in progress | PR #44 merge commit `c4f1408`; implementation branch `codex/private-redaction-rules` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, and merged private redaction rules implementation | PR #45 merge commit `2b50762`; merged-main `npm run check`, `npm run smoke:pack`, and `git diff --check` passed |
 
 ## Scope
 
@@ -51,7 +51,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - merged GitHub PR exact-packet transport implementation
 - merged reviewer-produced review-response workflow implementation
 - packet evidence enrichment design, implementation plan, and merged implementation
-- private redaction rules design, implementation plan, and implementation branch
+- merged private redaction rules implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -98,7 +98,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement first packet transport boundary | Done | No |
 | P1 | Implement reviewer-produced review-response workflow | Done | No |
 | P1 | Implement packet evidence enrichment | Done | No |
-| P1 | Implement private redaction rules | In progress | No |
+| P1 | Implement private redaction rules | Done | No |
 
 ## Known Gaps
 
@@ -121,7 +121,8 @@ Current scope is the first local protocol and validation CLI baseline:
   copy/paste when both sides emit Open Relay packet drafts.
 - Package publishing and deployment evidence are not present yet; local package
   smoke evidence exists on `main`.
-- Private redaction rules implementation is in progress as repo-local ignored
-  case-insensitive literal rules before generated packet output.
+- Private redaction rules are merged as repo-local ignored case-insensitive
+  literal rules before generated packet output; global profiles, regex rules,
+  environment reads, raw-diff scanning, and remote rule loading remain deferred.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
 - No live version, deployment, or registry package evidence exists yet.
