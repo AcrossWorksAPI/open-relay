@@ -25,10 +25,13 @@ owner instructions when they exist.
 - Storage behavior: `open-relay save review-request` creates ignored
   repo-local `.open-relay/review-requests/<storage_id>/` bundles containing
   validated JSON, rendered Markdown, and a manifest.
+- Prompt rendering behavior: `open-relay render <packet.json> --template
+  neutral|claude|codex` preserves neutral Markdown by default and can wrap
+  validated packet Markdown in deterministic Claude/Codex prompt instructions.
 - Non-goals for the current runtime slice: MCP server support, package
   registry publishing, hosted deployment, external agent invocation,
-  global packet storage, storage list/read/delete/archive commands, retention
-  policies, hosted sync, and agent-specific prompt templates.
+  custom prompt-template systems, global packet storage, storage
+  list/read/delete/archive commands, retention policies, and hosted sync.
 
 ## Required Starting Point
 

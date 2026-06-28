@@ -1,6 +1,6 @@
 # Open Relay Active Work
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 ## Current Direction
 
@@ -27,12 +27,13 @@ metadata. Release workflow implementation is merged, so the first public npm
 publish gate, `0.1.0` package metadata, changelog/tag flow, trusted publishing
 path, release preflight, and no-live-claim runbook are in place before any live
 release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
-or live claim exists yet. Native GitHub review import,
-response storage, fix
-automation, merge automation, implementation-handoff, resume-project, and
-agent-ready prompt runtime behavior remain later slices. Agent-ready prompt
-rendering is now in planning as optional Claude/Codex wrappers around the
-existing validated packet Markdown renderer. Roadmap version labels now use
+or live claim exists yet. Native GitHub review import, response storage, fix
+automation, merge automation, implementation-handoff, resume-project, external
+agent invocation, and custom prompt-template systems remain later slices.
+Agent-ready prompt rendering is implemented on branch
+`codex/agent-ready-prompt-rendering-implementation` as optional Claude/Codex
+wrappers around the existing validated packet Markdown renderer. Roadmap
+version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
 have a PR. The approved first runtime direction is a TypeScript CLI on Node.js
@@ -51,7 +52,7 @@ with npm.
 | `package.json` | Active | npm package metadata and build/test/check scripts. |
 | `package-lock.json` | Active | Locked npm dependency graph. |
 | `CHANGELOG.md` | Active | Manual release notes for the first public release target. |
-| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, and explicit private redaction rules. |
+| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, explicit private redaction rules, and Claude/Codex prompt rendering. |
 | `scripts/release-preflight.js` | Active | Dependency-free release gate for version, private-field mode, changelog, package metadata, lockfile, and packlist drift. |
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
@@ -65,6 +66,7 @@ with npm.
 | `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer, including changed-file evidence. |
 | `src/renderReviewResponse.ts` | Active | Pure review-response JSON-to-Markdown renderer. |
 | `src/renderPacket.ts` | Active | Generic packet Markdown renderer dispatcher. |
+| `src/renderPrompt.ts` | Active | Optional neutral/Claude/Codex prompt renderer that wraps validated packet Markdown without invoking agents or changing packet schemas. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/reviewResponse.ts` | Active | Review-response packet type exported through the package entrypoint. |
 | `src/reviewResponseArgs.ts` | Active | Argument parsing for `generate review-response` and `respond github-pr`. |
@@ -84,6 +86,7 @@ with npm.
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/renderReviewResponse.test.ts` | Active | Review-response Markdown renderer order, snapshot, confidence, escaping, and empty-state tests. |
 | `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
+| `tests/renderPrompt.test.ts` | Active | Neutral parity, Claude/Codex wrapper, and dynamic-fence prompt renderer tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `tests/reviewResponseArgs.test.ts` | Active | Review-response producer argument parser tests. |
 | `tests/reviewResponseProducer.test.ts` | Active | Review-response draft key guard, builder, and semantic validation tests. |
@@ -98,6 +101,7 @@ with npm.
 | `docs/protocol/review-response-packet.md` | Active | Review-response packet type and required protocol fields. |
 | `docs/protocol/review-response-producer.md` | Active | Producer workflow for turning reviewer-authored drafts into validated response packets. |
 | `docs/protocol/github-pr-transport.md` | Active | GitHub PR exact-packet transport commands, marker contract, `gh` auth model, authorship limits, and non-goals. |
+| `docs/protocol/agent-ready-prompt-rendering.md` | Active | Prompt-template command contract and safety model for neutral/Claude/Codex render wrappers. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `examples/review-response/relay.md` | Active | Human-readable synthetic review-response packet example. |
@@ -147,14 +151,13 @@ with npm.
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
-| Agent-specific prompt dialects in planning | Low | Branch `codex/agent-ready-prompt-rendering-plan` proposes optional `render --template claude\|codex` wrappers around validated packet Markdown; runtime behavior remains unmerged. |
+| External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
 | Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
 ## Next Recommended Work
 
-1. Review the agent-ready prompt rendering planning PR.
-2. If approved, implement `render --template neutral|claude|codex` while
-   preserving neutral Markdown output and avoiding external agent invocation.
+1. Review the agent-ready prompt rendering implementation PR.
+2. If approved, merge it after CI and review are green.
 3. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
 4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
@@ -166,8 +169,8 @@ with npm.
 - Global packet storage in addition to repo-local storage.
 - GitHub PR comments are the first packet transport boundary; native GitHub
   review import remains a separate future decision.
-- Codex/Claude specificity versus agent-neutral templates. Current planning
-  branch proposes named Claude/Codex render wrappers but no agent invocation,
-  custom template files, or new packet schemas.
+- Custom prompt templates versus built-in templates only. Current behavior
+  includes neutral/Claude/Codex wrappers, with no agent invocation, custom
+  template files, or new packet schemas.
 - npm publish owner/organization, trusted publisher setup, and when to create
   the owner-controlled `v0.1.0` GitHub Release.
