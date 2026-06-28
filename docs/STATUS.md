@@ -27,9 +27,9 @@ invocation, review-response storage, native GitHub review import,
 automation, and private redaction rules remain deferred. GitHub PR exact-packet
 transport is merged as the first outward packet boundary. Reviewer-produced
 `review-response` workflow is merged, so the reviewer side can create and send
-response packets without manual copy/paste. Packet evidence enrichment
-implementation is in progress so generated request packets can expose per-file
-churn evidence without a packet-version bump.
+response packets without manual copy/paste. Packet evidence enrichment is
+merged, so generated request packets expose per-file churn evidence without a
+packet-version bump.
 
 ## Active Work
 
@@ -58,8 +58,8 @@ churn evidence without a packet-version bump.
 | Review-response packet implementation | Done | PR #34 merged `review-response` schema validation, semantic checks, Markdown rendering, generic `render <packet.json>`, neutral validate messages, examples, protocol docs, package exports, installed-package smoke coverage, and block-rendered findings readability polish. |
 | GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
 | Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
-| Packet evidence enrichment implementation | In progress | PR #42 implements 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`; no raw diff embedding, automatic test execution, synthetic verification entry, or packet-version bump is added. Local `npm run check` passed with 150 tests after the tab-path parser regression fix, `npm run smoke:pack` passed, and manual branch packet smoke passed. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, and reviewer-produced response workflow are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, diff-summary capture, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
+| Packet evidence enrichment implementation | Done | PR #42 merged 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`; no raw diff embedding, automatic test execution, synthetic verification entry, or packet-version bump was added. Merged-main `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, and diff-summary capture are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, test-evidence capture, registry publishing, private redaction rules, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -67,6 +67,7 @@ churn evidence without a packet-version bump.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-28 | PR #42 merged-main closeout | Passed | PR #42 merged at commit `26c2a10`; fresh `main` verification passed `npm run check` with 150 tests, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-28 | Packet evidence enrichment implementation branch checks | Passed | PR #42: `https://github.com/AcrossWorksAPI/open-relay/pull/42`; branch `codex/review-request-evidence-enrichment`; `npm run check` passed with 150 tests after preserving `--numstat -z` paths containing literal tabs, `npm run smoke:pack` passed, and manual `main..HEAD` packet smoke generated/validated/rendered `/private/tmp/open-relay-evidence-review-request.json` with 18 changed files, diff-stat evidence present, `verification: []`, and no raw diff hunk markers. |
 | 2026-06-26 | `git diff --check` | Passed | Initial docs/governance baseline before runtime source existed. |
 | 2026-06-26 | PR #1 | Merged | `https://github.com/AcrossWorksAPI/open-relay/pull/1` |
@@ -123,7 +124,9 @@ churn evidence without a packet-version bump.
 
 ## Next Step
 
-Review PR #41, then write the implementation plan if the spec is accepted.
+Use the packet-native review-response flow on the next implementation PR, then
+decide whether private redaction rule files are needed before package
+publishing.
 
 ## Owner Decisions Needed
 

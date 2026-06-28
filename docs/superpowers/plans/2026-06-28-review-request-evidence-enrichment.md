@@ -326,7 +326,7 @@ node dist/src/cli.js render examples/review-request/relay.json --output examples
 
 - [x] Update `docs/STATUS.md` after implementation with the exact test count
   and smoke evidence.
-- [ ] Update `docs/planning/ROADMAP.md` by moving Packet evidence enrichment to
+- [x] Update `docs/planning/ROADMAP.md` by moving Packet evidence enrichment to
   `Done` only after implementation merges.
 - [x] Update `docs/planning/ACTIVE_WORK.md`, `PLAN_REGISTRY.md`,
   `VERSION_LEDGER.md`, `ENTITY_LIFECYCLE_SCOPE_MATRIX.md`, and

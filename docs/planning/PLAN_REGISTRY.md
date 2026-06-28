@@ -95,7 +95,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | In progress | Codex | Implementation branch adds best-effort `--numstat -z --find-renames` diff stats to generated review-request packets. |
+| - | - | - | No active implementation plans after PR #42 closeout. |
 
 ## Implemented Or Historical Plans
 
@@ -117,6 +117,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Done | Planned and implemented `review-response` schema validation, semantic checks, Markdown rendering, examples, generic render, neutral validate messages, package exports, package smoke coverage, Claude review fix, and merge closeout through PR #34. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Done | Planned and implemented GitHub PR exact-packet transport through local `gh`, dry-run, authenticated-user update, author-filtered fetch, protocol docs, package smoke, Claude review fixes, and merge closeout through PR #36. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Done | Planned and implemented reviewer-authored response draft production, `generate review-response`, `respond github-pr`, draft key guards, protocol docs, package smoke coverage, Claude dogfood review, and merge closeout through PR #39. |
+| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Done | Planned and implemented 0.1-compatible `changed_files[].evidence` diff stats from best-effort `--numstat -z --find-renames`, including binary, rename, non-ASCII, literal-tab path, package smoke, and merge closeout through PR #42. |
 
 ## Superseded Or Dormant Plans
 
