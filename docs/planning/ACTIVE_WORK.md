@@ -34,7 +34,7 @@ Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
 the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
-have a PR. Resume-project packet planning is active on branch
+have a PR. Resume-project packet planning is active in PR #53 on branch
 `codex/resume-project-plan` to turn validated `review-response` packets into
 local continuation packets without invoking agents or applying fixes. The
 approved first runtime direction is a TypeScript CLI on Node.js with npm.
