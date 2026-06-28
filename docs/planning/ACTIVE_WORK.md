@@ -126,7 +126,7 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the packet evidence enrichment implementation PR.
+1. Review PR #42's packet evidence enrichment implementation.
 2. Dogfood the merged loop on the packet evidence enrichment PR by sending a
    `review-response` packet.
 3. Decide whether private redaction rule files are needed before package
