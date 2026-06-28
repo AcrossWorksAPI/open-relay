@@ -9,8 +9,8 @@ Product purpose and target users are captured from the owner brief. The first
 protocol slice now defines a narrow `review-request` packet for Codex-to-Claude
 review handoffs. The first runtime direction is approved as a TypeScript CLI on
 Node.js with npm, the validation CLI is merged, and the first JSON-only
-git-state review-request generator is merged to `main`. Release/versioning
-convention is still `Unknown; needs owner decision`. The neutral
+git-state review-request generator is merged to `main`. The first package
+version target is `0.1.0`; live release timing remains owner-controlled. The neutral
 `review-request` JSON-to-Markdown renderer is merged for Codex, Claude, or
 another reviewer without introducing agent-specific prompt dialects yet. npm
 package metadata, an allowlisted package packlist, and local tarball install
@@ -33,10 +33,10 @@ packet-version bump. Private redaction rules are merged, so
 repository-specific private terms can be scrubbed before generated packet
 output without adding a packet-version bump, regex support, global config,
 environment reads, raw-diff scanning, or remote rule loading.
-Release workflow planning is merged, and release workflow implementation is in
-progress to prepare the first npm publish gate, recommended `0.1.0` version,
-changelog/tag workflow, trusted publishing path, release preflight, and npm
-release runbook without publishing yet.
+Release workflow implementation is merged, so `main` now has the first npm
+publish gate, `0.1.0` package metadata, changelog/tag workflow, trusted
+publishing path, release preflight, and npm release runbook. No `v0.1.0` tag,
+GitHub Release, npm publish, registry package, or live claim exists yet.
 
 ## Active Work
 
@@ -68,7 +68,7 @@ release runbook without publishing yet.
 | Packet evidence enrichment implementation | Done | PR #42 merged 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`; no raw diff embedding, automatic test execution, synthetic verification entry, or packet-version bump was added. Merged-main `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | Private redaction rules implementation | Done | PR #45 merged repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict case-insensitive literal JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, audit no-leak guards, and installed-package smoke coverage before npm publishing. |
 | Release workflow planning | Done | PR #47 defined the recommended `@acrossworks/open-relay@0.1.0` first release gate, changelog/tag workflow, npm trusted publishing path, release preflight, no-live-claim closeout rules, committed `private: true` safety, and release-job-only private-field removal. |
-| Release workflow implementation | In progress | PR #48 adds `CHANGELOG.md`, `scripts/release-preflight.js`, `.github/workflows/release.yml`, `docs/release/npm-release.md`, package metadata for `0.1.0`, and governance closeout without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
+| Release workflow implementation | Done | PR #48 merged `CHANGELOG.md`, `scripts/release-preflight.js`, `.github/workflows/release.yml`, `docs/release/npm-release.md`, package metadata for `0.1.0`, and governance closeout without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -77,6 +77,7 @@ release runbook without publishing yet.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-28 | PR #48 merged-main closeout | Passed | PR #48 merged at commit `a8f5f0a`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; `git tag --list 'v0.1.0'` returned no tag and `package.json` remains `private: true`. |
 | 2026-06-28 | Release workflow implementation branch checks | Passed | Branch `codex/release-workflow-implementation` adds `CHANGELOG.md`, release preflight, `0.1.0` package metadata while retaining `private: true`, GitHub Release publish workflow, release runbook, and governance closeout. `npm run check` passed with 169 tests, `npm run smoke:pack` passed, normal `npm run release:preflight -- 0.1.0` passed, publish-context preflight passed in a temporary worktree after `npm pkg delete private`, `git diff --check` passed, and `git tag --list 'v0.1.0'` returned no tag. |
 | 2026-06-28 | PR #45 merged-main closeout | Passed | PR #45 merged at commit `2b50762`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-28 | Private redaction rules implementation branch checks | Passed | Branch `codex/private-redaction-rules` adds parser, builder, CLI, handoff/save, docs, and package-smoke support for case-insensitive literal private redaction rules; PR review fix now rejects rule names containing private match text and asserts `redactions[]` audit records do not re-leak matches. `npm run check` passed with 169 tests and `npm run smoke:pack` passed after the review fix. |
@@ -138,8 +139,10 @@ release runbook without publishing yet.
 
 ## Next Step
 
-Review PR #48 for release workflow implementation, then configure npm trusted
-publishing and perform the owner-controlled tag/GitHub Release only when ready.
+Configure npm trusted publishing for `@acrossworks/open-relay` and
+`.github/workflows/release.yml`, then create the owner-controlled non-prerelease
+`v0.1.0` GitHub Release only when ready. After publish, run registry-install
+smoke and record live evidence before marking any version `Live`.
 
 ## Owner Decisions Needed
 

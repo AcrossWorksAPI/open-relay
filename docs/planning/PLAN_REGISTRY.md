@@ -103,7 +103,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #48 adds the changelog, release preflight, GitHub Release publish workflow, npm release runbook, and governance closeout without publishing. |
+| - | - | - | No active implementation plans. |
 
 ## Implemented Or Historical Plans
 
@@ -127,6 +127,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Done | Planned and implemented reviewer-authored response draft production, `generate review-response`, `respond github-pr`, draft key guards, protocol docs, package smoke coverage, Claude dogfood review, and merge closeout through PR #39. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Done | Planned and implemented 0.1-compatible `changed_files[].evidence` diff stats from best-effort `--numstat -z --find-renames`, including binary, rename, non-ASCII, literal-tab path, package smoke, and merge closeout through PR #42. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Done | Planned and implemented repo-local ignored case-insensitive literal private redaction rules, explicit `--redaction-rules`, fail-closed invalid config, allowlisted packet-field redaction, audit no-leak guards, package smoke, Claude review fix, and merge closeout through PR #45. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | Done | Planned and implemented the `0.1.0` changelog, dual-mode release preflight, GitHub Release-triggered trusted-publishing workflow, npm release runbook, package metadata, verification, and merge closeout through PR #48 without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
 
 ## Superseded Or Dormant Plans
 
