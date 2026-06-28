@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation merged
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, and release workflow planning in progress
 Last updated: 2026-06-28
 Current live version: Unknown; needs owner decision
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, and private redaction rules implementation merged
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, and release workflow planning in progress
 
 ## Project Purpose
 
@@ -35,6 +35,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Private redaction rules | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
 | Unversioned | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
 | Unversioned | Reviewer-produced review-response workflow | Done | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
+| Unversioned | Release workflow and first npm publish gate | In progress | High | Required | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
 | Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
 | Unversioned | Agent-ready prompt rendering | Planned | Medium | No | Review-response packet type | - |
@@ -49,6 +50,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Private redaction rules | Feature 2 and product thesis: make generated review context safer to share by scrubbing repository-specific private metadata before packet output. |
 | Review-response packet type | Feature 5: support review response. |
 | Reviewer-produced review-response workflow | Feature 5: close the review loop by letting reviewers create and send response packets without manual copy/paste. |
+| Release workflow and first npm publish gate | Product thesis: make the local CLI installable from a public package with release evidence before any live claim. |
 | Implementation-handoff packet type | Feature 5: support implementation handoff. |
 | Resume-project packet type | Feature 5: support resume project. |
 | Agent-ready prompt rendering | Feature 3: output Codex-ready and Claude-ready prompts. |
@@ -59,8 +61,6 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | --- | --- | --- | --- | --- | --- |
 | Protocol | Packet-version migrators | After a second packet version exists | Candidate | A breaking packet version ships and old stored bundles must still load | - |
 | Security | Non-GitHub remote allowlist | When non-GitHub users appear | Candidate | Target users report dropped safe GitLab, Codeberg, or GitHub Enterprise remotes | - |
-| Runtime | Publish to npm registry | Before first public live release | Candidate | Package smoke passes and publish authority is approved | - |
-| Release | Version, tag, changelog, and publish workflow | Before live claims | Candidate | Package smoke passes and publish authority is approved | - |
 
 ## Update Rules
 

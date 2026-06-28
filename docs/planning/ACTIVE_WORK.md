@@ -23,7 +23,10 @@ and send response packets without manual copy/paste. Packet evidence enrichment
 is merged, so generated request packets include per-file churn evidence without
 embedding raw diffs. Private redaction rules are merged before npm publishing,
 so repository-specific private terms can be scrubbed from generated packet
-metadata. Native GitHub review import, response storage, fix
+metadata. Release workflow planning is in progress to define the first public
+npm publish gate, recommended `0.1.0` version, changelog/tag flow, and trusted
+publishing path before any live release claim. Native GitHub review import,
+response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompts remain later slices. The approved first runtime direction
 is a TypeScript CLI on Node.js with npm.
@@ -78,6 +81,8 @@ is a TypeScript CLI on Node.js with npm.
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
+| `docs/superpowers/specs/2026-06-28-release-workflow-design.md` | Active | Design for first npm release workflow, trusted publishing, version/tag gate, and live-evidence rules. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | Active | Implementation plan for changelog, release preflight, publish workflow, docs, and governance closeout. |
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `docs/protocol/review-response-packet.md` | Active | Review-response packet type and required protocol fields. |
 | `docs/protocol/review-response-producer.md` | Active | Producer workflow for turning reviewer-authored drafts into validated response packets. |
@@ -122,6 +127,7 @@ is a TypeScript CLI on Node.js with npm.
 | --- | --- | --- |
 | Package publishing target not implemented | Medium | npm is the first package target, `private: true` is retained, and registry publish is deferred until release authority and version are decided. |
 | Release publish authority undecided | Medium | Local tarball install smoke is merged; registry publish remains deferred until npm owner, first version, changelog, tag, and `private: true` removal are approved. |
+| Trusted publishing not configured | Medium | Release workflow planning recommends npm trusted publishing through GitHub Actions OIDC instead of long-lived npm tokens; npm owner/org setup remains required before publishing. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
@@ -132,10 +138,12 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Define npm publish owner, first semver version, changelog, and tag workflow.
-2. Decide whether native GitHub review import belongs before the first package
+1. Review PR #47 for release workflow planning.
+2. Confirm npm owner/org and trusted publishing setup for
+   `@acrossworks/open-relay`.
+3. Decide whether native GitHub review import belongs before the first package
    publish or after the first public release.
-3. Decide whether agent-specific prompt dialects should be planned before or
+4. Decide whether agent-specific prompt dialects should be planned before or
    after npm publishing.
 
 ## Current Owner Decisions Needed
@@ -145,4 +153,5 @@ is a TypeScript CLI on Node.js with npm.
   review import remains a separate future decision.
 - Codex/Claude specificity versus agent-neutral templates. Current plan starts
   agent-neutral and defers dialects.
-- npm publish owner/organization and first released semver version.
+- npm publish owner/organization and whether first released semver should be
+  `0.1.0`.

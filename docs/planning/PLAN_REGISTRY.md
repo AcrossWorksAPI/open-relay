@@ -52,6 +52,8 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/storage.test.ts` | Repo-local storage tests | Active |
 | `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
+| `docs/superpowers/specs/2026-06-28-release-workflow-design.md` | Release workflow and first npm publish gate design | Active |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | Release workflow and first npm publish gate implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
@@ -97,7 +99,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans after PR #45 closeout. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #47 defines the publish gate, release preflight, changelog/tag workflow, and trusted publishing path before implementation. |
 
 ## Implemented Or Historical Plans
 
