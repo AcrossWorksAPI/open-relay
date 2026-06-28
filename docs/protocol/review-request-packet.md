@@ -1,6 +1,6 @@
 # Review Request Relay Packet
 
-Last updated: 2026-06-26
+Last updated: 2026-06-28
 
 ## Purpose
 
@@ -165,6 +165,13 @@ or `verification`. Do not duplicate every file path or command there.
 Do not use placeholder redactions such as `field: "all"` for a general "no
 secrets included" claim. Use an empty `redactions` array when no field was
 redacted, and use `sensitive_data` for optional exclusion notes.
+
+Generators may apply private redaction rules before output. A redaction rule
+file must not be embedded in the packet; only the resulting `redactions[]`
+records should appear. Matching is case-insensitive and literal-only. Redaction
+records should name generic fields such as `changed_files[].path` and must not
+reveal the matched private value. Rule names, reasons, and replacements must
+not contain configured match values because they can appear in audit metadata.
 
 ### `sensitive_data`
 

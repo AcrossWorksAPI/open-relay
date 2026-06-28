@@ -24,14 +24,15 @@ renderer registry entries. The `review-response` packet implementation is
 merged, so request and response packet shapes now validate and render
 end-to-end. npm registry publishing, global packet storage, external agent
 invocation, review-response storage, native GitHub review import,
-automation, and private redaction rules remain deferred. GitHub PR exact-packet
+automation, global redaction profiles, and regex rules remain deferred. GitHub PR exact-packet
 transport is merged as the first outward packet boundary. Reviewer-produced
 `review-response` workflow is merged, so the reviewer side can create and send
 response packets without manual copy/paste. Packet evidence enrichment is
 merged, so generated request packets expose per-file churn evidence without a
-packet-version bump. Private redaction rules are now in planning so
+packet-version bump. Private redaction rules are now in implementation so
 repository-specific private terms can be scrubbed before generated packet
-output without adding a packet-version bump.
+output without adding a packet-version bump, regex support, global config,
+environment reads, raw-diff scanning, or remote rule loading.
 
 ## Active Work
 
@@ -61,8 +62,8 @@ output without adding a packet-version bump.
 | GitHub PR packet transport implementation | Done | PR #36 merged `transport github-pr send/fetch`, base64 marker comments, local `gh` auth delegation, dry-run, authenticated-user update, public confirmation, author-filtered fetch, protocol docs, and installed-package dry-run smoke. |
 | Reviewer-produced review-response workflow implementation | Done | PR #39 merged the pure response producer, draft key guards, `generate review-response`, `respond github-pr`, CLI tests, and installed-package smoke coverage. |
 | Packet evidence enrichment implementation | Done | PR #42 merged 0.1-compatible per-file diff stats in `changed_files[].evidence`, sourced from best-effort `git diff --numstat -z --find-renames` joined to strict `--name-status -z --find-renames`; no raw diff embedding, automatic test execution, synthetic verification entry, or packet-version bump was added. Merged-main `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
-| Private redaction rules planning | In progress | Planning branch defines repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict literal-only JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, and package smoke coverage before npm publishing. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, and diff-summary capture are merged; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
+| Private redaction rules implementation | In progress | Branch `codex/private-redaction-rules` adds repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict case-insensitive literal JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, and installed-package smoke coverage before npm publishing. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules implementation branch are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -70,6 +71,7 @@ output without adding a packet-version bump.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-28 | Private redaction rules implementation branch checks | Passed | Branch `codex/private-redaction-rules` adds parser, builder, CLI, handoff/save, docs, and package-smoke support for case-insensitive literal private redaction rules; PR review fix now rejects rule names containing private match text and asserts `redactions[]` audit records do not re-leak matches. `npm run check` passed with 169 tests and `npm run smoke:pack` passed after the review fix. |
 | 2026-06-28 | Private redaction rules planning branch checks | Passed | Planning branch `codex/private-redaction-rules-plan` adds design and implementation plan; `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #42 merged-main closeout | Passed | PR #42 merged at commit `26c2a10`; fresh `main` verification passed `npm run check` with 150 tests, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-28 | Packet evidence enrichment implementation branch checks | Passed | PR #42: `https://github.com/AcrossWorksAPI/open-relay/pull/42`; branch `codex/review-request-evidence-enrichment`; `npm run check` passed with 150 tests after preserving `--numstat -z` paths containing literal tabs, `npm run smoke:pack` passed, and manual `main..HEAD` packet smoke generated/validated/rendered `/private/tmp/open-relay-evidence-review-request.json` with 18 changed files, diff-stat evidence present, `verification: []`, and no raw diff hunk markers. |
@@ -128,8 +130,8 @@ output without adding a packet-version bump.
 
 ## Next Step
 
-Review the private redaction rules planning PR, then implement it using the
-packet-native review-response flow on the implementation PR.
+Request Claude re-review for PR #45 after the private redaction rule-name leak
+fix.
 
 ## Owner Decisions Needed
 

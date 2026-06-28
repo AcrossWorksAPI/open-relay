@@ -29,6 +29,7 @@ test("parses required generator flags and defaults", () => {
   ]);
   assert.equal(result.options.format, "json");
   assert.equal(result.options.output, undefined);
+  assert.equal(result.options.redactionRules, undefined);
 });
 
 test("parses repeated focus, verification, risk, excluded scope, and flags", () => {
@@ -143,6 +144,37 @@ test("rejects duplicate singleton generator flags", () => {
   }
   assert.match(duplicateFormat.message, /Duplicate flag/);
   assert.match(duplicateFormat.message, /--format/);
+});
+
+test("parses redaction-rules path", () => {
+  const result = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Review",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--redaction-rules", ".open-relay/redaction-rules.json"
+  ]);
+
+  if (!result.ok) {
+    assert.fail(result.message);
+  }
+
+  assert.equal(result.options.redactionRules, ".open-relay/redaction-rules.json");
+});
+
+test("rejects duplicate redaction-rules flag", () => {
+  const result = parseGenerateReviewRequestArgs([
+    "--base", "main",
+    "--head", "HEAD",
+    "--goal", "Review",
+    "--summary", "Summary",
+    "--behavioral-intent", "Intent",
+    "--redaction-rules", "one.json",
+    "--redaction-rules", "two.json"
+  ]);
+
+  assert.deepEqual(result, { ok: false, message: "Duplicate flag: --redaction-rules" });
 });
 
 test("parses generator format options", () => {

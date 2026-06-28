@@ -93,6 +93,15 @@ provide it, such as `Diff stats: +12 -3.` or `Diff stats: binary file.`. Open
 Relay records counts, not raw diff hunks, and it does not run test commands
 automatically; checks belong in explicit verification entries.
 
+Private redaction rules can be provided with `--redaction-rules <path>`.
+When no explicit path is supplied, Open Relay looks for
+`.open-relay/redaction-rules.json` in the current repository. Missing default
+rules are ignored; invalid present or explicit rules fail closed before packet
+output. Rule files are case-insensitive literal-only JSON and should stay
+private. Formatting variants still need their own rules, and redacting file
+paths can make those paths less useful for direct review navigation. Rule
+names, reasons, and replacements must not contain the private match text.
+
 ## Close A Review Loop
 
 Fetch a request packet from a PR, write a reviewer draft, then produce and
