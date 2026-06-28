@@ -114,6 +114,8 @@ rename reports `+0 -0`, assert that exact value.
   its stat evidence. This proves `--numstat -z --find-renames` matches the
   existing `--name-status -z --find-renames` key instead of losing C-quoted
   paths.
+- [x] Add a literal-tab path regression so the numstat parser treats everything
+  after the second tab as the path instead of truncating legal git filenames.
 - [x] Add a best-effort numstat failure test by adding an injectable git runner
   to `collectGitContext`:
 

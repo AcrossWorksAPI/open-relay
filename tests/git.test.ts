@@ -183,6 +183,34 @@ test("keeps non-ascii paths from nul-delimited name-status output", () => {
   }
 });
 
+test("keeps diff stats for paths containing literal tabs", () => {
+  const repo = createRepo();
+  try {
+    writeFileSync(join(repo, "README.md"), "# Repo\n", "utf8");
+    git(repo, "add", "README.md");
+    git(repo, "commit", "-m", "initial");
+    const base = git(repo, "rev-parse", "HEAD").trim();
+
+    const tabbedPath = "tab\tpath.txt";
+    writeFileSync(join(repo, tabbedPath), "tabbed\n", "utf8");
+    git(repo, "add", ".");
+    git(repo, "commit", "-m", "add tabbed path");
+    const head = git(repo, "rev-parse", "HEAD").trim();
+
+    const context = collectGitContext({
+      cwd: repo,
+      baseRef: base,
+      headRef: head,
+      includeLocalPath: false
+    });
+
+    assert.equal(context.changedFiles[0]?.path, tabbedPath);
+    assert.equal(context.changedFiles[0]?.evidence, "Diff stats: +1 -0.");
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
+});
+
 test("continues without diff-stat evidence when numstat collection fails", () => {
   const repo = createRepo();
   try {

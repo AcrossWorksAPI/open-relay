@@ -123,7 +123,12 @@ function parseNumstat(raw: string): Map<string, DiffStat> {
       continue;
     }
 
-    const [addedRaw, deletedRaw, path = ""] = header.split("\t");
+    const parsedHeader = parseNumstatHeader(header);
+    if (!parsedHeader) {
+      continue;
+    }
+
+    const { addedRaw, deletedRaw, path } = parsedHeader;
     const stat = parseDiffStat(addedRaw, deletedRaw);
     if (!stat) {
       if (path === "" && index + 2 < parts.length) {
@@ -145,6 +150,24 @@ function parseNumstat(raw: string): Map<string, DiffStat> {
   }
 
   return stats;
+}
+
+function parseNumstatHeader(header: string): { addedRaw: string; deletedRaw: string; path: string } | undefined {
+  const firstTab = header.indexOf("\t");
+  if (firstTab === -1) {
+    return undefined;
+  }
+
+  const secondTab = header.indexOf("\t", firstTab + 1);
+  if (secondTab === -1) {
+    return undefined;
+  }
+
+  return {
+    addedRaw: header.slice(0, firstTab),
+    deletedRaw: header.slice(firstTab + 1, secondTab),
+    path: header.slice(secondTab + 1)
+  };
 }
 
 function parseDiffStat(addedRaw: string | undefined, deletedRaw: string | undefined): DiffStat | undefined {

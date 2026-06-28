@@ -126,9 +126,10 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review PR #42's packet evidence enrichment implementation.
+1. Re-run CI/review on PR #42 after the tab-path parser polish from the first
+   packet-native Claude dogfood review.
 2. Dogfood the merged loop on the packet evidence enrichment PR by sending a
-   `review-response` packet.
+   `review-response` packet when the branch is ready to merge.
 3. Decide whether private redaction rule files are needed before package
    publishing.
 4. Define npm publish owner, first semver version, changelog, and tag workflow.
