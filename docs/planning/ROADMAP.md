@@ -1,10 +1,10 @@
 # Open Relay Roadmap
 
 Project: Open Relay
-Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, and release workflow implementation merged
+Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, and agent-ready prompt rendering planning in progress
 Last updated: 2026-06-28
 Current live version: None yet; first public release not published
-Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, and release workflow implementation merged
+Current baseline: Open Relay project brief, governance baseline, first protocol baseline, TypeScript schema-validation CLI baseline, merged JSON-only git-state generator CLI MVP, merged review-request Markdown renderer, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, and agent-ready prompt rendering planning in progress
 
 ## Project Purpose
 
@@ -38,7 +38,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Unversioned | Release workflow and first npm publish gate | Done | High | No | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
 | Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | Unversioned | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
-| Unversioned | Agent-ready prompt rendering | Planned | Medium | No | Review-response packet type | - |
+| Unversioned | Agent-ready prompt rendering | In progress | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
 
 ## Brief MVP Mapping For Planned Slices
 

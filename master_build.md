@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | None yet | No `v0.1.0` tag, GitHub Release, npm publish, registry smoke, or live version claim exists |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, and merged release workflow implementation | PR #48 merge commit `a8f5f0a`; merged-main `npm run check`, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check` passed; no `v0.1.0` tag exists and `package.json` remains `private: true` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, and agent-ready prompt rendering planning in progress | PR #48 merge commit `a8f5f0a`; merged-main `npm run check`, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check` passed; no `v0.1.0` tag exists and `package.json` remains `private: true`; branch `codex/agent-ready-prompt-rendering-plan` adds a planning slice for optional render prompt templates |
 
 ## Scope
 
@@ -53,6 +53,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - packet evidence enrichment design, implementation plan, and merged implementation
 - merged private redaction rules implementation
 - merged release workflow design and implementation
+- agent-ready prompt rendering design and implementation plan
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -64,7 +65,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - MCP server support
 - Package publishing beyond local tarball smoke
 - Hosted deployment setup
-- Agent-specific prompt dialects beyond the neutral packet renderer
+- External agent invocation and custom prompt template systems
 - External service provisioning
 - Importing assumptions from Hosted Portal, Studio, npm, Python, Cloudflare,
   Render, or any other project
@@ -102,6 +103,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement private redaction rules | Done | No |
 | P1 | Define release workflow and first npm publish gate | Done | No |
 | P1 | Implement release workflow and first npm publish gate | Done | No |
+| P1 | Plan agent-ready prompt rendering | In progress | No |
 
 ## Known Gaps
 
@@ -116,7 +118,8 @@ Current scope is the first local protocol and validation CLI baseline:
   bundles; global storage, list/read/delete/archive, retention, and hosted sync
   remain deferred.
 - The product brief's review loop, agent-ready prompts, and test evidence
-  items are not fully implemented yet; protocol extensibility, the
+  items are not fully implemented yet; agent-ready prompt rendering is now in
+  planning, and protocol extensibility, the
   `review-response` validation/rendering implementation, GitHub PR
   exact-packet transport, reviewer-side response packet production, and
   per-file diff-stat evidence enrichment are merged, so the request/response

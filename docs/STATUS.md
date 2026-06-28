@@ -37,6 +37,9 @@ Release workflow implementation is merged, so `main` now has the first npm
 publish gate, `0.1.0` package metadata, changelog/tag workflow, trusted
 publishing path, release preflight, and npm release runbook. No `v0.1.0` tag,
 GitHub Release, npm publish, registry package, or live claim exists yet.
+Agent-ready prompt rendering is now in planning for optional Claude/Codex
+wrappers around validated packet Markdown; no prompt runtime behavior is merged
+yet.
 
 ## Active Work
 
@@ -55,7 +58,7 @@ GitHub Release, npm publish, registry package, or live claim exists yet.
 | Package/release smoke planning | Done | PR #19 merged the npm package target, packlist, tarball install smoke, CI guardrail, and release-readiness closeout plan. |
 | Package/release smoke implementation | Done | PR #20 merged `private: true` package metadata, `files` allowlist, `prepack`, `npm run smoke:pack`, tarball-content assertions, installed CLI validate/render/generate smokes, and CI execution. |
 | Direct Markdown generation planning | Done | PR #22 merged the design and implementation plan for `generate review-request --format markdown` while keeping JSON as the default and reusing the existing renderer. |
-| Direct Markdown generation implementation | Done | PR #23 merged `--format json|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
+| Direct Markdown generation implementation | Done | PR #23 merged `--format json\|markdown`, direct Markdown stdout/file output, parser and CLI regressions, and installed-package smoke coverage. |
 | Local handoff workflow planning | Done | PR #25 merged the design and implementation plan for `handoff review-request` as a Markdown-first local workflow command that reuses the existing generator and renderer path. |
 | Local handoff workflow implementation | Done | PR #26 merged `handoff review-request`, local-only help text, CLI regressions, parity with direct Markdown generation, sanitized write-error behavior, and installed-package smoke coverage. |
 | Repo-local packet storage implementation | Done | PR #29 merged explicit `save review-request` repo-local bundle storage under `.open-relay/review-requests`. |
@@ -69,7 +72,8 @@ GitHub Release, npm publish, registry package, or live claim exists yet.
 | Private redaction rules implementation | Done | PR #45 merged repo-local ignored `.open-relay/redaction-rules.json`, explicit `--redaction-rules <path>`, strict case-insensitive literal JSON rules, fail-closed invalid-config behavior, allowlisted packet-field redaction, audit no-leak guards, and installed-package smoke coverage before npm publishing. |
 | Release workflow planning | Done | PR #47 defined the recommended `@acrossworks/open-relay@0.1.0` first release gate, changelog/tag workflow, npm trusted publishing path, release preflight, no-live-claim closeout rules, committed `private: true` safety, and release-job-only private-field removal. |
 | Release workflow implementation | Done | PR #48 merged `CHANGELOG.md`, `scripts/release-preflight.js`, `.github/workflows/release.yml`, `docs/release/npm-release.md`, package metadata for `0.1.0`, and governance closeout without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompts, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
+| Agent-ready prompt rendering planning | In progress | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` wrappers while preserving neutral Markdown output and avoiding agent invocation, GitHub posting, merge, publish, or schema changes. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompt runtime behavior, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -77,6 +81,7 @@ GitHub Release, npm publish, registry package, or live claim exists yet.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-28 | Agent-ready prompt rendering planning branch checks | Passed | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #48 merged-main closeout | Passed | PR #48 merged at commit `a8f5f0a`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; `git tag --list 'v0.1.0'` returned no tag and `package.json` remains `private: true`. |
 | 2026-06-28 | Release workflow implementation branch checks | Passed | Branch `codex/release-workflow-implementation` adds `CHANGELOG.md`, release preflight, `0.1.0` package metadata while retaining `private: true`, GitHub Release publish workflow, release runbook, and governance closeout. `npm run check` passed with 169 tests, `npm run smoke:pack` passed, normal `npm run release:preflight -- 0.1.0` passed, publish-context preflight passed in a temporary worktree after `npm pkg delete private`, `git diff --check` passed, and `git tag --list 'v0.1.0'` returned no tag. |
 | 2026-06-28 | PR #45 merged-main closeout | Passed | PR #45 merged at commit `2b50762`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, and `git diff --check`. |
@@ -139,18 +144,19 @@ GitHub Release, npm publish, registry package, or live claim exists yet.
 
 ## Next Step
 
-Configure npm trusted publishing for `@acrossworks/open-relay` and
-`.github/workflows/release.yml`, then create the owner-controlled non-prerelease
-`v0.1.0` GitHub Release only when ready. After publish, run registry-install
-smoke and record live evidence before marking any version `Live`.
+Review the agent-ready prompt rendering planning PR, then implement
+`render --template neutral|claude|codex` if the plan is approved. The first npm
+publish remains owner-controlled and should happen only after npm trusted
+publishing is configured and the owner is ready to create the non-prerelease
+`v0.1.0` GitHub Release.
 
 ## Owner Decisions Needed
 
 - Should global user packet storage be added in addition to repo-local
   `.open-relay/review-requests` storage?
 - How opinionated should Open Relay be about Codex and Claude specifically?
-  The current renderer plan keeps the first template agent-neutral and defers
-  agent-specific prompt dialects.
+  The current planning slice proposes named Claude/Codex prompt wrappers but no
+  external agent invocation or custom template system.
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
 - Can the Across Works npm org/account publish `@acrossworks/open-relay`?

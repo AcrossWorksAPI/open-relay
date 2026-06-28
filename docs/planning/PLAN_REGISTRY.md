@@ -58,6 +58,8 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/release/npm-release.md` | npm release runbook | Active |
 | `docs/superpowers/specs/2026-06-28-release-workflow-design.md` | Release workflow and first npm publish gate design | Active |
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Release workflow and first npm publish gate implementation plan | Active |
+| `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Agent-ready prompt rendering design | Active |
+| `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
@@ -103,7 +105,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plans. |
+| `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | In progress | Codex | Planning branch `codex/agent-ready-prompt-rendering-plan` defines optional `render --template neutral\|claude\|codex` prompt wrappers; implementation pending review. |
 
 ## Implemented Or Historical Plans
 
