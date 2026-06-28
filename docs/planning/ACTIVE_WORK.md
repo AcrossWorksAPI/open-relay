@@ -19,11 +19,12 @@ packet shapes now exist end-to-end. GitHub PR exact-packet transport is merged
 as the first boundary so packets can move between agents without manual
 copy/paste when both sides emit Open Relay packets. Reviewer-produced
 `review-response` packet workflow is merged, so the reviewer side can create
-and send response packets without manual copy/paste. Native GitHub review
-import, response storage, fix automation, merge automation, richer packet
-evidence, implementation-handoff, resume-project, and agent-ready prompts
-remain later slices. The approved first runtime direction is a TypeScript CLI
-on Node.js with npm.
+and send response packets without manual copy/paste. Packet evidence enrichment
+planning is in progress to add per-file churn evidence to request packets
+without embedding raw diffs. Native GitHub review import, response storage, fix
+automation, merge automation, implementation-handoff, resume-project, and
+agent-ready prompts remain later slices. The approved first runtime direction
+is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -90,6 +91,8 @@ on Node.js with npm.
 | `docs/superpowers/specs/2026-06-26-repo-local-packet-storage-design.md` | Active | Design for explicit repo-local review-request packet bundle storage. |
 | `docs/superpowers/specs/2026-06-27-relay-protocol-envelope-design.md` | Active | Design for multi-type and multi-version packet validation/rendering dispatch. |
 | `docs/superpowers/specs/2026-06-27-review-response-packet-design.md` | Active | Design for `review-response` 0.1, the first packet type consuming the envelope. |
+| `docs/superpowers/specs/2026-06-28-review-request-evidence-enrichment-design.md` | Active | Design for 0.1-compatible per-file diff stats in `changed_files[].evidence`. |
+| `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
@@ -116,18 +119,21 @@ on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
-| Packet evidence is thinner than brief | Medium | Diff summary and test capture are restored as planned packet evidence enrichment. |
+| Packet evidence is thinner than brief | Medium | Diff summary capture is planned through packet evidence enrichment; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Agent-specific prompt dialects deferred | Low | First renderer uses packet audience/focus fields and defers `--template claude` or `--template codex` variants. |
 | Private redaction rule files undefined | Medium | Generator uses fixed fail-closed redaction defaults and defers private rule files. |
 
 ## Next Recommended Work
 
-1. Dogfood the merged loop on the next real review by sending a
+1. Review PR #41's packet evidence enrichment planning package.
+2. Implement packet evidence enrichment from
+   `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md`.
+3. Dogfood the merged loop on the packet evidence enrichment PR by sending a
    `review-response` packet.
-2. Decide whether private redaction rule files are needed before package
+4. Decide whether private redaction rule files are needed before package
    publishing.
-3. Define npm publish owner, first semver version, changelog, and tag workflow.
+5. Define npm publish owner, first semver version, changelog, and tag workflow.
 
 ## Current Owner Decisions Needed
 
