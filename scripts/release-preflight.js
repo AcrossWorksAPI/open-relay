@@ -33,16 +33,23 @@ function run(version) {
   assert.ok(Array.isArray(packageJson.files), "package files allowlist is required");
 
   const releaseWorkflow = readFileSync(".github/workflows/release.yml", "utf8");
-  assert.match(
+  assertWorkflowScalar(
     releaseWorkflow,
-    /^\s*id-token:\s*write\s*$/m,
+    "id-token",
+    "write",
     "release workflow must request id-token: write for trusted publishing"
   );
   assert.doesNotMatch(releaseWorkflow, /NPM_TOKEN/, "release workflow must not reference NPM_TOKEN");
-  assert.match(releaseWorkflow, /node-version:\s*"24"/, "release workflow must use Node.js 24 for trusted publishing");
-  assert.match(
+  const nodeVersion = workflowScalar(releaseWorkflow, "node-version");
+  const nodeMajor = Number.parseInt(nodeVersion ?? "", 10);
+  assert.ok(
+    Number.isFinite(nodeMajor) && nodeMajor >= 24,
+    "release workflow must use Node.js 24 or newer for trusted publishing"
+  );
+  assertWorkflowScalar(
     releaseWorkflow,
-    /package-manager-cache:\s*false/,
+    "package-manager-cache",
+    "false",
     "release workflow must disable package-manager-cache for release builds"
   );
   assert.doesNotMatch(
@@ -52,14 +59,21 @@ function run(version) {
   );
   assert.match(
     releaseWorkflow,
-    /npm 11\.5\.1 or newer is required for trusted publishing|expected 11\.5\.1 or newer/,
-    "release workflow must guard the npm version required for trusted publishing"
+    /npm --version/,
+    "release workflow must print the npm version before publishing"
   );
   assert.match(
     releaseWorkflow,
-    /npm publish --access public --provenance/,
-    "release workflow must publish with npm provenance"
+    /11\.5\.1/,
+    "release workflow must guard the npm version required for trusted publishing"
   );
+  assert.match(releaseWorkflow, /npm publish/, "release workflow must publish with npm");
+  assert.match(
+    releaseWorkflow,
+    /--access(?:=|\s+)public/,
+    "release workflow must publish with public npm access"
+  );
+  assert.match(releaseWorkflow, /--provenance/, "release workflow must publish with npm provenance");
 
   const packageLock = readJson("package-lock.json");
   assert.equal(packageLock.version, version, "package-lock root version must match release tag");
@@ -116,4 +130,14 @@ function readJson(path) {
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function workflowScalar(source, key) {
+  const escapedKey = escapeRegExp(key);
+  const match = source.match(new RegExp(`^\\s*${escapedKey}:\\s*["']?([^"'#\\s]+)["']?\\s*(?:#.*)?$`, "m"));
+  return match?.[1];
+}
+
+function assertWorkflowScalar(source, key, expected, message) {
+  assert.equal(workflowScalar(source, key), expected, message);
 }

@@ -168,7 +168,7 @@ The script should fail closed if:
 - `publishConfig.access` is not `public`;
 - the release workflow stops requesting `id-token: write`;
 - the release workflow references `NPM_TOKEN`;
-- the release workflow stops using Node.js 24;
+- the release workflow stops using Node.js 24 or newer;
 - the release workflow enables package-manager caching;
 - the release workflow stops checking for npm CLI `11.5.1` or newer;
 - the release workflow stops publishing with provenance;
@@ -182,6 +182,9 @@ The script should not call the npm registry, create tags, create releases, or
 publish. It is a local release gate only. Its default mode verifies that the
 committed branch remains unpublishable; `OPEN_RELAY_PUBLISH_CONTEXT=1` verifies
 the transient release-workflow checkout after `npm pkg delete private`.
+CI should run the default-mode preflight on pull requests and pushes to `main`
+so release-workflow weakening is caught before the eventual publish event, not
+only during the release job.
 
 ## Changelog Contract
 

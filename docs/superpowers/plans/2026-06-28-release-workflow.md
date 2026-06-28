@@ -337,6 +337,9 @@ Verify the workflow:
 - disables package-manager caching for the release job;
 - uses `OPEN_RELAY_PUBLISH_CONTEXT=1` only after deleting `private`;
 - does not reference `NPM_TOKEN` or any npm token secret.
+- is covered by the normal CI workflow's default-mode `release:preflight` step
+  so OIDC, no-token, provenance, no-cache, and runtime drift are caught on PRs
+  before a GitHub Release is created.
 
 - [ ] **Step 3: Check workflow syntax locally**
 

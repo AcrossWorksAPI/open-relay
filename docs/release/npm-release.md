@@ -28,7 +28,9 @@
 
 ## Pre-Publish Checklist
 
-Run locally before creating the release:
+The CI workflow runs `release:preflight` on pull requests and pushes to `main`
+so release-workflow weakening is caught before a GitHub Release is created.
+Run the same gate locally before creating the release:
 
 ```bash
 npm ci
