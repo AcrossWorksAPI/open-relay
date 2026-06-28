@@ -143,7 +143,7 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the release workflow implementation PR.
+1. Review PR #48 for release workflow implementation.
 2. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
 3. Decide whether native GitHub review import belongs before the first package

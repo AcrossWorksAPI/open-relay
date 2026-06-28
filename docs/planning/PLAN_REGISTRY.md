@@ -103,7 +103,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | Implementation branch `codex/release-workflow-implementation` adds the changelog, release preflight, GitHub Release publish workflow, npm release runbook, and governance closeout without publishing. |
+| `docs/superpowers/plans/2026-06-28-release-workflow.md` | In progress | Codex | PR #48 adds the changelog, release preflight, GitHub Release publish workflow, npm release runbook, and governance closeout without publishing. |
 
 ## Implemented Or Historical Plans
 
