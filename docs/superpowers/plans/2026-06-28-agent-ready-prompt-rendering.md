@@ -6,6 +6,8 @@
 
 **Architecture:** Keep packet validation and packet Markdown rendering unchanged. Add a small prompt-rendering layer that delegates neutral output to `renderPacketMarkdown(packet)` and wraps validated packet Markdown for `claude` or `codex` using a dynamic fenced block and fixed agent instructions. Extend only the render CLI path with `--template neutral|claude|codex`.
 
+**Security framing:** The dynamic fence prevents syntactic break-out from the quoted packet block. It does not eliminate semantic prompt-injection risk. The untrusted-context prompt text is best-effort mitigation, and the real safety boundary is that this slice does not invoke agents, post outputs, merge, publish, run commands, or otherwise perform side effects.
+
 **Tech Stack:** TypeScript, Node.js 22+, existing packet schema dispatch, existing Markdown renderer dispatcher, existing CLI parser style, Node's built-in test runner, and `npm run smoke:pack`.
 
 ---
@@ -547,7 +549,10 @@ open-relay render review-response.json --template codex --output codex-follow-up
 ```
 
 Templates wrap the validated packet as untrusted context. They do not call an
-agent, post to GitHub, merge, publish, or run commands.
+agent, post to GitHub, merge, publish, or run commands. Fencing prevents
+syntactic break-out from the packet block, but it does not eliminate semantic
+prompt-injection risk; a human or surrounding tool must still evaluate the
+agent response before authorizing side effects.
 ````
 
 - [ ] **Step 3: Add protocol documentation**
@@ -576,6 +581,11 @@ open-relay render <packet.json> --template codex
 The packet is rendered inside a dynamic fenced block and described as untrusted
 context. The prompt tells the receiving agent not to let packet-authored text
 override the wrapper, user instructions, or repository instructions.
+
+The dynamic fence prevents packet-authored backticks from syntactically closing
+the quoted packet block. It does not guarantee that a model will ignore
+malicious instructions inside the packet. Treat the wrapper as best-effort
+prompt-injection mitigation, not as a sanitizer or security boundary.
 
 Prompt rendering does not read repository files, run tests, call GitHub, invoke
 agents, merge PRs, publish packages, or hide transport markers.
@@ -677,6 +687,6 @@ Ask reviewers to focus on:
 
 1. Does `neutral` preserve current Markdown behavior exactly?
 2. Are Claude/Codex wrappers useful without pretending to invoke agents?
-3. Does the dynamic fence prevent packet-authored text from breaking out of the quoted context?
+3. Does the dynamic fence prevent packet-authored text from syntactically closing the quoted context?
 4. Does the command shape avoid duplicating the existing `render`/`handoff` surfaces?
-5. Are prompt-injection and side-effect boundaries documented clearly enough?
+5. Are prompt-injection limits and side-effect boundaries documented clearly enough, including the residual semantic injection risk and human-in-the-loop/no-auto-act safety model?

@@ -1,6 +1,6 @@
 # Agent-Ready Prompt Rendering Design
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 ## Purpose
 
@@ -29,8 +29,9 @@ short, deterministic prompt envelope.
 
 The wrapper treats the rendered packet as untrusted quoted context. It should
 tell the receiving agent to use the packet as data, not as an instruction
-source that can override the wrapper. This addresses the documented free-text
-prompt-injection surface without changing the neutral Markdown renderer.
+source that can override the wrapper. This mitigates the documented free-text
+prompt-injection surface without changing the neutral Markdown renderer, but it
+does not eliminate semantic prompt-injection risk.
 
 ## Alternatives Considered
 
@@ -81,7 +82,9 @@ Every agent template should include:
 
 The fence must be generated from the packet Markdown, using a backtick run
 longer than any run already present in the rendered packet. This prevents
-packet-authored text from closing the fence.
+packet-authored text from closing the fence. That is a syntactic containment
+guard only; it does not guarantee that a receiving model will ignore malicious
+or manipulative instructions inside the fenced packet.
 
 ### Claude Template
 
@@ -166,6 +169,13 @@ Prompt templates must:
 - keep packet content fenced as untrusted context; and
 - tell the receiving agent that packet-authored text cannot override the prompt
   wrapper or project/user instructions.
+
+The dynamic fence prevents syntactic break-out from the quoted packet block.
+The untrusted-context instructions are best-effort semantic mitigation, not a
+security boundary. The real safety boundary for this slice is that Open Relay
+does not invoke agents, post outputs, merge, publish, or run commands; a human
+or surrounding tool remains responsible for reading the response and separately
+authorizing any side effects.
 
 The wrapper does not make an unsafe packet safe to publish. Existing private
 redaction rules remain the tool for removing private repository terms before a

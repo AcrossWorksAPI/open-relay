@@ -1,6 +1,6 @@
 # Open Relay Status
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 ## Current Baseline
 
@@ -84,6 +84,7 @@ version without implying an npm publish or live release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-29 | Agent-ready prompt rendering review fix | Passed | PR #51 follow-up reframed prompt-injection language: dynamic fences prevent syntactic packet-block break-out, while untrusted-context prompt text is best-effort semantic mitigation, not a security boundary; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-28 | Roadmap PR-indexed pre-release tracking branch checks | Passed | PR #51 updates `docs/planning/ROADMAP.md` version cells to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for planned slices without a PR; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, `git diff --check` passed, and a scan found no remaining `Baseline` or `Unversioned` roadmap version rows. |
 | 2026-06-28 | Agent-ready prompt rendering planning branch checks | Passed | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #48 merged-main closeout | Passed | PR #48 merged at commit `a8f5f0a`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; `git tag --list 'v0.1.0'` returned no tag and `package.json` remains `private: true`. |
