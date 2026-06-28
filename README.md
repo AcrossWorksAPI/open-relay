@@ -63,6 +63,25 @@ The validate command checks a `review-request` JSON packet against
 `schemas/review-request.schema.json`; packet dispatch also validates
 `review-response/0.1`.
 
+## Install
+
+Open Relay is prepared for npm publishing as `@acrossworks/open-relay`.
+Until the first npm release is published and smoke-tested from the registry,
+use the repository checkout:
+
+```bash
+npm ci
+npm run build
+node dist/src/cli.js --help
+```
+
+After the first public release:
+
+```bash
+npm install -g @acrossworks/open-relay
+open-relay --help
+```
+
 ## Generate Review Packets
 
 Generate a `review-request` packet from local git state:
