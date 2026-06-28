@@ -1,0 +1,60 @@
+name: Open Relay Release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-npm:
+    name: Publish npm package
+    if: startsWith(github.ref_name, 'v') && !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Extract release version
+        id: release-version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must look like vX.Y.Z; got $tag" >&2
+            exit 1
+          fi
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - name: Install runtime dependencies
+        run: npm ci
+
+      - name: Run runtime checks
+        run: npm run check
+
+      - name: Run package smoke
+        run: npm run smoke:pack
+
+      - name: Prepare publish metadata
+        run: npm pkg delete private
+
+      - name: Run release preflight
+        env:
+          OPEN_RELAY_PUBLISH_CONTEXT: "1"
+        run: npm run release:preflight -- "${{ steps.release-version.outputs.version }}"
+
+      - name: Publish to npm
+        run: npm publish --access public --provenance
