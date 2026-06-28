@@ -14,7 +14,7 @@
 
 - Create `CHANGELOG.md`: manual first-release changelog with `0.1.0`.
 - Create `scripts/release-preflight.js`: dependency-free local gate for version, changelog, package metadata, lockfile, and packlist drift.
-- Modify `package.json`: set `version` to `0.1.0`, remove `private: true`, add `release:preflight`, and add useful keywords.
+- Modify `package.json`: set `version` to `0.1.0`, keep `private: true`, add `release:preflight`, and add useful keywords.
 - Modify `package-lock.json`: sync the root package version to `0.1.0`.
 - Create `.github/workflows/release.yml`: publish from GitHub Release `published` events only, with `id-token: write` and `npm publish --provenance`.
 - Modify `README.md`: document install and release status without claiming the package is live before publish.
@@ -59,7 +59,12 @@ function run(version) {
   const packageJson = readJson("package.json");
   assert.equal(packageJson.name, "@acrossworks/open-relay", "package name changed unexpectedly");
   assert.equal(packageJson.version, version, "package version must match release tag");
-  assert.notEqual(packageJson.private, true, "package must not be private for release");
+  const publishContext = process.env.OPEN_RELAY_PUBLISH_CONTEXT === "1";
+  if (publishContext) {
+    assert.notEqual(packageJson.private, true, "package must not be private inside release publish context");
+  } else {
+    assert.equal(packageJson.private, true, "committed package metadata must remain private outside release publish context");
+  }
   assert.equal(packageJson.publishConfig?.access, "public", "publishConfig.access must be public");
   assert.equal(packageJson.bin?.["open-relay"], "./dist/src/cli.js", "CLI bin entry must stay stable");
   assert.ok(Array.isArray(packageJson.files), "package files allowlist is required");
@@ -130,7 +135,7 @@ Run:
 node scripts/release-preflight.js 0.1.0
 ```
 
-Expected: fails with `Release preflight failed:` because `package.json` is still `0.0.0` and/or `private: true`.
+Expected: fails with `Release preflight failed:` because `package.json` is still `0.0.0`.
 
 - [ ] **Step 3: Add the npm script**
 
@@ -180,6 +185,7 @@ Modify `package.json`:
 {
   "name": "@acrossworks/open-relay",
   "version": "0.1.0",
+  "private": true,
   "description": "Local-first AI handoff and review protocol CLI",
   "keywords": [
     "ai",
@@ -195,7 +201,7 @@ Modify `package.json`:
 }
 ```
 
-Remove the `private: true` field in this same edit. Preserve every existing runtime entrypoint, dependency, files allowlist, license, repository, bugs, homepage, `bin`, `main`, `types`, and `engines` field.
+Keep the `private: true` field in this same edit so `main` remains locally unpublishable. Preserve every existing runtime entrypoint, dependency, files allowlist, license, repository, bugs, homepage, `bin`, `main`, `types`, and `engines` field.
 
 - [ ] **Step 3: Sync package lock root version**
 
@@ -249,7 +255,7 @@ permissions:
 jobs:
   publish-npm:
     name: Publish npm package
-    if: startsWith(github.ref_name, 'v')
+    if: startsWith(github.ref_name, 'v') && !github.event.release.prerelease
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -285,14 +291,32 @@ jobs:
       - name: Run package smoke
         run: npm run smoke:pack
 
+      - name: Prepare publish metadata
+        run: npm pkg delete private
+
       - name: Run release preflight
+        env:
+          OPEN_RELAY_PUBLISH_CONTEXT: "1"
         run: npm run release:preflight -- "${{ steps.release-version.outputs.version }}"
 
       - name: Publish to npm
         run: npm publish --access public --provenance
 ```
 
-- [ ] **Step 2: Check workflow syntax locally**
+- [ ] **Step 2: Confirm the release boundary is explicit**
+
+Verify the workflow:
+
+- triggers only on GitHub Release `published` events;
+- skips GitHub pre-releases with `!github.event.release.prerelease`;
+- accepts only strict `vX.Y.Z` tags;
+- keeps `private: true` committed on `main`;
+- deletes `private` only in the release job checkout before preflight and
+  publish;
+- uses `OPEN_RELAY_PUBLISH_CONTEXT=1` only after deleting `private`;
+- does not reference `NPM_TOKEN` or any npm token secret.
+
+- [ ] **Step 3: Check workflow syntax locally**
 
 Run:
 
@@ -302,7 +326,7 @@ git diff --check
 
 Expected: no whitespace errors. The repository does not currently have a local GitHub Actions linter, so CI will be the workflow syntax gate.
 
-- [ ] **Step 3: Commit release workflow**
+- [ ] **Step 4: Commit release workflow**
 
 ```bash
 git add .github/workflows/release.yml
@@ -363,6 +387,8 @@ Create `docs/release/npm-release.md`:
 3. Confirm branch protection still requires `Governance Checks`.
 4. Confirm the release PR changed `package.json`, `package-lock.json`,
    `CHANGELOG.md`, and release docs intentionally.
+5. Confirm `package.json` on `main` still has `private: true`; the release
+   workflow deletes that field only in the checked-out release job.
 
 ## Pre-Publish Checklist
 
@@ -383,10 +409,13 @@ Expected: all commands pass.
 1. Merge the release implementation PR.
 2. Confirm local `main` matches `origin/main`.
 3. Create tag `v0.1.0` from `main`.
-4. Create and publish a GitHub Release for `v0.1.0`.
+4. Create and publish a non-prerelease GitHub Release for `v0.1.0`.
 5. Wait for `Open Relay Release / Publish npm package`.
 6. If the workflow fails, do not retry blindly. Read the log, fix in a PR, and
    publish a corrected release only after checks pass.
+
+Pre-release tags such as `v0.1.0-rc.1` are intentionally unsupported by the
+first release workflow.
 
 ## Post-Publish Smoke
 
@@ -413,6 +442,14 @@ Do not rewrite git history after a public publish. For a bad release:
 2. Publish a patch release with the fix.
 3. Record the bad version, corrective version, and smoke evidence in the
    version ledger.
+
+## Emergency Fallback
+
+Trusted publishing is the supported release path. If trusted publishing is
+unavailable, do not add an npm token to GitHub Actions. A fallback requires a
+separate owner-approved plan for a one-time manual publish using a granular,
+short-lived npm token that is never committed, logged, or stored as a GitHub
+secret.
 ````
 
 - [ ] **Step 3: Commit public docs**
@@ -497,6 +534,7 @@ Expected:
 - `npm run check` passes with the current test count;
 - package smoke passes;
 - release preflight passes for `0.1.0`;
+- committed `package.json` still has `private: true`;
 - whitespace check passes.
 
 - [ ] **Step 2: Confirm no accidental publish happened**
@@ -527,16 +565,21 @@ PR body must include:
 - version target `0.1.0`;
 - verification commands and results;
 - review focus on release trigger safety, preflight coverage, and package
-  metadata.
+  metadata, including the committed `private: true` invariant.
 
 ## Implementation Notes
 
 - If npm ownership for `@acrossworks/open-relay` is not available, stop before
-  removing `private: true` and revise the package name.
+  merging the release workflow and revise the package name.
 - If `npm publish --provenance` requirements change, update the workflow from
   official npm docs before implementation.
-- Do not add an npm token secret unless trusted publishing is unavailable and
-  the owner explicitly approves a token-based fallback in a separate plan.
+- Do not add an npm token secret. If trusted publishing is unavailable, the
+  only allowed fallback is a separate owner-approved plan for a one-time manual
+  publish using a granular, short-lived token that is never stored in CI.
+- Keep `private: true` committed on `main`; only the release workflow checkout
+  may delete it immediately before preflight and publish.
+- Pre-releases are intentionally unsupported until a later release policy
+  explicitly adds them.
 - Do not mark `Current live version` as `0.1.0` until the package is published
   and post-publish smoke passes from the public registry.
 

@@ -68,11 +68,14 @@ The implementation PR should:
 
 - add `CHANGELOG.md` with a `0.1.0` entry;
 - update package metadata for the first public release candidate;
-- remove `private: true` only in the publish-ready implementation PR;
+- keep `private: true` committed on `main` so local/manual `npm publish`
+  remains blocked by default;
 - add a release preflight script;
 - add `npm run release:preflight`;
 - add `.github/workflows/release.yml`;
 - run the full checks and package smoke in the release workflow before publish;
+- transiently remove `private` in the release workflow checkout immediately
+  before release preflight and publish;
 - run `npm publish --access public --provenance` only from the release
   workflow;
 - keep live evidence unset until a real npm publish and registry-install smoke
@@ -104,7 +107,7 @@ After publish, closeout must:
 | npm owner/org | Use an Across Works-controlled npm org/account | Unknown; needs owner decision |
 | trusted publisher | Configure npm trusted publisher for this repo and release workflow | Required before publish |
 | release trigger | GitHub Release published from tag `v0.1.0` | Recommended |
-| token fallback | Do not use a long-lived npm token for first release | Recommended |
+| token fallback | Do not use a CI token; if trusted publishing is unavailable, require a separate owner-approved manual one-time granular short-lived token plan | Recommended |
 | native GitHub review import before publish | Defer until after first public package unless owner prefers otherwise | Recommended |
 | agent-specific prompt dialects before publish | Defer until after first public package unless owner prefers otherwise | Recommended |
 
@@ -135,12 +138,17 @@ The job should:
 3. Run `npm ci`.
 4. Run `npm run check`.
 5. Run `npm run smoke:pack`.
-6. Run `npm run release:preflight -- <tag-version>`.
-7. Publish with `npm publish --access public --provenance`.
+6. Run `npm pkg delete private` in the release checkout.
+7. Run `OPEN_RELAY_PUBLISH_CONTEXT=1 npm run release:preflight -- <tag-version>`.
+8. Publish with `npm publish --access public --provenance`.
 
 The workflow must not publish on pull request, push to `main`, or arbitrary
 manual dispatch. A release is a deliberate outward action, so the outward event
 should be a deliberate GitHub Release.
+
+Pre-releases are intentionally unsupported for the first release workflow. The
+job should skip GitHub pre-releases, and the strict `vX.Y.Z` tag parser remains
+a second fail-closed guard against `v0.1.0-rc.1` style tags.
 
 ## Release Preflight
 
@@ -152,7 +160,8 @@ The script should fail closed if:
 - the expected version is not strict semver `X.Y.Z`;
 - `package.json.version` does not match the expected version;
 - the package name is not `@acrossworks/open-relay`;
-- `private` is still `true`;
+- outside publish context, `private` is not `true`;
+- inside publish context, `private` is still `true`;
 - `publishConfig.access` is not `public`;
 - `CHANGELOG.md` does not contain a heading for the expected version;
 - `package-lock.json` does not carry the same package version;
@@ -161,7 +170,9 @@ The script should fail closed if:
   `.github`, `.codex`, planning docs, or local config files.
 
 The script should not call the npm registry, create tags, create releases, or
-publish. It is a local release gate only.
+publish. It is a local release gate only. Its default mode verifies that the
+committed branch remains unpublishable; `OPEN_RELAY_PUBLISH_CONTEXT=1` verifies
+the transient release-workflow checkout after `npm pkg delete private`.
 
 ## Changelog Contract
 
@@ -182,10 +193,11 @@ too costly.
 ## Package Metadata Contract
 
 The implementation PR should update `package.json` from private local package
-metadata to publish-ready package metadata:
+metadata to release-candidate package metadata while keeping `main`
+unpublishable:
 
 - `version`: `0.1.0`;
-- remove `private: true`;
+- keep `private: true`;
 - keep `publishConfig.access: "public"`;
 - keep `name: "@acrossworks/open-relay"`;
 - keep `bin.open-relay`;
@@ -195,13 +207,20 @@ metadata to publish-ready package metadata:
 - set author to an Across Works value if the owner confirms it.
 
 If the npm org/account cannot publish `@acrossworks/open-relay`, stop and
-revise the package name before removing `private: true`.
+revise the package name before merging the release workflow.
 
 ## Security Model
 
 - Prefer trusted publishing over stored write tokens.
 - Keep `id-token: write` scoped only to the release workflow job.
 - Do not add `NPM_TOKEN` secrets in this slice.
+- Keep `private: true` committed on `main`; only the release workflow's
+  checked-out working tree may delete it immediately before preflight and
+  publish.
+- If trusted publishing is unavailable, do not store a token in CI. The only
+  allowed fallback is a separate owner-approved plan for a one-time manual
+  publish using a granular, short-lived npm token that is never committed or
+  stored as a GitHub secret.
 - Do not publish on push or pull request events.
 - Fail closed if version, tag, changelog, or package metadata disagree.
 - Keep package contents allowlisted.
@@ -249,6 +268,7 @@ Ask reviewers to check:
 2. Is GitHub Release plus npm trusted publishing the right first outward
    release boundary?
 3. Does the preflight catch version/tag/changelog/package drift before publish?
-4. Does the workflow avoid token storage and accidental publish triggers?
+4. Does the workflow avoid token storage and accidental publish triggers while
+   keeping `main` locally unpublishable?
 5. Are live evidence and rollback rules strong enough for an open-source first
    release?
