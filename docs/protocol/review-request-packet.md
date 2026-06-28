@@ -170,7 +170,8 @@ Generators may apply private redaction rules before output. A redaction rule
 file must not be embedded in the packet; only the resulting `redactions[]`
 records should appear. Matching is case-insensitive and literal-only. Redaction
 records should name generic fields such as `changed_files[].path` and must not
-reveal the matched private value.
+reveal the matched private value. Rule names, reasons, and replacements must
+not contain configured match values because they can appear in audit metadata.
 
 ### `sensitive_data`
 

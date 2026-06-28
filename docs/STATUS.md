@@ -71,7 +71,7 @@ environment reads, raw-diff scanning, or remote rule loading.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
-| 2026-06-28 | Private redaction rules implementation branch checks | Passed | Branch `codex/private-redaction-rules` adds parser, builder, CLI, handoff/save, docs, and package-smoke support for case-insensitive literal private redaction rules; `npm run check` passed with 167 tests and `npm run smoke:pack` passed before PR. |
+| 2026-06-28 | Private redaction rules implementation branch checks | Passed | Branch `codex/private-redaction-rules` adds parser, builder, CLI, handoff/save, docs, and package-smoke support for case-insensitive literal private redaction rules; PR review fix now rejects rule names containing private match text and asserts `redactions[]` audit records do not re-leak matches. `npm run check` passed with 169 tests and `npm run smoke:pack` passed after the review fix. |
 | 2026-06-28 | Private redaction rules planning branch checks | Passed | Planning branch `codex/private-redaction-rules-plan` adds design and implementation plan; `npm run check` passed with 150 tests, `npm run smoke:pack` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #42 merged-main closeout | Passed | PR #42 merged at commit `26c2a10`; fresh `main` verification passed `npm run check` with 150 tests, `npm run smoke:pack`, and `git diff --check`. |
 | 2026-06-28 | Packet evidence enrichment implementation branch checks | Passed | PR #42: `https://github.com/AcrossWorksAPI/open-relay/pull/42`; branch `codex/review-request-evidence-enrichment`; `npm run check` passed with 150 tests after preserving `--numstat -z` paths containing literal tabs, `npm run smoke:pack` passed, and manual `main..HEAD` packet smoke generated/validated/rendered `/private/tmp/open-relay-evidence-review-request.json` with 18 changed files, diff-stat evidence present, `verification: []`, and no raw diff hunk markers. |
@@ -130,8 +130,8 @@ environment reads, raw-diff scanning, or remote rule loading.
 
 ## Next Step
 
-Open the private redaction rules implementation PR and request packet-native
-review-response review.
+Request Claude re-review for PR #45 after the private redaction rule-name leak
+fix.
 
 ## Owner Decisions Needed
 

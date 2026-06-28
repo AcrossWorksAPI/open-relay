@@ -85,11 +85,12 @@ Validation:
 - rule keys are exactly `name`, `match`, `replacement`, and `reason`;
 - each rule field is a non-empty string;
 - trimmed `match` length is at least three;
+- `name` does not contain `match`, case-insensitively;
 - `replacement` does not contain `match`, case-insensitively;
 - `reason` does not contain `match`, case-insensitively;
 - rule names are unique;
 - match strings are unique case-insensitively;
-- no replacement or reason contains any configured match string
+- no name, replacement, or reason contains any configured match string
   case-insensitively.
 
 Rules perform case-insensitive literal substring replacement across an
@@ -289,6 +290,7 @@ export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRule
   for (const rule of rules) {
     if (
       rules.some((candidate) =>
+        containsIgnoreCase(rule.name, candidate.match) ||
         containsIgnoreCase(rule.replacement, candidate.match) ||
         containsIgnoreCase(rule.reason, candidate.match)
       )

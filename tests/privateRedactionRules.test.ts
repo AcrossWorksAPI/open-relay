@@ -88,6 +88,18 @@ test("rejects case-insensitive duplicate matches and cross-rule leaks", () => {
   }).ok, false);
 });
 
+test("rejects rule names that contain a private match", () => {
+  assert.equal(parsePrivateRedactionRules({
+    version: 1,
+    rules: [{
+      name: "scrub PrivateCustomerName customer",
+      match: "PrivateCustomerName",
+      replacement: "[private-customer]",
+      reason: "Private customer name."
+    }]
+  }).ok, false);
+});
+
 test("applies private rules only to allowlisted packet fields", () => {
   const packet = reviewRequestFixture({
     goal: "Review privatecustomername and PRIVATECUSTOMERNAME changes.",
@@ -110,6 +122,20 @@ test("applies private rules only to allowlisted packet fields", () => {
   assert.equal(redacted.redactions.some((item) => item.field === "changed_files[].path"), true);
   assert.equal(JSON.stringify(redacted).includes("PrivateCustomerName"), false);
   assert.equal(JSON.stringify(redacted).includes("privatecustomername"), false);
+});
+
+test("does not include private matches in redaction audit entries", () => {
+  const redacted = applyPrivateRedactionRules(reviewRequestFixture({
+    goal: "Review PrivateCustomerName changes."
+  }), [{
+    name: "customer",
+    match: "PrivateCustomerName",
+    replacement: "[private-customer]",
+    reason: "Private customer name."
+  }]);
+
+  assert.equal(redacted.redactions.some((item) => item.field === "goal"), true);
+  assert.doesNotMatch(JSON.stringify(redacted.redactions), /PrivateCustomerName/i);
 });
 
 test("treats regex syntax and replacement dollars as literals", () => {

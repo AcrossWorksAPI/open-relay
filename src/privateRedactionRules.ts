@@ -103,6 +103,7 @@ export function parsePrivateRedactionRules(value: unknown): PrivateRedactionRule
   for (const rule of rules) {
     if (
       rules.some((candidate) =>
+        containsIgnoreCase(rule.name, candidate.match) ||
         containsIgnoreCase(rule.replacement, candidate.match) ||
         containsIgnoreCase(rule.reason, candidate.match)
       )

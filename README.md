@@ -99,7 +99,8 @@ When no explicit path is supplied, Open Relay looks for
 rules are ignored; invalid present or explicit rules fail closed before packet
 output. Rule files are case-insensitive literal-only JSON and should stay
 private. Formatting variants still need their own rules, and redacting file
-paths can make those paths less useful for direct review navigation.
+paths can make those paths less useful for direct review navigation. Rule
+names, reasons, and replacements must not contain the private match text.
 
 ## Close A Review Loop
 
