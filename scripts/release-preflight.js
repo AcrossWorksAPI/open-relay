@@ -32,6 +32,49 @@ function run(version) {
   assert.equal(packageJson.bin?.["open-relay"], "./dist/src/cli.js", "CLI bin entry must stay stable");
   assert.ok(Array.isArray(packageJson.files), "package files allowlist is required");
 
+  const releaseWorkflow = readFileSync(".github/workflows/release.yml", "utf8");
+  assertWorkflowScalar(
+    releaseWorkflow,
+    "id-token",
+    "write",
+    "release workflow must request id-token: write for trusted publishing"
+  );
+  assert.doesNotMatch(releaseWorkflow, /NPM_TOKEN/, "release workflow must not reference NPM_TOKEN");
+  const nodeVersion = workflowScalar(releaseWorkflow, "node-version");
+  const nodeMajor = Number.parseInt(nodeVersion ?? "", 10);
+  assert.ok(
+    Number.isFinite(nodeMajor) && nodeMajor >= 24,
+    "release workflow must use Node.js 24 or newer for trusted publishing"
+  );
+  assertWorkflowScalar(
+    releaseWorkflow,
+    "package-manager-cache",
+    "false",
+    "release workflow must disable package-manager-cache for release builds"
+  );
+  assert.doesNotMatch(
+    releaseWorkflow,
+    /^\s*cache:\s*npm\s*$/m,
+    "release workflow must not use npm dependency caching for release builds"
+  );
+  assert.match(
+    releaseWorkflow,
+    /npm --version/,
+    "release workflow must print the npm version before publishing"
+  );
+  assert.match(
+    releaseWorkflow,
+    /11\.5\.1/,
+    "release workflow must guard the npm version required for trusted publishing"
+  );
+  assert.match(releaseWorkflow, /npm publish/, "release workflow must publish with npm");
+  assert.match(
+    releaseWorkflow,
+    /--access(?:=|\s+)public/,
+    "release workflow must publish with public npm access"
+  );
+  assert.match(releaseWorkflow, /--provenance/, "release workflow must publish with npm provenance");
+
   const packageLock = readJson("package-lock.json");
   assert.equal(packageLock.version, version, "package-lock root version must match release tag");
   assert.equal(packageLock.packages?.[""]?.version, version, "package-lock package version must match release tag");
@@ -87,4 +130,14 @@ function readJson(path) {
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function workflowScalar(source, key) {
+  const escapedKey = escapeRegExp(key);
+  const match = source.match(new RegExp(`^\\s*${escapedKey}:\\s*["']?([^"'#\\s]+)["']?\\s*(?:#.*)?$`, "m"));
+  return match?.[1];
+}
+
+function assertWorkflowScalar(source, key, expected, message) {
+  assert.equal(workflowScalar(source, key), expected, message);
 }

@@ -67,6 +67,12 @@ jobs:
       - name: Install runtime dependencies
         run: npm ci
 
+      - name: Run release preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run release:preflight -- "$(node -p "require('./package.json').version")"
+
       - name: Run runtime checks
         run: npm run check
 

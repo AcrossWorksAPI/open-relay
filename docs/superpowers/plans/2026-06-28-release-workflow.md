@@ -278,9 +278,28 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
-          cache: npm
+          package-manager-cache: false
+
+      - name: Verify trusted publishing runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
+          node - <<'NODE'
+          const { execFileSync } = require("node:child_process");
+          const version = execFileSync("npm", ["--version"], { encoding: "utf8" }).trim();
+          const [major, minor, patch] = version.split(".").map(Number);
+          if (
+            major < 11 ||
+            (major === 11 && minor < 5) ||
+            (major === 11 && minor === 5 && patch < 1)
+          ) {
+            throw new Error(`npm ${version} is too old for trusted publishing; expected 11.5.1 or newer`);
+          }
+          NODE
 
       - name: Install runtime dependencies
         run: npm ci
@@ -313,8 +332,14 @@ Verify the workflow:
 - keeps `private: true` committed on `main`;
 - deletes `private` only in the release job checkout before preflight and
   publish;
+- uses Node.js 24 and guards npm CLI `11.5.1` or newer for trusted
+  publishing;
+- disables package-manager caching for the release job;
 - uses `OPEN_RELAY_PUBLISH_CONTEXT=1` only after deleting `private`;
 - does not reference `NPM_TOKEN` or any npm token secret.
+- is covered by the normal CI workflow's default-mode `release:preflight` step
+  so OIDC, no-token, provenance, no-cache, and runtime drift are caught on PRs
+  before a GitHub Release is created.
 
 - [ ] **Step 3: Check workflow syntax locally**
 

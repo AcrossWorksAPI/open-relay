@@ -11,17 +11,26 @@
 ## Required Owner Setup
 
 1. Confirm the npm org/account can publish `@acrossworks/open-relay`.
-2. Configure npm trusted publishing for this GitHub repository and
-   `.github/workflows/release.yml`.
+2. Configure npm trusted publishing for this GitHub repository:
+   - package: `@acrossworks/open-relay`
+   - repository owner: `AcrossWorksAPI`
+   - repository name: `open-relay`
+   - workflow filename: `release.yml`
+   - environment: leave blank unless a GitHub environment is intentionally
+     added later.
 3. Confirm branch protection still requires `Governance Checks`.
 4. Confirm the release PR changed `package.json`, `package-lock.json`,
    `CHANGELOG.md`, and release docs intentionally.
 5. Confirm `package.json` on `main` still has `private: true`; the release
    workflow deletes that field only in the checked-out release job.
+6. Confirm the release workflow uses Node.js 24, disables package-manager
+   caching, and does not reference `NPM_TOKEN`.
 
 ## Pre-Publish Checklist
 
-Run locally before creating the release:
+The CI workflow runs `release:preflight` on pull requests and pushes to `main`
+so release-workflow weakening is caught before a GitHub Release is created.
+Run the same gate locally before creating the release:
 
 ```bash
 npm ci
