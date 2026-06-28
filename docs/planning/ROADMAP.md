@@ -17,28 +17,28 @@ Markdown/JSON relay packet schema, not a SaaS app.
 
 | Version | Slice | Status | Priority | Client gate | Depends on | Plan |
 | --- | --- | --- | --- | --- | --- | --- |
-| Baseline | Project foundation governance baseline | Done | High | No | - | - |
-| Baseline | Open Relay brief and remote alignment | Done | High | No | Project foundation governance baseline | - |
-| Baseline | Open-source hardening and first CI | Done | High | No | Open Relay brief and remote alignment | - |
-| Unversioned | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
-| Unversioned | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
-| Unversioned | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
-| Unversioned | Review-request packet CLI MVP | Done | High | No | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
-| Unversioned | Codex and Claude render templates (neutral renderer only) | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-26-render-review-request.md |
-| Unversioned | Package and release target | Done | Medium | No | Codex and Claude render templates (neutral renderer only) | docs/superpowers/plans/2026-06-26-package-release-smoke.md |
-| Unversioned | Direct Markdown generation | Done | Medium | No | Package and release target | docs/superpowers/plans/2026-06-26-direct-markdown-generation.md |
-| Unversioned | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
-| Unversioned | Repo-local packet storage | Done | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
-| Unversioned | Relay protocol envelope and multi-type validation | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
-| Unversioned | Boundary/transport decision | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-github-pr-transport.md |
-| Unversioned | Packet evidence enrichment | Done | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md |
-| Unversioned | Private redaction rules | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
-| Unversioned | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
-| Unversioned | Reviewer-produced review-response workflow | Done | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
-| Unversioned | Release workflow and first npm publish gate | Done | High | No | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
-| Unversioned | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
-| Unversioned | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
-| Unversioned | Agent-ready prompt rendering | In progress | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
+| v0.1.0-pre.1 | Project foundation governance baseline | Done | High | No | - | - |
+| v0.1.0-pre.1 | Open Relay brief and remote alignment | Done | High | No | Project foundation governance baseline | - |
+| v0.1.0-pre.2 | Open-source hardening and first CI | Done | High | No | Open Relay brief and remote alignment | - |
+| v0.1.0-pre.5 | Smallest useful relay packet definition | Done | High | No | Open Relay brief and remote alignment | - |
+| v0.1.0-pre.9 | Runtime and verification selection | Done | High | No | Smallest useful relay packet definition | docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md |
+| v0.1.0-pre.11 | Runtime schema validation CLI | Done | High | No | Runtime and verification selection | docs/superpowers/plans/2026-06-26-runtime-schema-cli.md |
+| v0.1.0-pre.14 | Review-request packet CLI MVP | Done | High | No | Runtime schema validation CLI | docs/superpowers/plans/2026-06-26-git-state-generator.md |
+| v0.1.0-pre.17 | Codex and Claude render templates (neutral renderer only) | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-26-render-review-request.md |
+| v0.1.0-pre.20 | Package and release target | Done | Medium | No | Codex and Claude render templates (neutral renderer only) | docs/superpowers/plans/2026-06-26-package-release-smoke.md |
+| v0.1.0-pre.23 | Direct Markdown generation | Done | Medium | No | Package and release target | docs/superpowers/plans/2026-06-26-direct-markdown-generation.md |
+| v0.1.0-pre.26 | Local handoff workflow | Done | Medium | No | Direct Markdown generation | docs/superpowers/plans/2026-06-26-handoff-review-request.md |
+| v0.1.0-pre.29 | Repo-local packet storage | Done | Medium | No | Local handoff workflow | docs/superpowers/plans/2026-06-26-repo-local-packet-storage.md |
+| v0.1.0-pre.31 | Relay protocol envelope and multi-type validation | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-relay-protocol-envelope.md |
+| v0.1.0-pre.34 | Review-response packet type | Done | High | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md |
+| v0.1.0-pre.36 | Boundary/transport decision | Done | High | No | Repo-local packet storage | docs/superpowers/plans/2026-06-27-github-pr-transport.md |
+| v0.1.0-pre.39 | Reviewer-produced review-response workflow | Done | High | No | Review-response packet type; Boundary/transport decision | docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md |
+| v0.1.0-pre.42 | Packet evidence enrichment | Done | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md |
+| v0.1.0-pre.45 | Private redaction rules | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
+| v0.1.0-pre.48 | Release workflow and first npm publish gate | Done | High | No | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
+| v0.1.0-pre.51 | Agent-ready prompt rendering | In progress | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
+| v0.1.0-pre.next | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
+| v0.1.0-pre.next | Resume-project packet type | Planned | Medium | No | Review-response packet type | - |
 
 ## Brief MVP Mapping For Planned Slices
 
@@ -73,6 +73,13 @@ Markdown/JSON relay packet schema, not a SaaS app.
   or `-`.
 - Every new Versioned Slice must name the brief MVP feature it advances; a
   slice that advances none is out of scope until the brief changes.
+- Before the first public npm publish, roadmap version cells use
+  `v0.1.0-pre.<PR_NUMBER>` for slices with a PR and `v0.1.0-pre.next` only for
+  planned slices without a PR. These are roadmap tracking labels, not npm tags,
+  GitHub Releases, or live package versions.
+- Every future PR that changes scope, status, or behavior must update the
+  roadmap version cell to its PR-numbered pre-release label and record evidence
+  in `docs/planning/VERSION_LEDGER.md`.
 - No new packet type may be implemented before the relay protocol envelope
   slice is merged.
 - Do not add another command that only re-emits an existing packet. Current

@@ -32,8 +32,11 @@ response storage, fix
 automation, merge automation, implementation-handoff, resume-project, and
 agent-ready prompt runtime behavior remain later slices. Agent-ready prompt
 rendering is now in planning as optional Claude/Codex wrappers around the
-existing validated packet Markdown renderer. The approved first runtime
-direction is a TypeScript CLI on Node.js with npm.
+existing validated packet Markdown renderer. Roadmap version labels now use
+PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
+npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
+have a PR. The approved first runtime direction is a TypeScript CLI on Node.js
+with npm.
 
 ## Current Implementation Source
 
@@ -140,6 +143,7 @@ direction is a TypeScript CLI on Node.js with npm.
 | Trusted publishing not configured | Medium | Release workflow implementation uses npm trusted publishing through GitHub Actions OIDC instead of long-lived npm tokens; npm owner/org setup remains required before publishing. |
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
+| Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Native review import, automation, implementation-handoff, and resume-project remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |

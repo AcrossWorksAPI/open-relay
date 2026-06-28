@@ -39,7 +39,9 @@ publishing path, release preflight, and npm release runbook. No `v0.1.0` tag,
 GitHub Release, npm publish, registry package, or live claim exists yet.
 Agent-ready prompt rendering is now in planning for optional Claude/Codex
 wrappers around validated packet Markdown; no prompt runtime behavior is merged
-yet.
+yet. Roadmap version tracking is now moving to PR-indexed pre-release labels
+(`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap views can track changes by
+version without implying an npm publish or live release.
 
 ## Active Work
 
@@ -73,6 +75,7 @@ yet.
 | Release workflow planning | Done | PR #47 defined the recommended `@acrossworks/open-relay@0.1.0` first release gate, changelog/tag workflow, npm trusted publishing path, release preflight, no-live-claim closeout rules, committed `private: true` safety, and release-job-only private-field removal. |
 | Release workflow implementation | Done | PR #48 merged `CHANGELOG.md`, `scripts/release-preflight.js`, `.github/workflows/release.yml`, `docs/release/npm-release.md`, package metadata for `0.1.0`, and governance closeout without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
 | Agent-ready prompt rendering planning | In progress | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` wrappers while preserving neutral Markdown output and avoiding agent invocation, GitHub posting, merge, publish, or schema changes. |
+| Roadmap PR-indexed pre-release tracking | In progress | PR #51 updates the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, and private redaction rules are in place; native GitHub review import, implementation-handoff, resume-project, agent-ready prompt runtime behavior, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -81,6 +84,7 @@ yet.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-28 | Roadmap PR-indexed pre-release tracking branch checks | Passed | PR #51 updates `docs/planning/ROADMAP.md` version cells to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for planned slices without a PR; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, `git diff --check` passed, and a scan found no remaining `Baseline` or `Unversioned` roadmap version rows. |
 | 2026-06-28 | Agent-ready prompt rendering planning branch checks | Passed | Branch `codex/agent-ready-prompt-rendering-plan` adds design and implementation plan for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-28 | PR #48 merged-main closeout | Passed | PR #48 merged at commit `a8f5f0a`; fresh `main` verification passed `npm run check` with 169 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; `git tag --list 'v0.1.0'` returned no tag and `package.json` remains `private: true`. |
 | 2026-06-28 | Release workflow implementation branch checks | Passed | Branch `codex/release-workflow-implementation` adds `CHANGELOG.md`, release preflight, `0.1.0` package metadata while retaining `private: true`, GitHub Release publish workflow, release runbook, and governance closeout. `npm run check` passed with 169 tests, `npm run smoke:pack` passed, normal `npm run release:preflight -- 0.1.0` passed, publish-context preflight passed in a temporary worktree after `npm pkg delete private`, `git diff --check` passed, and `git tag --list 'v0.1.0'` returned no tag. |
