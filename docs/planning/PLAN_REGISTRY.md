@@ -123,7 +123,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | In progress | Codex / Claude / Owner | Tracks the Relay Session ID `R7M4Q9K2` live proof checklist for PR packet transport, owner approval gates, clean proof directories, no packet-body chat handoff, and posted/fetched canonical equality. |
+| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | In progress | Codex / Claude / Owner | Tracks the Relay Session ID `R7M4Q9K2` live proof checklist for PR packet transport, owner approval gates, clean proof directories, no packet-body chat handoff, clean PR packet-marker preflight, rerun cleanup approval, `respond github-pr` dry-run stable-content equivalence after normalizing command-owned `created_at`, schema-valid `resume-project` derivation, and posted/fetched canonical equality. |
 | `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | In progress | Codex | Plans `implementation-handoff/0.1` as an explicit draft-to-packet local producer without schema changes in this planning slice, agent invocation, GitHub posting, merge automation, publish, or external orchestration. |
 
 ## Implemented Or Historical Plans

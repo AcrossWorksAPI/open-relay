@@ -20,7 +20,11 @@ as the first packet boundary, and reviewer-produced `review-response` workflow
 is merged, so the command capability exists for packets to move through PR
 comments. A live Codex/Claude no-copy/paste round trip remains unproven until
 the packet-native review-loop proof plan passes its PR-comment transport and
-canonical-equality gates. Packet evidence enrichment is merged, so generated
+canonical-equality gates, including zero existing PR packet markers before the
+first live post, rerun cleanup approval, `respond github-pr` dry-run
+stable-content equivalence after normalizing command-owned `created_at`, and
+schema-valid `resume-project` derivation. Packet evidence
+enrichment is merged, so generated
 request packets include per-file churn evidence without
 embedding raw diffs. Private redaction rules are merged before npm publishing,
 so repository-specific private terms can be scrubbed from generated packet
@@ -137,7 +141,7 @@ a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
 | `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md` | Active | Design for an explicit-draft `implementation-handoff/0.1` packet before work begins. |
-| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | Active | Live proof checklist for Codex/Claude PR packet transport with owner approval gates, clean proof directories, no shared filesystem fallback, no `--update` on first proof, and canonical posted/fetched equality checks. |
+| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | Active | Live proof checklist for Codex/Claude PR packet transport with owner approval gates, clean proof directories, no shared filesystem fallback, no `--update` on first proof, zero existing PR packet marker preflight, rerun cleanup approval, `respond github-pr` dry-run stable-content equivalence after normalizing command-owned `created_at`, schema-valid `resume-project` derivation, and canonical posted/fetched equality checks. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
@@ -170,7 +174,7 @@ a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Codex/Claude packet-native round trip unproven | High | The first Open Relay trial used chat/attachment handoff instead of PR packet transport. `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` is now the active acceptance checklist before the no-copy/paste review-loop claim can be treated as proven. |
+| Codex/Claude packet-native round trip unproven | High | The first Open Relay trial used chat/attachment handoff instead of PR packet transport. `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` is now the active acceptance checklist before the no-copy/paste review-loop claim can be treated as proven; the checklist now blocks on clean PR packet-marker preflight, owner-approved rerun cleanup, canonical equality, `respond github-pr` dry-run stable-content equivalence after normalizing command-owned `created_at`, and schema-valid `resume-project` derivation. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Implementation-handoff is now planned as an explicit local draft-to-packet producer; native review import, automation, runtime implementation-handoff behavior, and fix/merge automation remain unbuilt until their implementation PRs merge. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
@@ -201,7 +205,8 @@ a TypeScript CLI on Node.js with npm.
   review import remains a separate future decision.
 - For Relay Session ID `R7M4Q9K2`, owner approval is required before Codex or
   Claude posts live packet comments to PR #58 as part of the packet-native
-  proof plan.
+  proof plan; separate explicit owner approval is required before deleting any
+  stale packet comments for a rerun.
 - Custom prompt templates versus built-in templates only. Current behavior
   includes neutral/Claude/Codex wrappers, with no agent invocation, custom
   template files, or new packet schemas.

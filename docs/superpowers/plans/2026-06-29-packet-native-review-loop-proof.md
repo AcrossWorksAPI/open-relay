@@ -37,7 +37,10 @@ Out of scope:
 - No native GitHub review import
 - No independent GitHub identity proof
 - No external agent invocation by Open Relay
-- No file edits by Claude
+- No repository source edits by Claude; Claude may write local proof artifacts
+  inside its private `/private/tmp` proof directory
+- No PR packet comment cleanup, update, or deletion without separate explicit
+  owner approval
 - No merge, tag, publish, release, auto-merge, or destructive commands
 
 ## Honest Claim Boundary
@@ -47,11 +50,21 @@ If this trial passes, Open Relay may claim:
 > A `review-request` and `review-response` can round-trip through GitHub PR
 > exact-packet comments between two desktop-agent threads using the same local
 > GitHub login, with fetched packets validating and matching the posted packet
-> contents.
+> contents, and Codex can derive a schema-valid `resume-project/0.1` packet
+> from the fetched response.
 
 It must not claim:
 
 > Two independently authenticated agents exchanged packets.
+
+It also must not claim that the one-shot `respond github-pr` command was used
+for the live response post. This proof uses `generate review-response` plus
+exact-packet `transport github-pr send` for the live response so the posted
+packet has a local JSON artifact for canonical equality. The integrated
+`respond github-pr` path is checked only by a dry-run stable-content comparison
+in this trial. Full canonical equality between `generate review-response` and
+`respond github-pr --dry-run` is not expected because each command creates its
+own protocol-owned `created_at` timestamp.
 
 Independent identity, session manifests, and orchestration remain future work.
 
@@ -63,6 +76,11 @@ Independent identity, session manifests, and orchestration remain future work.
   file.
 - The first proof run must not use `--update`; distinct PR comments are required
   evidence.
+- Before the first live post, PR #58 must have zero existing Open Relay packet
+  marker comments. `fetch` is newest-wins, so stale comments would silently
+  weaken the proof.
+- `origin/main` must be refreshed before generating the request packet so the
+  diff evidence is based on the current remote baseline.
 - Every fetched packet must validate with `open-relay validate`.
 - Posted and fetched packets must match by canonical JSON equality on both
   legs.
@@ -79,17 +97,19 @@ Update this table as the trial progresses. Do not mark a checkpoint `Approved`,
 | ORT-1 | Owner authorizes Codex to post one `review-request` packet comment to PR #58 | Pending | Required before Codex runs non-dry-run `transport github-pr send`. |
 | ORT-2 | Owner authorizes Claude to post one `review-response` packet comment to PR #58 | Pending | Required before Claude runs non-dry-run `transport github-pr send`. |
 | ORT-3 | Codex creates a clean private proof directory | Pending | Directory path recorded; no existing files before generation. |
-| ORT-4 | Codex generates and validates the `review-request` packet | Pending | `open-relay validate` output plus local packet path recorded. |
-| ORT-5 | Codex posts the `review-request` packet to PR #58 without `--update` | Pending | PR comment URL or comment id recorded. |
-| ORT-6 | Codex fetches the `review-request` packet from PR #58 and proves equality | Pending | Fetch output, validation output, and canonical JSON match recorded. |
-| ORT-7 | Claude creates a clean private proof directory | Pending | Directory path recorded; no existing files before fetch. |
-| ORT-8 | Claude fetches and validates Codex's `review-request` from PR #58 | Pending | Fetch output and validation output recorded from Claude directory. |
-| ORT-9 | Claude reviews the fetched request and writes local `review-draft.json` | Pending | Draft path recorded; packet body not pasted in chat. |
-| ORT-10 | Claude generates, validates, and posts a `review-response` packet to PR #58 without `--update` | Pending | Local packet path plus PR comment URL or comment id recorded. |
-| ORT-11 | Claude fetches the `review-response` packet from PR #58 and proves equality | Pending | Fetch output, validation output, and canonical JSON match recorded. |
-| ORT-12 | Codex fetches Claude's `review-response` from PR #58 | Pending | Fetch output and validation output recorded from Codex directory. |
-| ORT-13 | Codex derives and validates `resume-project` from the fetched response | Pending | `generate resume-project` and validation output recorded. |
-| ORT-14 | Owner records pass/fail result and limitation | Pending | Status and version ledger updated after the trial. |
+| ORT-4 | Codex refreshes `origin/main`, generates, and validates the `review-request` packet | Pending | `git fetch origin`, `open-relay validate` output, and local packet path recorded. |
+| ORT-5 | Codex confirms PR #58 has zero existing Open Relay packet marker comments | Pending | Marker count command output is `0`; current observed value before this plan update was `0`. |
+| ORT-6 | Codex posts the `review-request` packet to PR #58 without `--update` | Pending | PR comment URL or comment id recorded. |
+| ORT-7 | Codex fetches the `review-request` packet from PR #58 and proves equality | Pending | Fetch output, validation output, and canonical JSON match recorded. |
+| ORT-8 | Claude creates a clean private proof directory | Pending | Directory path recorded; no existing files before fetch. |
+| ORT-9 | Claude fetches and validates Codex's `review-request` from PR #58 | Pending | Fetch output and validation output recorded from Claude directory. |
+| ORT-10 | Claude reviews the fetched request and writes local `review-draft.json` | Pending | Draft path recorded; packet body not pasted in chat. |
+| ORT-11 | Claude generates and validates `review-response`, then proves `respond github-pr --dry-run` stable-content equality after normalizing `created_at` | Pending | Local response packet, validation output, dry-run output path, and normalized canonical JSON match recorded. |
+| ORT-12 | Claude posts the pre-generated `review-response` packet to PR #58 without `--update` | Pending | Local packet path plus PR comment URL or comment id recorded. |
+| ORT-13 | Claude fetches the `review-response` packet from PR #58 and proves equality | Pending | Fetch output, validation output, and canonical JSON match recorded. |
+| ORT-14 | Codex fetches Claude's `review-response` from PR #58 | Pending | Fetch output and validation output recorded from Codex directory. |
+| ORT-15 | Codex derives and validates `resume-project` from the fetched response | Pending | `generate resume-project` and validation output recorded. |
+| ORT-16 | Owner records pass/fail result, packet comment evidence, and limitation | Pending | Status and version ledger updated after the trial. |
 
 ## Proof Directories
 
@@ -113,9 +133,11 @@ variant:
 Owner authorizes Codex and Claude, for Relay Session ID R7M4Q9K2, to post Open
 Relay packet comments only on PR #58 using `transport github-pr send`.
 Codex may post one `review-request` packet comment. Claude may post one
-pre-generated `review-response` packet comment. No merge, publish, tag, file
-edits by Claude, native GitHub review submission, or other write actions are
-authorized.
+pre-generated `review-response` packet comment. No merge, publish, tag,
+repository source edits by Claude, native GitHub review submission, packet
+comment cleanup, or other write actions are authorized. Claude may write only
+local proof artifacts inside
+`/private/tmp/open-relay-r7m4q9k2-claude-proof-001`.
 ```
 
 ## Commands
@@ -127,6 +149,8 @@ published and registry-smoked.
 
 ```bash
 mkdir /private/tmp/open-relay-r7m4q9k2-codex-proof-001
+
+git fetch origin
 
 node dist/src/cli.js generate review-request \
   --base origin/main \
@@ -140,7 +164,24 @@ node dist/src/cli.js validate \
   /private/tmp/open-relay-r7m4q9k2-codex-proof-001/review-request.json
 ```
 
-### ORT-5: Codex Posts Request Packet
+### ORT-5: Codex Confirms PR Comment Preflight
+
+```bash
+gh api repos/AcrossWorksAPI/open-relay/issues/58/comments \
+  --jq '[.[] | select((.body // "") | contains("<!-- open-relay-packet"))] | length'
+```
+
+The output must be `0`. If the output is not `0`, stop and list the existing
+packet comments:
+
+```bash
+gh api repos/AcrossWorksAPI/open-relay/issues/58/comments \
+  --jq '[.[] | select((.body // "") | contains("<!-- open-relay-packet")) | {id, html_url, user: .user.login, created_at}]'
+```
+
+Do not continue by relying on newest-wins fetch behavior.
+
+### ORT-6: Codex Posts Request Packet
 
 Requires ORT-1 approval.
 
@@ -153,7 +194,7 @@ node dist/src/cli.js transport github-pr send \
 
 Do not add `--update` on the first proof run.
 
-### ORT-6: Codex Fetches Request Packet
+### ORT-7: Codex Fetches Request Packet
 
 ```bash
 AUTHOR="$(gh api user --jq .login)"
@@ -196,7 +237,7 @@ console.log("canonical JSON match");
   /private/tmp/open-relay-r7m4q9k2-codex-proof-001/review-request-fetched.json
 ```
 
-### ORT-7 And ORT-8: Claude Fetches Request Packet
+### ORT-8 And ORT-9: Claude Fetches Request Packet
 
 Claude must use only:
 
@@ -222,7 +263,7 @@ node dist/src/cli.js validate \
 Claude must not use packet bodies pasted in chat or files from Codex's proof
 directory.
 
-### ORT-9: Claude Writes Review Draft
+### ORT-10: Claude Writes Review Draft
 
 Claude reviews the fetched request packet, the PR #58 diff, and any linked
 source material, then writes:
@@ -234,9 +275,7 @@ source material, then writes:
 The draft is reviewer-authored JSON only. It must not include Open Relay-owned
 fields such as `packet_type`, `packet_version`, `created_at`, or `response_to`.
 
-### ORT-10: Claude Generates And Posts Response Packet
-
-Requires ORT-2 approval.
+### ORT-11: Claude Generates Response And Proves Dry-Run Stable-Content Match
 
 ```bash
 node dist/src/cli.js generate review-response \
@@ -246,20 +285,67 @@ node dist/src/cli.js generate review-response \
 
 node dist/src/cli.js validate \
   /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-response.json
+```
 
+Prove that the ergonomic one-shot command would produce the same packet content,
+apart from its command-owned `created_at`, without making a live post:
+
+```bash
+node dist/src/cli.js respond github-pr \
+  --request /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-request-fetched.json \
+  --review /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-draft.json \
+  --pr https://github.com/AcrossWorksAPI/open-relay/pull/58 \
+  --dry-run \
+  > /private/tmp/open-relay-r7m4q9k2-claude-proof-001/respond-dry-run.txt
+
+node -e '
+const fs = require("node:fs");
+const sort = (value) => {
+  if (Array.isArray(value)) return value.map(sort);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, child]) => [key, sort(child)])
+    );
+  }
+  return value;
+};
+const body = fs.readFileSync(process.argv[1], "utf8");
+const marker = /<!-- open-relay-packet\r?\npacket_type: ([^\r\n]+)\r?\npacket_version: ([^\r\n]+)\r?\npayload_base64: ([A-Za-z0-9+/=]+)\r?\n-->/.exec(body);
+if (!marker) {
+  console.error("missing Open Relay packet marker");
+  process.exit(1);
+}
+const normalize = (packet) => sort({ ...packet, created_at: "<command-owned>" });
+const left = normalize(JSON.parse(fs.readFileSync(process.argv[2], "utf8")));
+const right = normalize(JSON.parse(Buffer.from(marker[3], "base64").toString("utf8")));
+if (JSON.stringify(left) !== JSON.stringify(right)) {
+  console.error("canonical JSON mismatch");
+  process.exit(1);
+}
+console.log("canonical JSON match after normalizing created_at");
+' \
+  /private/tmp/open-relay-r7m4q9k2-claude-proof-001/respond-dry-run.txt \
+  /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-response.json
+```
+
+### ORT-12: Claude Posts Response Packet
+
+Requires ORT-2 approval.
+
+```bash
 node dist/src/cli.js transport github-pr send \
   /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-response.json \
   --pr https://github.com/AcrossWorksAPI/open-relay/pull/58 \
   --confirm-public
 ```
 
-Do not add `--update` on the first proof run. This proof uses
+Do not add `--update` on the first proof run. The live post uses
 `generate review-response` plus exact-packet `transport github-pr send` so the
-posted response has a local JSON file for canonical equality. `respond github-pr`
-remains covered by local tests, but it is not the live proof path
-because it posts an in-memory packet without writing the posted JSON to disk.
+posted response has a local JSON file for canonical equality.
 
-### ORT-11: Claude Fetches Response Packet
+### ORT-13: Claude Fetches Response Packet
 
 ```bash
 AUTHOR="$(gh api user --jq .login)"
@@ -281,7 +367,7 @@ Run the same canonical JSON equality script from ORT-6 with these paths:
 /private/tmp/open-relay-r7m4q9k2-claude-proof-001/review-response-fetched.json
 ```
 
-### ORT-12 And ORT-13: Codex Fetches Response And Resumes
+### ORT-14 And ORT-15: Codex Fetches Response And Resumes
 
 ```bash
 AUTHOR="$(gh api user --jq .login)"
@@ -307,28 +393,55 @@ node dist/src/cli.js validate \
 
 The trial passes only if all criteria are true:
 
-- PR #58 contains two distinct marked Open Relay packet comments: one
-  `review-request/0.1` and one `review-response/0.1`.
+- ORT-5 confirmed PR #58 had zero existing Open Relay packet marker comments
+  immediately before the first live post.
+- PR #58 contains exactly two distinct marked Open Relay packet comments
+  created by this trial run: one `review-request/0.1` and one
+  `review-response/0.1`.
 - Claude's request packet came from `transport github-pr fetch` into a clean
   Claude-only directory.
 - Codex's response packet came from `transport github-pr fetch` into a
   Codex-only directory.
 - Both fetched packets validate.
 - Posted and fetched canonical JSON matches on both legs.
+- Claude's `respond github-pr --dry-run` payload canonical-equals the generated
+  `review-response.json` after normalizing the command-owned `created_at`,
+  without making an extra live post.
+- Codex derived a schema-valid `resume-project/0.1` packet from the fetched
+  `review-response`.
 - No packet body crossed chat.
 - The result records that this is a one-GitHub-login desktop-agent transport
   proof, not independent identity proof.
+
+## Rerun Hygiene
+
+Directory suffixes solve only local proof-file collisions. They do not clean PR
+comment state. If ORT-5 finds existing Open Relay packet comments, or if a run
+posts a packet comment and then fails, stop and record the comment ids and
+URLs.
+
+Before any rerun on PR #58, the owner must explicitly choose one of:
+
+- fail the trial and keep the comments as failed-run evidence;
+- use a different PR as the next proof target;
+- authorize deletion of the specific stale packet comment ids.
+
+This plan does not authorize deletion. A cleanup command may be run only after
+the owner approves the exact comment ids to delete.
 
 ## Failure Handling
 
 Stop the trial and record a failed checkpoint if:
 
+- ORT-5 returns any existing Open Relay packet marker comments.
 - A fetch returns no matching packet.
 - A fetched packet fails validation.
 - Canonical JSON equality fails.
+- `respond github-pr --dry-run` does not match the generated response packet
+  after normalizing the command-owned `created_at`.
 - A packet body is pasted through chat.
 - Claude or Codex reads the other agent's proof directory.
-- A PR comment is updated or deleted during the first proof run.
+- A PR comment is updated or deleted without explicit owner cleanup approval.
 - Any unapproved write action is attempted.
 
 The next product slice should be chosen from the failure evidence:

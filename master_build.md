@@ -139,7 +139,11 @@ Current scope is the first local protocol and validation CLI baseline:
   enrichment are merged. The command capability exists for the
   request/response/resume loop to move as packets with changed-file churn
   evidence, but the live no-copy/paste Codex/Claude round trip is unproven
-  until the packet-native review-loop proof plan passes. Implementation-handoff
+  until the packet-native review-loop proof plan passes its clean PR
+  packet-marker preflight, owner-approved rerun cleanup gate, canonical
+  equality checks, `respond github-pr` dry-run stable-content equivalence after
+  normalizing command-owned `created_at`, and schema-valid `resume-project`
+  derivation. Implementation-handoff
   planning is now in progress; implementation-handoff runtime behavior,
   external agent invocation, and automatic test capture remain deferred.
 - Package publishing and deployment evidence are not present yet; local package
