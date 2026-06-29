@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | None yet | No `v0.1.0` tag, GitHub Release, npm publish, registry smoke, or live version claim exists |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, and resume-project packet implementation in progress | PR #53 merged the `resume-project/0.1` design and implementation plan; PR #54 / branch `codex/resume-project-implementation` adds schema, producer, renderer, CLI, docs, examples, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; no `v0.1.0` tag exists and `package.json` remains `private: true` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, and merged resume-project packet implementation | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; merged-main verification passed `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; no `v0.1.0` tag exists and `package.json` remains `private: true` |
 
 ## Scope
 
@@ -55,6 +55,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - merged release workflow design and implementation
 - PR-indexed pre-release roadmap version tracking
 - agent-ready prompt rendering design, implementation plan, and implementation
+- resume-project packet design, implementation plan, and implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -111,7 +112,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Add PR-indexed roadmap version tracking | Done | No |
 | P1 | Implement agent-ready prompt rendering | Done | No |
 | P1 | Plan resume-project packet type | Done | No |
-| P1 | Implement resume-project packet type | In progress | No |
+| P1 | Implement resume-project packet type | Done | No |
 
 ## Known Gaps
 
@@ -129,11 +130,12 @@ Current scope is the first local protocol and validation CLI baseline:
   implemented yet; agent-ready prompt rendering is implemented as optional
   `render --template claude|codex` wrappers, and protocol extensibility, the
   `review-response` validation/rendering implementation, GitHub PR
-  exact-packet transport, reviewer-side response packet production, and
-  per-file diff-stat evidence enrichment are merged, so the request/response
-  loop can move as packets with changed-file churn evidence and without manual
-  copy/paste when both sides emit Open Relay packet drafts. External agent
-  invocation and automatic test capture remain deferred.
+  exact-packet transport, reviewer-side response packet production,
+  resume-project continuation packets, and per-file diff-stat evidence
+  enrichment are merged, so the request/response/resume loop can move as
+  packets with changed-file churn evidence and without manual copy/paste when
+  both sides emit Open Relay packet drafts. Implementation-handoff, external
+  agent invocation, and automatic test capture remain deferred.
 - Package publishing and deployment evidence are not present yet; local package
   smoke and the GitHub Release-triggered npm publish workflow exist on `main`,
   with committed `private: true` retained. Registry publishing remains gated on
