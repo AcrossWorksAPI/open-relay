@@ -12,7 +12,7 @@ Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. The first package
 version target is `0.1.0`; live release timing remains owner-controlled. The
 neutral `review-request` JSON-to-Markdown renderer is merged for Codex, Claude,
-or another reviewer, and this branch adds optional Claude/Codex prompt wrappers
+or another reviewer, and optional Claude/Codex prompt wrappers are merged
 without changing neutral packet Markdown. npm
 package metadata, an allowlisted package packlist, and local tarball install
 smoke are merged as the release-readiness gate before publishing. Direct
@@ -99,7 +99,7 @@ release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
-| 2026-06-29 | Implementation-handoff packet planning branch checks | Passed | PR #58 / branch `codex/implementation-handoff-packet-plan` adds design and implementation plan docs for an explicit draft-file `implementation-handoff/0.1` producer plus roadmap, plan registry, status, version ledger, and lifecycle updates; `npm run check` passed with 201 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
+| 2026-06-29 | Implementation-handoff packet planning branch checks | Passed | PR #58 / branch `codex/implementation-handoff-packet-plan` adds design and implementation plan docs for an explicit draft-file `implementation-handoff/0.1` producer plus roadmap, plan registry, status, version ledger, and lifecycle updates; review-fix follow-up aligned schema-owned collection minimums with semantic checks, added a trim-based source-ref producer guard to the implementation plan, removed stale branch wording, removed the in-progress ledger commit pin, and reran `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`. |
 | 2026-06-29 | Relay session identifier candidate branch check | Passed | PR #56 merged at commit `e495a14`; the branch flags Relay Session IDs as a future workflow candidate for linked Codex/Claude thread titles and defers manifest or packet-field implementation until project/session orchestration; `git diff --check` passed and `Governance Checks` passed. |
 | 2026-06-29 | PR #54 merged-main closeout | Passed | PR #54 merged at commit `9b0204e`; Claude review dogfooded request-to-response-to-resume and reported no findings; fresh `main` verification passed `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`. |
 | 2026-06-29 | Resume-project packet implementation branch checks | Passed | PR #54 / branch `codex/resume-project-implementation` adds `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage; targeted RED/GREEN tests passed, `npm run check` passed with 201 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |

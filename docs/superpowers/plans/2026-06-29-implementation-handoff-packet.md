@@ -93,7 +93,7 @@ test("rejects implementation-handoff packets with no tasks", () => {
   const result = validatePacket(packet);
 
   assert.equal(result.valid, false);
-  assert.match(result.errors.join("\n"), /implementation-handoff requires at least one task/);
+  assert.match(result.errors.join("\n"), /\/tasks must NOT have fewer than 1 items/);
 });
 
 test("rejects implementation-handoff packets with duplicate task ids", () => {
@@ -139,6 +139,39 @@ test("rejects implementation-handoff packets with disabled safety gates", () => 
 
   assert.equal(result.valid, false);
   assert.match(result.errors.join("\n"), /implementation-handoff safety gates must all be true/);
+});
+
+test("rejects implementation-handoff packets with missing required planning lists", () => {
+  const cases = [
+    {
+      patch: { source_materials: [] },
+      message: /\/source_materials must NOT have fewer than 1 items/
+    },
+    {
+      patch: { work_scope: { ...readJson("examples/implementation-handoff/relay.json").work_scope, included: [] } },
+      message: /\/work_scope\/included must NOT have fewer than 1 items/
+    },
+    {
+      patch: { acceptance_criteria: [] },
+      message: /\/acceptance_criteria must NOT have fewer than 1 items/
+    },
+    {
+      patch: { verification_plan: [] },
+      message: /\/verification_plan must NOT have fewer than 1 items/
+    }
+  ];
+
+  for (const testCase of cases) {
+    const packet = {
+      ...readJson("examples/implementation-handoff/relay.json"),
+      ...testCase.patch
+    };
+
+    const result = validatePacket(packet);
+
+    assert.equal(result.valid, false);
+    assert.match(result.errors.join("\n"), testCase.message);
+  }
 });
 ```
 
@@ -295,6 +328,9 @@ Create `schemas/implementation-handoff.schema.json` with the required fields and
 
 Each object definition must reject unknown fields. Use enum values from
 `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md`.
+Use `minLength: 1` for required string fields and string-array items, including
+`tasks[].source_refs[]`; the producer adds a trim-based blank source-ref guard
+for whitespace-only values.
 
 - [ ] **Step 5: Add the generated example JSON**
 
@@ -406,10 +442,6 @@ function validateImplementationHandoffSemantics(packet: unknown): string[] {
   const handoff = packet as ImplementationHandoffPacket;
   const errors: string[] = [];
 
-  if (handoff.tasks.length === 0) {
-    errors.push("implementation-handoff requires at least one task.");
-  }
-
   const taskIds = new Set<string>();
   for (const task of handoff.tasks) {
     if (taskIds.has(task.id)) {
@@ -428,9 +460,11 @@ function validateImplementationHandoffSemantics(packet: unknown): string[] {
 }
 ```
 
-Also rely on schema `minItems` for source materials, included scope,
-acceptance criteria, and verification plan so users get path-specific schema
-errors for those empty arrays.
+Keep schema `minItems` responsible for source materials, included scope, tasks,
+acceptance criteria, and verification plan because Open Relay only runs semantic
+checks after the schema validates. The semantic check should cover invariants
+that schema cannot express cleanly in the existing registry path: duplicate task
+ids and all-true safety gates.
 
 - [ ] **Step 7: Run targeted schema tests**
 
@@ -595,6 +629,21 @@ test("rejects protocol-owned implementation-handoff draft fields", () => {
     /Implementation-handoff drafts cannot set protocol field: packet_type/
   );
 });
+
+test("rejects blank implementation-handoff task source refs", () => {
+  const draft = readDraft();
+  draft.tasks = [
+    {
+      ...draft.tasks[0],
+      source_refs: ["   "]
+    }
+  ];
+
+  assert.throws(
+    () => buildImplementationHandoffPacket(draft, { createdAt: "2026-06-29T00:00:00Z" }),
+    /Implementation-handoff task T1 has a blank source ref/
+  );
+});
 ```
 
 - [ ] **Step 4: Implement strict argument parsing**
@@ -662,6 +711,8 @@ export function buildImplementationHandoffPacket(
 
   const allowedDraft = draft as ImplementationHandoffDraft;
 
+  assertTaskSourceRefs(allowedDraft);
+
   return {
     packet_version: "0.1",
     packet_type: "implementation-handoff",
@@ -675,6 +726,25 @@ export function buildImplementationHandoffPacket(
       requires_human_approval_for_scope_expansion: true
     }
   };
+}
+
+function assertTaskSourceRefs(draft: ImplementationHandoffDraft): void {
+  if (!Array.isArray(draft.tasks)) {
+    return;
+  }
+
+  for (const task of draft.tasks) {
+    if (!task || typeof task !== "object" || !Array.isArray(task.source_refs)) {
+      continue;
+    }
+
+    const taskId = typeof task.id === "string" ? task.id : "unknown";
+    for (const sourceRef of task.source_refs) {
+      if (typeof sourceRef === "string" && sourceRef.trim() === "") {
+        throw new Error(`Implementation-handoff task ${taskId} has a blank source ref.`);
+      }
+    }
+  }
 }
 ```
 

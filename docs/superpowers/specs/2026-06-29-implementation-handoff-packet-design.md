@@ -273,16 +273,21 @@ The parser must reject unknown draft keys and protocol-owned keys such as
 This mirrors the existing review-response draft guard posture: misspelled or
 reserved keys fail closed instead of silently dropping author intent.
 
-## Semantic Rules
+## Schema And Semantic Rules
 
-Schema validation is not enough. The registry semantic check should enforce:
+Schema validation owns required fields, object shapes, enum values, rejected
+unknown fields, and minimum collection sizes:
 
 - `tasks` must contain at least one item.
-- `tasks[].id` values must be unique.
 - `source_materials` must contain at least one item.
 - `work_scope.included` must contain at least one item.
 - `acceptance_criteria` must contain at least one item.
 - `verification_plan` must contain at least one item.
+
+Schema validation is not enough for cross-field or protocol-owned invariants.
+The registry semantic check should enforce:
+
+- `tasks[].id` values must be unique.
 - generated `safety_gates` values must all be `true`.
 
 The producer should also verify that every `tasks[].source_refs[]` value is
