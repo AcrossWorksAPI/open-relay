@@ -60,6 +60,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
 | Protocol | Packet-version migrators | After a second packet version exists | Candidate | A breaking packet version ships and old stored bundles must still load | - |
+| Workflow | Relay session identifiers | Before project/session orchestration, or when trials need linked Codex and Claude threads | Candidate | Multi-agent trials need a shared non-secret sync key such as `<relay_session_id>-OR-CX` and `<relay_session_id>-OR-CD` across thread titles, packet trails, and future manifests | - |
 | Security | Non-GitHub remote allowlist | When non-GitHub users appear | Candidate | Target users report dropped safe GitLab, Codeberg, or GitHub Enterprise remotes | - |
 
 ## Update Rules

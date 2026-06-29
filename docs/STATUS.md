@@ -173,6 +173,9 @@ Release, or plan the remaining implementation-handoff packet type for `0.1.x`.
   only the built-in neutral/Claude/Codex render templates for `0.1.x`?
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
+- Relay Session ID/thread-title linking is flagged as a future workflow
+  candidate; the safe stage is the project/session orchestration layer, not the
+  current packet schema.
 - Can the Across Works npm org/account publish `@acrossworks/open-relay`?
 - Should the owner configure npm trusted publishing for
   `.github/workflows/release.yml` and publish `v0.1.0` when ready?
