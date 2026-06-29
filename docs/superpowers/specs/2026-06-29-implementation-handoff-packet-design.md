@@ -210,11 +210,12 @@ free-form instruction and should be rejected.
 | `title` | string | Yes | Short task title. |
 | `description` | string | Yes | What to do and why. |
 | `priority` | string | Yes | `high`, `medium`, or `low`. |
-| `source_refs` | array of strings | Yes | References to `source_materials[].reference` or human-readable source labels. |
-| `acceptance_refs` | array of strings | No | Optional references to acceptance criteria labels. |
+| `source_refs` | array of strings | Yes | References to `source_materials[].reference`. |
 
 Task ids must be unique. Tasks are ordered by the handoff author; priority helps
-triage but does not hide lower-priority work.
+triage but does not hide lower-priority work. Task-level acceptance references
+are deferred for `0.1`; `acceptance_criteria` remains a packet-level string
+list until stable criterion ids are designed.
 
 ### `constraints[]`
 
@@ -290,10 +291,11 @@ The registry semantic check should enforce:
 - `tasks[].id` values must be unique.
 - generated `safety_gates` values must all be `true`.
 
-The producer should also verify that every `tasks[].source_refs[]` value is
-either present in `source_materials[].reference` or is a non-empty human label.
-This is producer-tested because a hand-edited packet might still validate while
-using broader source labels.
+The producer should also verify that every `tasks[].source_refs[]` value
+matches a value in `source_materials[].reference`. This is producer-tested
+because JSON Schema does not express this cross-reference cleanly in the current
+registry path, and human-readable source labels would make the rule too weak to
+guide implementation.
 
 ## Markdown Rendering
 

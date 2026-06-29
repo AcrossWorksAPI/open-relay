@@ -246,7 +246,6 @@ export type ImplementationHandoffTask = {
   description: string;
   priority: ImplementationHandoffTaskPriority;
   source_refs: string[];
-  acceptance_refs?: string[];
 };
 
 export type ImplementationHandoffConstraint = {
@@ -329,8 +328,8 @@ Create `schemas/implementation-handoff.schema.json` with the required fields and
 Each object definition must reject unknown fields. Use enum values from
 `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md`.
 Use `minLength: 1` for required string fields and string-array items, including
-`tasks[].source_refs[]`; the producer adds a trim-based blank source-ref guard
-for whitespace-only values.
+`tasks[].source_refs[]`; the producer also verifies that every task source ref
+matches a `source_materials[].reference`.
 
 - [ ] **Step 5: Add the generated example JSON**
 
@@ -379,8 +378,7 @@ Create `examples/implementation-handoff/relay.json`:
       "title": "Implement the planned CLI behavior",
       "description": "Follow the referenced implementation plan and reuse existing parser, validation, renderer, and smoke-test patterns.",
       "priority": "high",
-      "source_refs": ["docs/superpowers/plans/example-implementation.md"],
-      "acceptance_refs": ["CLI behavior is covered by tests"]
+      "source_refs": ["docs/superpowers/plans/example-implementation.md"]
     }
   ],
   "constraints": [
@@ -630,18 +628,18 @@ test("rejects protocol-owned implementation-handoff draft fields", () => {
   );
 });
 
-test("rejects blank implementation-handoff task source refs", () => {
+test("rejects unresolved implementation-handoff task source refs", () => {
   const draft = readDraft();
   draft.tasks = [
     {
       ...draft.tasks[0],
-      source_refs: ["   "]
+      source_refs: ["docs/superpowers/plans/missing-plan.md"]
     }
   ];
 
   assert.throws(
     () => buildImplementationHandoffPacket(draft, { createdAt: "2026-06-29T00:00:00Z" }),
-    /Implementation-handoff task T1 has a blank source ref/
+    /Implementation-handoff task T1 source ref must match source_materials reference: docs\/superpowers\/plans\/missing-plan\.md/
   );
 });
 ```
@@ -729,9 +727,16 @@ export function buildImplementationHandoffPacket(
 }
 
 function assertTaskSourceRefs(draft: ImplementationHandoffDraft): void {
-  if (!Array.isArray(draft.tasks)) {
+  if (!Array.isArray(draft.tasks) || !Array.isArray(draft.source_materials)) {
     return;
   }
+
+  const sourceReferences = new Set(
+    draft.source_materials
+      .filter((source) => source && typeof source === "object")
+      .map((source) => source.reference)
+      .filter((reference): reference is string => typeof reference === "string")
+  );
 
   for (const task of draft.tasks) {
     if (!task || typeof task !== "object" || !Array.isArray(task.source_refs)) {
@@ -740,8 +745,10 @@ function assertTaskSourceRefs(draft: ImplementationHandoffDraft): void {
 
     const taskId = typeof task.id === "string" ? task.id : "unknown";
     for (const sourceRef of task.source_refs) {
-      if (typeof sourceRef === "string" && sourceRef.trim() === "") {
-        throw new Error(`Implementation-handoff task ${taskId} has a blank source ref.`);
+      if (typeof sourceRef === "string" && !sourceReferences.has(sourceRef)) {
+        throw new Error(
+          `Implementation-handoff task ${taskId} source ref must match source_materials reference: ${sourceRef}.`
+        );
       }
     }
   }
@@ -1033,6 +1040,8 @@ design, trimmed for public users. Include:
 - packet fields;
 - object shapes;
 - semantic rules;
+- programmatic producer callers must validate the returned packet before using
+  or writing it;
 - Markdown rendering order;
 - relationship to review-request, review-response, and resume-project;
 - non-goals.
