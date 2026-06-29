@@ -33,7 +33,7 @@ open-relay respond github-pr --request <review-request.json> --review <review-re
 
 `generate review-response` is the local packet producer. It writes or prints a complete validated packet in JSON by default, or rendered Markdown with `--format markdown`.
 
-`respond github-pr` is the no-copy/paste reviewer workflow. It builds the same validated packet, renders it, and passes it to the existing GitHub PR transport helper. `--dry-run`, `--update`, and `--confirm-public` keep the same meanings as `transport github-pr send`.
+`respond github-pr` is the reviewer-side packet transport composition command. It is intended for no-copy/paste review loops, but live Codex/Claude proof is tracked separately before the project treats that claim as proven. It builds the same validated packet, renders it, and passes it to the existing GitHub PR transport helper. `--dry-run`, `--update`, and `--confirm-public` keep the same meanings as `transport github-pr send`.
 
 Do not add `handoff review-response` in this slice. The command would only re-emit an existing generated packet shape and would violate the roadmap rule against command duplication.
 
@@ -560,4 +560,4 @@ After implementation, the review loop can run locally as:
 5. Open Relay posts the exact packet to the PR.
 6. Codex fetches the reviewer-authored packet and acts on its outcome.
 
-That is the first complete no-copy/paste Open Relay loop. Automation, native review import, and merge/fix gates remain later slices.
+That is the intended command path for the first complete no-copy/paste Open Relay loop. Live Codex/Claude proof is tracked separately before the project treats the end-to-end behavior as proven. Automation, native review import, and merge/fix gates remain later slices.

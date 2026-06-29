@@ -16,11 +16,12 @@ storage is merged to make saved handoff packets durable without adding global
 storage, hosted sync, or external orchestration. Protocol envelope dispatch and
 `review-response` validation/rendering are merged, so the request/response
 packet shapes now exist end-to-end. GitHub PR exact-packet transport is merged
-as the first boundary so packets can move between agents without manual
-copy/paste when both sides emit Open Relay packets. Reviewer-produced
-`review-response` packet workflow is merged, so the reviewer side can create
-and send response packets without manual copy/paste. Packet evidence enrichment
-is merged, so generated request packets include per-file churn evidence without
+as the first packet boundary, and reviewer-produced `review-response` workflow
+is merged, so the command capability exists for packets to move through PR
+comments. A live Codex/Claude no-copy/paste round trip remains unproven until
+the packet-native review-loop proof plan passes its PR-comment transport and
+canonical-equality gates. Packet evidence enrichment is merged, so generated
+request packets include per-file churn evidence without
 embedding raw diffs. Private redaction rules are merged before npm publishing,
 so repository-specific private terms can be scrubbed from generated packet
 metadata. Release workflow implementation is merged, so the first public npm
@@ -36,12 +37,14 @@ PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
 have a PR. Resume-project packet implementation is merged, so validated
 `review-response` packets can become local continuation packets without
-invoking agents or applying fixes. Implementation-handoff packet planning is
-now active as the pre-work counterpart to `review-request`; this planning slice
-defines an explicit draft-file producer, packet fields, safety gates,
-verification-plan semantics, renderer expectations, and implementation tasks
-without changing packet schemas or runtime behavior yet. The approved first
-runtime direction is a TypeScript CLI on Node.js with npm.
+invoking agents or applying fixes. Packet-native review-loop proof planning is
+now active as the acceptance gate before treating the no-copy/paste review-loop
+claim as proven. Implementation-handoff packet planning remains active as the
+pre-work counterpart to `review-request`; this planning slice defines an
+explicit draft-file producer, packet fields, safety gates, verification-plan
+semantics, renderer expectations, and implementation tasks without changing
+packet schemas or runtime behavior yet. The approved first runtime direction is
+a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -134,6 +137,7 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
 | `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md` | Active | Design for an explicit-draft `implementation-handoff/0.1` packet before work begins. |
+| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | Active | Live proof checklist for Codex/Claude PR packet transport with owner approval gates, clean proof directories, no shared filesystem fallback, no `--update` on first proof, and canonical posted/fetched equality checks. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
@@ -166,6 +170,7 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
+| Codex/Claude packet-native round trip unproven | High | The first Open Relay trial used chat/attachment handoff instead of PR packet transport. `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` is now the active acceptance checklist before the no-copy/paste review-loop claim can be treated as proven. |
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Implementation-handoff is now planned as an explicit local draft-to-packet producer; native review import, automation, runtime implementation-handoff behavior, and fix/merge automation remain unbuilt until their implementation PRs merge. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
@@ -175,16 +180,18 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review and merge the implementation-handoff packet planning PR if the
+1. Approve and run the packet-native review-loop proof plan for Relay Session
+   ID `R7M4Q9K2` before treating no-copy/paste review-loop behavior as proven.
+2. Review and merge the implementation-handoff packet planning PR if the
    explicit draft-file boundary is accepted.
-2. Decide whether to implement `implementation-handoff/0.1` before publishing
+3. Decide whether to implement `implementation-handoff/0.1` before publishing
    `0.1.0`, or publish now that request-to-response-to-resume is packet-native.
-3. If publishing first, confirm npm owner/org and trusted publishing setup for
+4. If publishing first, confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
-4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
+5. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
    ready to publish, then run post-publish registry-install smoke before
    marking any version `Live`.
-5. Keep Relay Session ID/thread-title linking as a candidate for the first
+6. Keep Relay Session ID/thread-title linking as a candidate for the first
    project/session orchestration slice, not the immediate packet schema.
 
 ## Current Owner Decisions Needed
@@ -192,6 +199,9 @@ runtime direction is a TypeScript CLI on Node.js with npm.
 - Global packet storage in addition to repo-local storage.
 - GitHub PR comments are the first packet transport boundary; native GitHub
   review import remains a separate future decision.
+- For Relay Session ID `R7M4Q9K2`, owner approval is required before Codex or
+  Claude posts live packet comments to PR #58 as part of the packet-native
+  proof plan.
 - Custom prompt templates versus built-in templates only. Current behavior
   includes neutral/Claude/Codex wrappers, with no agent invocation, custom
   template files, or new packet schemas.

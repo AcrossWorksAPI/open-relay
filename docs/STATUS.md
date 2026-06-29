@@ -29,9 +29,11 @@ automation, implementation-handoff runtime behavior, global redaction profiles,
 and regex rules remain deferred. GitHub PR exact-packet
 transport is merged as the first outward packet boundary. Reviewer-produced
 `review-response` workflow is merged, so the reviewer side can create and send
-response packets without manual copy/paste. Packet evidence enrichment is
-merged, so generated request packets expose per-file churn evidence without a
-packet-version bump. Private redaction rules are merged, so
+response packets through exact-packet transport. A live Codex/Claude
+no-copy/paste round trip remains unproven until the packet-native review-loop
+proof plan passes its PR-comment transport and canonical-equality gates. Packet
+evidence enrichment is merged, so generated request packets expose per-file
+churn evidence without a packet-version bump. Private redaction rules are merged, so
 repository-specific private terms can be scrubbed before generated packet
 output without adding a packet-version bump, regex support, global config,
 environment reads, raw-diff scanning, or remote rule loading.
@@ -45,11 +47,17 @@ Markdown; it does not invoke agents, post to GitHub, merge, publish, run
 commands, or change packet schemas. Resume-project packet implementation is
 merged, so validated `review-response` packets can become local continuation
 packets without applying fixes or invoking agents.
-Implementation-handoff packet planning is in progress as the remaining MVP
-packet-loop slot. This planning slice defines an explicit local draft-to-packet
-producer, packet fields, safety gates, verification-plan semantics, renderer
-order, and implementation tasks without changing packet schemas, runtime
-behavior, transport, storage, or prompt templates yet.
+Packet-native review-loop proof planning is in progress after the first Open
+Relay trial showed that prompt rendering and local packet files were substituted
+for PR packet transport. The new proof plan requires owner-approved live PR
+packet comments, clean per-agent proof directories, no packet body in chat, and
+canonical posted/fetched equality checks before the no-copy/paste review-loop
+claim can be treated as proven. Implementation-handoff packet planning remains
+in progress as the remaining MVP packet-loop slot. That planning slice defines
+an explicit local draft-to-packet producer, packet fields, safety gates,
+verification-plan semantics, renderer order, and implementation tasks without
+changing packet schemas, runtime behavior, transport, storage, or prompt
+templates yet.
 Roadmap version tracking now uses
 PR-indexed pre-release labels (`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap
 views can track changes by version without implying an npm publish or live
@@ -90,6 +98,7 @@ release.
 | Roadmap PR-indexed pre-release tracking | Done | PR #51 updated the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
 | Agent-ready prompt rendering implementation | Done | Branch `codex/agent-ready-prompt-rendering-implementation` adds pure prompt rendering, `render --template neutral\|claude\|codex`, package exports, installed-package smoke, README docs, and a protocol doc without agent invocation or schema changes. |
 | Resume-project packet implementation | Done | PR #54 merged `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage. |
+| Packet-native review-loop proof | In progress | Relay Session ID `R7M4Q9K2` proof plan tracks owner approval gates, live PR packet comments, clean per-agent proof directories, no shared filesystem fallback, canonical posted/fetched equality, and the one-GitHub-login limitation before the no-copy/paste review-loop claim is accepted. |
 | Implementation-handoff packet planning | In progress | Branch `codex/implementation-handoff-packet-plan` adds a design and implementation plan for an explicit-draft `implementation-handoff/0.1` packet; runtime implementation, schemas, examples, CLI behavior, storage, transport, and prompt-template changes remain future implementation work. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, and agent-ready prompt rendering are in place; native GitHub review import, implementation-handoff runtime behavior, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, external agent invocation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
@@ -170,9 +179,10 @@ release.
 
 ## Next Step
 
-Choose the next gate after review of the implementation-handoff planning PR:
-either implement `implementation-handoff/0.1`, or publish `0.1.0` after npm
-trusted publishing is configured and the owner is ready to create the
+Approve and run the packet-native review-loop proof plan for Relay Session ID
+`R7M4Q9K2`, then choose the next gate after review of the implementation-handoff
+planning PR: either implement `implementation-handoff/0.1`, or publish `0.1.0`
+after npm trusted publishing is configured and the owner is ready to create the
 non-prerelease `v0.1.0` GitHub Release.
 
 ## Owner Decisions Needed
@@ -183,6 +193,8 @@ non-prerelease `v0.1.0` GitHub Release.
   only the built-in neutral/Claude/Codex render templates for `0.1.x`?
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
+- For Relay Session ID `R7M4Q9K2`, owner approval is required before Codex or
+  Claude posts live Open Relay packet comments to PR #58.
 - Relay Session ID/thread-title linking is flagged as a future workflow
   candidate; the safe stage is the project/session orchestration layer, not the
   current packet schema.

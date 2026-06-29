@@ -70,6 +70,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Agent-ready prompt rendering design | Active |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Resume-project packet design | Active |
 | `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md` | Implementation-handoff packet design | Active |
+| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | Packet-native review-loop proof plan | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | Implementation-handoff packet implementation plan | Active |
@@ -122,6 +123,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
+| `docs/superpowers/plans/2026-06-29-packet-native-review-loop-proof.md` | In progress | Codex / Claude / Owner | Tracks the Relay Session ID `R7M4Q9K2` live proof checklist for PR packet transport, owner approval gates, clean proof directories, no packet-body chat handoff, and posted/fetched canonical equality. |
 | `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | In progress | Codex | Plans `implementation-handoff/0.1` as an explicit draft-to-packet local producer without schema changes in this planning slice, agent invocation, GitHub posting, merge automation, publish, or external orchestration. |
 
 ## Implemented Or Historical Plans
