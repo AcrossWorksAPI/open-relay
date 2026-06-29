@@ -92,6 +92,7 @@ release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-29 | Relay session identifier candidate branch check | Passed | PR #56 / branch `codex/relay-session-identifier-candidate` flags Relay Session IDs as a future workflow candidate for linked Codex/Claude thread titles and defers manifest or packet-field implementation until project/session orchestration; `git diff --check` passed. |
 | 2026-06-29 | PR #54 merged-main closeout | Passed | PR #54 merged at commit `9b0204e`; Claude review dogfooded request-to-response-to-resume and reported no findings; fresh `main` verification passed `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`. |
 | 2026-06-29 | Resume-project packet implementation branch checks | Passed | PR #54 / branch `codex/resume-project-implementation` adds `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage; targeted RED/GREEN tests passed, `npm run check` passed with 201 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-29 | Resume-project packet planning branch checks | Passed | PR #53 / branch `codex/resume-project-plan` adds the resume-project design and implementation plan, updates roadmap/governance closeout for PR #52, and makes resume-project the active planned continuation slice; `npm run check` passed with 178 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
@@ -173,6 +174,9 @@ Release, or plan the remaining implementation-handoff packet type for `0.1.x`.
   only the built-in neutral/Claude/Codex render templates for `0.1.x`?
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
+- Relay Session ID/thread-title linking is flagged as a future workflow
+  candidate; the safe stage is the project/session orchestration layer, not the
+  current packet schema.
 - Can the Across Works npm org/account publish `@acrossworks/open-relay`?
 - Should the owner configure npm trusted publishing for
   `.github/workflows/release.yml` and publish `v0.1.0` when ready?

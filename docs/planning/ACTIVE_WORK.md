@@ -163,6 +163,7 @@ TypeScript CLI on Node.js with npm.
 | Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
+| Relay session/thread identity absent | Low | Candidate rule flagged: future trials should use a random Open Relay-generated `relay_session_id` in linked thread titles such as `<id>-OR-CX` and `<id>-OR-CD`; the source-of-truth manifest or packet field is deferred until session/profile orchestration is designed. |
 | External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
 | Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
@@ -178,6 +179,8 @@ TypeScript CLI on Node.js with npm.
    marking any version `Live`.
 4. If continuing feature work first, draft the implementation-handoff packet
    design and plan against the existing protocol envelope.
+5. Keep Relay Session ID/thread-title linking as a candidate for the first
+   project/session orchestration slice, not the immediate packet schema.
 
 ## Current Owner Decisions Needed
 
