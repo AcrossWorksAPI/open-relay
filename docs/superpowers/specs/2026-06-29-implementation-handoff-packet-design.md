@@ -347,11 +347,14 @@ Error posture:
 - invalid JSON: `Invalid JSON in <path>`;
 - unknown draft key: `Unknown implementation-handoff draft field: <key>.`;
 - reserved draft key: `Implementation-handoff drafts cannot set protocol field: <key>.`;
+- unresolved task source reference:
+  `Implementation-handoff task <id> source ref must match a source_materials reference.`;
 - generated schema failure: `Generated implementation-handoff packet failed validation.`;
 - write failure: `Could not write implementation-handoff packet.`;
 - output success: `Wrote implementation-handoff packet.`;
 - Markdown output success: `Wrote implementation-handoff Markdown.`;
-- errors must not echo draft contents.
+- errors may name field keys and task ids, but must not echo author-supplied
+  draft prose or reference values.
 
 ## Relationship To Existing Packets
 

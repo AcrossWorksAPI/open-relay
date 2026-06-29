@@ -639,7 +639,7 @@ test("rejects unresolved implementation-handoff task source refs", () => {
 
   assert.throws(
     () => buildImplementationHandoffPacket(draft, { createdAt: "2026-06-29T00:00:00Z" }),
-    /Implementation-handoff task T1 source ref must match source_materials reference: docs\/superpowers\/plans\/missing-plan\.md/
+    /Implementation-handoff task T1 source ref must match a source_materials reference/
   );
 });
 ```
@@ -747,7 +747,7 @@ function assertTaskSourceRefs(draft: ImplementationHandoffDraft): void {
     for (const sourceRef of task.source_refs) {
       if (typeof sourceRef === "string" && !sourceReferences.has(sourceRef)) {
         throw new Error(
-          `Implementation-handoff task ${taskId} source ref must match source_materials reference: ${sourceRef}.`
+          `Implementation-handoff task ${taskId} source ref must match a source_materials reference.`
         );
       }
     }
@@ -983,6 +983,7 @@ if (args[0] === "generate" && args[1] === "implementation-handoff") {
 Use these sanitized messages:
 
 - `Invalid JSON in <path>`;
+- `Implementation-handoff task <id> source ref must match a source_materials reference.`;
 - `Generated implementation-handoff packet failed validation.`;
 - `Could not write implementation-handoff packet.`;
 - `Wrote implementation-handoff packet.`;
