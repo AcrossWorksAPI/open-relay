@@ -16,6 +16,11 @@ async function validReviewResponseFixture(): Promise<Record<string, unknown>> {
   return JSON.parse(raw) as Record<string, unknown>;
 }
 
+async function validResumeProjectFixture(): Promise<Record<string, unknown>> {
+  const raw = await readFile("examples/resume-project/relay.json", "utf8");
+  return JSON.parse(raw) as Record<string, unknown>;
+}
+
 test("validates the synthetic review-request example", async () => {
   const packet = await validPacketFixture();
   const result = validatePacket(packet);
@@ -26,6 +31,14 @@ test("validates the synthetic review-request example", async () => {
 
 test("validates the synthetic review-response example", async () => {
   const packet = await validReviewResponseFixture();
+  const result = validatePacket(packet);
+
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.errors, []);
+});
+
+test("validates the synthetic resume-project example", async () => {
+  const packet = await validResumeProjectFixture();
   const result = validatePacket(packet);
 
   assert.equal(result.valid, true);
@@ -138,6 +151,63 @@ test("accepts review-response empty arrays and enum values", async () => {
   ];
 
   assert.equal(validatePacket(blocked).valid, true);
+});
+
+test("rejects contradictory resume-project statuses", async () => {
+  const ownerDecision = await validResumeProjectFixture();
+  ownerDecision.resume_status = "owner_decision";
+  ownerDecision.tasks = [
+    {
+      source_finding_id: "F1",
+      severity: "high",
+      blocking: true,
+      title: "Blocking finding",
+      description: "A blocking finding must not appear on owner_decision.",
+      evidence: "Synthetic evidence.",
+      recommendation: "Synthetic recommendation."
+    }
+  ];
+  assert.match(
+    validatePacket(ownerDecision).errors.join("\n"),
+    /owner_decision status cannot include blocking tasks/
+  );
+
+  const continueWithContext = await validResumeProjectFixture();
+  continueWithContext.resume_status = "continue_with_context";
+  continueWithContext.tasks = [
+    {
+      source_finding_id: "F1",
+      severity: "low",
+      blocking: true,
+      title: "Blocking finding",
+      description: "A blocking finding must not appear on continue_with_context.",
+      evidence: "Synthetic evidence.",
+      recommendation: "Synthetic recommendation."
+    }
+  ];
+  assert.match(
+    validatePacket(continueWithContext).errors.join("\n"),
+    /continue_with_context status cannot include blocking tasks/
+  );
+
+  const addressFindings = await validResumeProjectFixture();
+  addressFindings.resume_status = "address_findings";
+  addressFindings.tasks = [];
+  assert.match(
+    validatePacket(addressFindings).errors.join("\n"),
+    /address_findings status requires at least one blocking task/
+  );
+
+  const blocked = await validResumeProjectFixture();
+  blocked.resume_status = "blocked";
+  blocked.reviewed_scope = {
+    files: [],
+    limitations: []
+  };
+  assert.match(
+    validatePacket(blocked).errors.join("\n"),
+    /blocked status requires at least one limitation/
+  );
 });
 
 test("rejects unsupported packet types with supported combinations", () => {

@@ -77,6 +77,15 @@ test("prints review-response producer commands in help", () => {
   assert.match(result.stdout, /open-relay respond github-pr/);
 });
 
+test("prints resume-project producer command in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay generate resume-project/);
+});
+
 test("validates the example packet", () => {
   const result = spawnSync(
     process.execPath,
@@ -506,6 +515,112 @@ test("generate review-response rejects semantic validation failures", () => {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test("generate resume-project prints valid json to stdout", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "resume-project",
+    "--response",
+    "examples/review-response/relay.json"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  const packet = JSON.parse(result.stdout);
+  assert.equal(packet.packet_type, "resume-project");
+  assert.equal(packet.resume_from.packet_type, "review-response");
+  assert.equal(packet.target.repository, "AcrossWorksAPI/open-relay");
+  assert.equal(packet.target.local_path, undefined);
+  assert.equal(result.stderr, "");
+});
+
+test("generate resume-project renders markdown to stdout", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "resume-project",
+    "--response",
+    "examples/review-response/relay.json",
+    "--format",
+    "markdown"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /^# Resume Project Relay Packet/);
+  assert.match(result.stdout, /## Next Action/);
+  assert.equal(result.stderr, "");
+});
+
+test("generate resume-project writes output without echoing path", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-resume-"));
+  const outputPath = join(directory, "SECRET_OUTPUT_SHOULD_NOT_APPEAR.md");
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "resume-project",
+      "--response",
+      "examples/review-response/relay.json",
+      "--format",
+      "markdown",
+      "--output",
+      outputPath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Wrote resume-project Markdown/);
+    assert.doesNotMatch(result.stdout, /SECRET_OUTPUT_SHOULD_NOT_APPEAR/);
+    assert.match(readFileSync(outputPath, "utf8"), /^# Resume Project Relay Packet/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate resume-project rejects invalid response json without leaking contents", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-resume-"));
+  const responsePath = join(directory, "response.json");
+  writeFileSync(responsePath, "{\"token\": SECRET_TOKEN_SHOULD_NOT_APPEAR}", "utf8");
+
+  try {
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "generate",
+      "resume-project",
+      "--response",
+      responsePath
+    ], {
+      encoding: "utf8"
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Invalid JSON in review-response file/);
+    assert.doesNotMatch(result.stderr, /SECRET_TOKEN_SHOULD_NOT_APPEAR/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("generate resume-project requires a review-response packet", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "generate",
+    "resume-project",
+    "--response",
+    "examples/review-request/relay.json"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Resume-project generation requires a review-response packet/);
 });
 
 test("respond github-pr dry-run prints exact review-response comment body without gh", () => {
@@ -1426,6 +1541,19 @@ test("renders a review-response packet through generic render", () => {
   assert.equal(result.stderr, "");
 });
 
+test("renders a resume-project packet through generic render", () => {
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "render", "examples/resume-project/relay.json"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /^# Resume Project Relay Packet/);
+  assert.match(result.stdout, /## Status And Confidence/);
+  assert.equal(result.stderr, "");
+});
+
 test("renders a review-request packet through generic render", () => {
   const result = spawnSync(
     process.execPath,
@@ -1755,7 +1883,7 @@ test("exports the validator and renderer from the package entrypoint", () => {
     process.execPath,
     [
       "-e",
-      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewResponseMarkdown !== 'function') process.exit(1);"
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewResponseMarkdown !== 'function') process.exit(1); if (typeof relay.buildResumeProjectPacket !== 'function') process.exit(1);"
     ],
     {
       encoding: "utf8"

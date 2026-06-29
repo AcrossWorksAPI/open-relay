@@ -41,9 +41,10 @@ GitHub Release, npm publish, registry package, or live claim exists yet.
 Agent-ready prompt rendering is merged as optional
 `render --template neutral|claude|codex` wrappers around validated packet
 Markdown; it does not invoke agents, post to GitHub, merge, publish, run
-commands, or change packet schemas. Resume-project packet planning is active on
-branch `codex/resume-project-plan` to turn validated `review-response` packets
-into local continuation packets without applying fixes or invoking agents.
+commands, or change packet schemas. Resume-project packet planning is merged,
+and PR #54 / branch `codex/resume-project-implementation` turns validated
+`review-response` packets into local continuation packets without applying
+fixes or invoking agents.
 Roadmap version tracking now uses
 PR-indexed pre-release labels (`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap
 views can track changes by version without implying an npm publish or live
@@ -83,7 +84,7 @@ release.
 | Agent-ready prompt rendering planning | Done | PR #51 merged the design and implementation plan for optional `render --template neutral\|claude\|codex` wrappers while preserving neutral Markdown output and avoiding agent invocation, GitHub posting, merge, publish, or schema changes. |
 | Roadmap PR-indexed pre-release tracking | Done | PR #51 updated the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
 | Agent-ready prompt rendering implementation | Done | Branch `codex/agent-ready-prompt-rendering-implementation` adds pure prompt rendering, `render --template neutral\|claude\|codex`, package exports, installed-package smoke, README docs, and a protocol doc without agent invocation or schema changes. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, private redaction rules, and agent-ready prompt rendering are in place; resume-project is in planning; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, external agent invocation, and external orchestration remain unbuilt. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, diff-summary capture, private redaction rules, and agent-ready prompt rendering are in place; resume-project implementation is in PR #54 branch review; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, external agent invocation, and external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -91,6 +92,7 @@ release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-29 | Resume-project packet implementation branch checks | Passed | PR #54 / branch `codex/resume-project-implementation` adds `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage; targeted RED/GREEN tests passed, `npm run check` passed with 201 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-29 | Resume-project packet planning branch checks | Passed | PR #53 / branch `codex/resume-project-plan` adds the resume-project design and implementation plan, updates roadmap/governance closeout for PR #52, and makes resume-project the active planned continuation slice; `npm run check` passed with 178 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-29 | Agent-ready prompt rendering implementation branch checks | Passed | PR #52 / branch `codex/agent-ready-prompt-rendering-implementation` adds `render --template neutral\|claude\|codex`; targeted RED/GREEN tests were run for pure prompt rendering and CLI parsing, `npm run check` passed with 178 tests, `npm run smoke:pack` passed with installed Claude/Codex prompt checks, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-06-29 | Agent-ready prompt rendering review fix | Passed | PR #51 follow-up reframed prompt-injection language: dynamic fences prevent syntactic packet-block break-out, while untrusted-context prompt text is best-effort semantic mitigation, not a security boundary; `npm run check` passed with 169 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
@@ -158,10 +160,10 @@ release.
 
 ## Next Step
 
-Review the resume-project packet planning PR, then implement it if the packet
-contract is approved. The first npm publish remains owner-controlled and should
-happen only after npm trusted publishing is configured and the owner is ready to
-create the non-prerelease `v0.1.0` GitHub Release.
+Review the resume-project packet implementation PR, then merge if CI and review
+are green. The first npm publish remains owner-controlled and should happen
+only after npm trusted publishing is configured and the owner is ready to create
+the non-prerelease `v0.1.0` GitHub Release.
 
 ## Owner Decisions Needed
 

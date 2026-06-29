@@ -5,8 +5,10 @@ import { test } from "node:test";
 import { PACKET_RENDERERS, renderPacketMarkdown } from "../src/renderPacket";
 import { renderReviewRequestMarkdown } from "../src/renderReviewRequest";
 import { renderReviewResponseMarkdown } from "../src/renderReviewResponse";
+import { renderResumeProjectMarkdown } from "../src/renderResumeProject";
 import type { ReviewRequestPacket } from "../src/reviewRequest";
 import type { ReviewResponsePacket } from "../src/reviewResponse";
+import type { ResumeProjectPacket } from "../src/resumeProject";
 
 const packet = JSON.parse(
   readFileSync("examples/review-request/relay.json", "utf8")
@@ -14,6 +16,9 @@ const packet = JSON.parse(
 const reviewResponsePacket = JSON.parse(
   readFileSync("examples/review-response/relay.json", "utf8")
 ) as ReviewResponsePacket;
+const resumeProjectPacket = JSON.parse(
+  readFileSync("examples/resume-project/relay.json", "utf8")
+) as ResumeProjectPacket;
 
 test("dispatches review-request markdown rendering", () => {
   assert.equal(renderPacketMarkdown(packet), renderReviewRequestMarkdown(packet));
@@ -21,6 +26,10 @@ test("dispatches review-request markdown rendering", () => {
 
 test("dispatches review-response markdown rendering", () => {
   assert.equal(renderPacketMarkdown(reviewResponsePacket), renderReviewResponseMarkdown(reviewResponsePacket));
+});
+
+test("dispatches resume-project markdown rendering", () => {
+  assert.equal(renderPacketMarkdown(resumeProjectPacket), renderResumeProjectMarkdown(resumeProjectPacket));
 });
 
 test("rejects packets without a registered renderer", () => {

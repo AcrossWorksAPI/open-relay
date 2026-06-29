@@ -14,6 +14,9 @@ import {
   renderPacketForTemplate,
   type PromptTemplate
 } from "./renderPrompt";
+import { parseGenerateResumeProjectArgs } from "./resumeProjectArgs";
+import type { ResumeProjectPacket } from "./resumeProject";
+import { buildResumeProjectPacket } from "./resumeProjectProducer";
 import {
   parseGenerateReviewResponseArgs,
   parseRespondGithubPrArgs
@@ -40,6 +43,7 @@ Usage:
   open-relay validate <packet.json>
   open-relay generate review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--format json|markdown] [--redaction-rules <path>] [--output <path>]
   open-relay generate review-response --request <review-request.json> --review <review-response-draft.json> [--format json|markdown] [--output <path>]
+  open-relay generate resume-project --response <review-response.json> [--format json|markdown] [--output <path>]
   open-relay handoff review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--output <relay.md>]
   open-relay save review-request --base <ref> --head <ref> --goal <text> --summary <text> --behavioral-intent <text> [--redaction-rules <path>] [--storage-dir <path>]
   open-relay render <packet.json> [--template neutral|claude|codex] [--output <relay.md>]
@@ -73,6 +77,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "generate" && args[1] === "review-response") {
     return generateReviewResponseCommand(args.slice(2));
+  }
+
+  if (args[0] === "generate" && args[1] === "resume-project") {
+    return generateResumeProjectCommand(args.slice(2));
   }
 
   if (args[0] === "handoff" && args[1] === "review-request") {
@@ -337,6 +345,10 @@ type GithubPrFetchArgs =
 
 type BuiltReviewResponsePacket =
   | { ok: true; packet: ReviewResponsePacket }
+  | { ok: false; exitCode: 1 | 2; message: string; errors?: string[] };
+
+type BuiltResumeProjectPacket =
+  | { ok: true; packet: ResumeProjectPacket }
   | { ok: false; exitCode: 1 | 2; message: string; errors?: string[] };
 
 function parseStorageDir(args: string[]): SaveReviewRequestArgs {
@@ -646,6 +658,47 @@ async function generateReviewResponseCommand(args: string[]): Promise<number> {
   return 0;
 }
 
+async function generateResumeProjectCommand(args: string[]): Promise<number> {
+  const parsed = parseGenerateResumeProjectArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  const built = await buildValidatedResumeProjectFromFile(parsed.options.response);
+  if (!built.ok) {
+    process.stderr.write(`${built.message}\n`);
+    for (const error of built.errors ?? []) {
+      process.stderr.write(`- ${error}\n`);
+    }
+    return built.exitCode;
+  }
+
+  const output = parsed.options.format === "markdown"
+    ? renderPacketMarkdown(built.packet)
+    : `${JSON.stringify(built.packet, null, 2)}\n`;
+  const successMessage = parsed.options.format === "markdown"
+    ? "Wrote resume-project Markdown.\n"
+    : "Wrote resume-project packet.\n";
+  const writeErrorMessage = parsed.options.format === "markdown"
+    ? "Could not write resume-project Markdown.\n"
+    : "Could not write resume-project packet.\n";
+
+  if (parsed.options.output) {
+    try {
+      await writeFile(parsed.options.output, output, "utf8");
+    } catch {
+      process.stderr.write(writeErrorMessage);
+      return 1;
+    }
+    process.stdout.write(successMessage);
+  } else {
+    process.stdout.write(output);
+  }
+
+  return 0;
+}
+
 async function respondGithubPrCommand(args: string[]): Promise<number> {
   const parsed = parseRespondGithubPrArgs(args);
   if (!parsed.ok) {
@@ -770,6 +823,55 @@ async function buildValidatedReviewResponseFromFiles(input: {
   return { ok: true, packet };
 }
 
+async function buildValidatedResumeProjectFromFile(
+  responsePath: string
+): Promise<BuiltResumeProjectPacket> {
+  const responseRead = await readJsonFile(responsePath, {
+    invalidJsonMessage: "Invalid JSON in review-response file.",
+    readErrorMessage: "Could not read review-response file."
+  });
+  if (!responseRead.ok) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: responseRead.message
+    };
+  }
+
+  const responseValidation = validatePacket(responseRead.value);
+  if (!responseValidation.valid) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Invalid review-response packet.",
+      errors: responseValidation.errors
+    };
+  }
+
+  if (!isReviewResponsePacket(responseRead.value)) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Resume-project generation requires a review-response packet."
+    };
+  }
+
+  const packet = buildResumeProjectPacket({
+    response: responseRead.value
+  });
+  const resumeValidation = validatePacket(packet);
+  if (!resumeValidation.valid) {
+    return {
+      ok: false,
+      exitCode: 1,
+      message: "Generated resume-project packet failed validation.",
+      errors: resumeValidation.errors
+    };
+  }
+
+  return { ok: true, packet };
+}
+
 type JsonReadResult =
   | { ok: true; value: unknown }
   | { ok: false; message: string };
@@ -793,6 +895,12 @@ async function readJsonFile(path: string, messages: {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isReviewResponsePacket(value: unknown): value is ReviewResponsePacket {
+  return isRecord(value) &&
+    value.packet_type === "review-response" &&
+    value.packet_version === "0.1";
 }
 
 function safeTransportError(error: unknown, fallback: string): string {

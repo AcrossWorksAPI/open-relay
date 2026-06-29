@@ -34,9 +34,9 @@ Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
 the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
-have a PR. Resume-project packet planning is active in PR #53 on branch
-`codex/resume-project-plan` to turn validated `review-response` packets into
-local continuation packets without invoking agents or applying fixes. The
+have a PR. Resume-project packet planning is merged, and PR #54 / branch
+`codex/resume-project-implementation` turns validated `review-response` packets
+into local continuation packets without invoking agents or applying fixes. The
 approved first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
@@ -65,12 +65,16 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | `src/renderMarkdown.ts` | Active | Shared Markdown escaping, code-span, list, and label helpers. |
 | `src/renderReviewRequest.ts` | Active | Pure review-request JSON-to-Markdown renderer, including changed-file evidence. |
 | `src/renderReviewResponse.ts` | Active | Pure review-response JSON-to-Markdown renderer. |
+| `src/renderResumeProject.ts` | Active | Pure resume-project JSON-to-Markdown renderer. |
 | `src/renderPacket.ts` | Active | Generic packet Markdown renderer dispatcher. |
 | `src/renderPrompt.ts` | Active | Optional neutral/Claude/Codex prompt renderer that wraps validated packet Markdown without invoking agents or changing packet schemas. |
 | `src/reviewRequest.ts` | Active | Schema-valid review-request packet assembly. |
 | `src/reviewResponse.ts` | Active | Review-response packet type exported through the package entrypoint. |
 | `src/reviewResponseArgs.ts` | Active | Argument parsing for `generate review-response` and `respond github-pr`. |
 | `src/reviewResponseProducer.ts` | Active | Pure builder for validated reviewer-authored `review-response` packets from request packets plus drafts. |
+| `src/resumeProject.ts` | Active | Resume-project packet TypeScript type definitions. |
+| `src/resumeProjectArgs.ts` | Active | Argument parsing for `generate resume-project`. |
+| `src/resumeProjectProducer.ts` | Active | Pure builder for validated `resume-project` packets from `review-response` packets. |
 | `src/schema.ts` | Active | Reusable packet validation module with packet type/version dispatch. |
 | `src/schemaRegistry.ts` | Active | Packet schema registry and review-request semantic checks. |
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
@@ -85,11 +89,14 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | `tests/privateRedactionRules.test.ts` | Active | Private redaction rule validation, case-insensitive replacement, audit no-leak, schema validity, and field allowlist coverage tests. |
 | `tests/renderReviewRequest.test.ts` | Active | Markdown renderer order, snapshot, escaping, and empty-state tests. |
 | `tests/renderReviewResponse.test.ts` | Active | Review-response Markdown renderer order, snapshot, confidence, escaping, and empty-state tests. |
+| `tests/renderResumeProject.test.ts` | Active | Resume-project Markdown renderer order, snapshot, escaping, task-block, and empty-state tests. |
 | `tests/renderPacket.test.ts` | Active | Generic renderer dispatcher and test-only packet renderer tests. |
 | `tests/renderPrompt.test.ts` | Active | Neutral parity, Claude/Codex wrapper, and dynamic-fence prompt renderer tests. |
 | `tests/reviewRequest.test.ts` | Active | Review-request packet builder tests. |
 | `tests/reviewResponseArgs.test.ts` | Active | Review-response producer argument parser tests. |
 | `tests/reviewResponseProducer.test.ts` | Active | Review-response draft key guard, builder, and semantic validation tests. |
+| `tests/resumeProjectArgs.test.ts` | Active | Resume-project producer argument parser tests. |
+| `tests/resumeProjectProducer.test.ts` | Active | Resume-project producer status mapping and task projection tests. |
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
@@ -100,12 +107,15 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/protocol/review-request-packet.md` | Active | First packet type and required protocol fields. |
 | `docs/protocol/review-response-packet.md` | Active | Review-response packet type and required protocol fields. |
 | `docs/protocol/review-response-producer.md` | Active | Producer workflow for turning reviewer-authored drafts into validated response packets. |
+| `docs/protocol/resume-project-packet.md` | Active | Resume-project packet type and local continuation workflow protocol. |
 | `docs/protocol/github-pr-transport.md` | Active | GitHub PR exact-packet transport commands, marker contract, `gh` auth model, authorship limits, and non-goals. |
 | `docs/protocol/agent-ready-prompt-rendering.md` | Active | Prompt-template command contract and safety model for neutral/Claude/Codex render wrappers. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `examples/review-response/relay.md` | Active | Human-readable synthetic review-response packet example. |
 | `examples/review-response/relay.json` | Active | Machine-readable synthetic review-response packet example. |
+| `examples/resume-project/relay.md` | Active | Human-readable synthetic resume-project packet example. |
+| `examples/resume-project/relay.json` | Active | Machine-readable synthetic resume-project packet example. |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
@@ -150,7 +160,7 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project planning is active; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
+| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project implementation is in PR #54 branch review; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
@@ -158,9 +168,8 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the resume-project packet planning PR.
-2. If approved, implement `generate resume-project` as a packet-native
-   continuation producer.
+1. Review the resume-project packet implementation PR.
+2. If approved, merge it after CI and review are green.
 3. Confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
 4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when

@@ -16,6 +16,10 @@ const reviewResponse = JSON.parse(
   readFileSync("examples/review-response/relay.json", "utf8")
 ) as Record<string, unknown>;
 
+const resumeProject = JSON.parse(
+  readFileSync("examples/resume-project/relay.json", "utf8")
+) as Record<string, unknown>;
+
 test("neutral template matches packet markdown", () => {
   assert.equal(
     renderPacketForTemplate({ packet: reviewRequest, template: "neutral" }),
@@ -46,6 +50,18 @@ test("codex template wraps review-response packets for implementation follow-up"
   assert.match(prompt, /evaluate the findings/i);
   assert.match(prompt, /Do not merge, publish, or run destructive commands/i);
   assert.match(prompt, /# Review Response Relay Packet/);
+});
+
+test("codex template wraps resume-project packets for continuation work", () => {
+  const prompt = renderPacketForTemplate({
+    packet: resumeProject,
+    template: "codex"
+  });
+
+  assert.match(prompt, /^# Codex Follow-Up Prompt/);
+  assert.match(prompt, /Evaluate each continuation task/i);
+  assert.match(prompt, /Do not merge, publish, or run destructive commands/i);
+  assert.match(prompt, /# Resume Project Relay Packet/);
 });
 
 test("prompt fence is longer than any backtick run in packet markdown", () => {

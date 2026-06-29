@@ -1,5 +1,6 @@
 import Ajv, { type ValidateFunction } from "ajv";
 
+import resumeProjectSchema from "../schemas/resume-project.schema.json";
 import reviewResponseSchema from "../schemas/review-response.schema.json";
 import reviewRequestSchema from "../schemas/review-request.schema.json";
 
@@ -26,6 +27,12 @@ export const SCHEMA_REGISTRY: Record<string, Record<string, RegistryEntry>> = {
     "0.1": {
       validate: ajv.compile(reviewResponseSchema),
       semantics: validateReviewResponseSemantics
+    }
+  },
+  "resume-project": {
+    "0.1": {
+      validate: ajv.compile(resumeProjectSchema),
+      semantics: validateResumeProjectSemantics
     }
   }
 };
@@ -82,6 +89,36 @@ function validateReviewResponseSemantics(packet: Record<string, unknown>): strin
 
   if (outcome === "blocked" && limitations.length === 0) {
     return ["/reviewed_scope/limitations blocked outcome requires at least one limitation"];
+  }
+
+  return [];
+}
+
+function validateResumeProjectSemantics(packet: Record<string, unknown>): string[] {
+  const status = packet.resume_status;
+  const tasks = Array.isArray(packet.tasks) ? packet.tasks : [];
+  const reviewedScope = packet.reviewed_scope;
+  const limitations = isRecord(reviewedScope) && Array.isArray(reviewedScope.limitations)
+    ? reviewedScope.limitations
+    : [];
+  const hasBlockingTask = tasks.some((task) =>
+    isRecord(task) && task.blocking === true
+  );
+
+  if (status === "address_findings" && !hasBlockingTask) {
+    return ["/tasks address_findings status requires at least one blocking task"];
+  }
+
+  if (status === "owner_decision" && hasBlockingTask) {
+    return ["/tasks owner_decision status cannot include blocking tasks"];
+  }
+
+  if (status === "continue_with_context" && hasBlockingTask) {
+    return ["/tasks continue_with_context status cannot include blocking tasks"];
+  }
+
+  if (status === "blocked" && limitations.length === 0) {
+    return ["/reviewed_scope/limitations blocked status requires at least one limitation"];
   }
 
   return [];

@@ -1,0 +1,65 @@
+{
+  "packet_version": "0.1",
+  "packet_type": "resume-project",
+  "created_at": "2026-06-29T00:00:00Z",
+  "resume_from": {
+    "packet_type": "review-response",
+    "packet_version": "0.1",
+    "created_at": "2026-06-28T00:00:00Z",
+    "reviewer_name": "Claude Code",
+    "reviewer_kind": "agent",
+    "outcome": "changes_requested",
+    "source": "review-response packet"
+  },
+  "target": {
+    "repository": "AcrossWorksAPI/open-relay",
+    "working_branch": "codex/example-branch",
+    "base_commit": "1111111111111111111111111111111111111111",
+    "head_commit": "2222222222222222222222222222222222222222",
+    "diff_range": "1111111111111111111111111111111111111111..2222222222222222222222222222222222222222",
+    "pull_request_url": "https://github.com/AcrossWorksAPI/open-relay/pull/123"
+  },
+  "resume_status": "address_findings",
+  "confidence": "high",
+  "summary": "Address the blocking review finding before requesting another review.",
+  "tasks": [
+    {
+      "source_finding_id": "F1",
+      "severity": "medium",
+      "blocking": true,
+      "title": "Missing regression coverage",
+      "description": "The implementation changed CLI behavior without a focused regression test.",
+      "evidence": "The review inspected tests/cli.test.ts and did not find coverage for the new flag.",
+      "recommendation": "Add a CLI regression test before merging.",
+      "location": {
+        "path": "src/cli.ts",
+        "symbol": "run"
+      }
+    }
+  ],
+  "reviewed_scope": {
+    "files": [
+      {
+        "path": "src/cli.ts",
+        "notes": "Reviewed command routing."
+      }
+    ],
+    "limitations": []
+  },
+  "prior_verification": [
+    {
+      "kind": "command",
+      "command": "npm run check",
+      "result": "passed",
+      "evidence": "Reviewer reported the command passed locally."
+    }
+  ],
+  "safety_gates": {
+    "preserve_unrelated_changes": true,
+    "requires_human_approval_for_merge": true,
+    "requires_human_approval_for_publish": true,
+    "requires_human_approval_for_destructive_commands": true
+  },
+  "redactions": [],
+  "next_action": "Fix the blocking finding, run verification, and request another review."
+}
