@@ -120,7 +120,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | In progress | Codex | Implementation branch adds `generate resume-project` from a validated `review-response`, without agent invocation, fix application, GitHub posting, merge, publish, or packet-version bump. |
+| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | In progress | Codex | PR #54 / branch `codex/resume-project-implementation` adds `generate resume-project` from a validated `review-response`, without agent invocation, fix application, GitHub posting, merge, publish, or packet-version bump. |
 
 ## Implemented Or Historical Plans
 

@@ -34,7 +34,7 @@ Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
 the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
-have a PR. Resume-project packet planning is merged, and branch
+have a PR. Resume-project packet planning is merged, and PR #54 / branch
 `codex/resume-project-implementation` turns validated `review-response` packets
 into local continuation packets without invoking agents or applying fixes. The
 approved first runtime direction is a TypeScript CLI on Node.js with npm.
@@ -160,7 +160,7 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project implementation is in branch review; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
+| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project implementation is in PR #54 branch review; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
