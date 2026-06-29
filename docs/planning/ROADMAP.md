@@ -37,7 +37,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | v0.1.0-pre.45 | Private redaction rules | Done | Medium | No | Review-request packet CLI MVP | docs/superpowers/plans/2026-06-28-private-redaction-rules.md |
 | v0.1.0-pre.48 | Release workflow and first npm publish gate | Done | High | No | Package and release target; Private redaction rules | docs/superpowers/plans/2026-06-28-release-workflow.md |
 | v0.1.0-pre.52 | Agent-ready prompt rendering | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
-| v0.1.0-pre.next | Implementation-handoff packet type | In progress | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md |
+| v0.1.0-pre.58 | Implementation-handoff packet type | In progress | Medium | No | Relay protocol envelope and multi-type validation | docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md |
 | v0.1.0-pre.54 | Resume-project packet type | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-29-resume-project-packet.md |
 
 ## Brief MVP Mapping For Planned Slices
