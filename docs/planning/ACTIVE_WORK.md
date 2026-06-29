@@ -28,16 +28,16 @@ publish gate, `0.1.0` package metadata, changelog/tag flow, trusted publishing
 path, release preflight, and no-live-claim runbook are in place before any live
 release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
 or live claim exists yet. Native GitHub review import, response storage, fix
-automation, merge automation, implementation-handoff, resume-project, external
-agent invocation, and custom prompt-template systems remain later slices.
+automation, merge automation, implementation-handoff, external agent
+invocation, and custom prompt-template systems remain later slices.
 Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
 the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
-have a PR. Resume-project packet planning is merged, and PR #54 / branch
-`codex/resume-project-implementation` turns validated `review-response` packets
-into local continuation packets without invoking agents or applying fixes. The
-approved first runtime direction is a TypeScript CLI on Node.js with npm.
+have a PR. Resume-project packet implementation is merged, so validated
+`review-response` packets can become local continuation packets without
+invoking agents or applying fixes. The approved first runtime direction is a
+TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -160,7 +160,7 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport. Resume-project implementation is in PR #54 branch review; native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
+| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | External agent invocation remains deferred | Low | `render --template claude\|codex` produces deterministic local prompt Markdown only; Open Relay still does not invoke agents, post prompt output, merge, publish, or run commands. |
@@ -168,13 +168,16 @@ approved first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the resume-project packet implementation PR.
-2. If approved, merge it after CI and review are green.
-3. Confirm npm owner/org and trusted publishing setup for
+1. Decide whether to publish `0.1.0` now that request-to-response-to-resume is
+   packet-native, or plan the remaining implementation-handoff packet type for
+   `0.1.x`.
+2. If publishing first, confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
-4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
+3. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
    ready to publish, then run post-publish registry-install smoke before
    marking any version `Live`.
+4. If continuing feature work first, draft the implementation-handoff packet
+   design and plan against the existing protocol envelope.
 
 ## Current Owner Decisions Needed
 

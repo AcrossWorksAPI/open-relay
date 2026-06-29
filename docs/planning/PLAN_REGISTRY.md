@@ -120,7 +120,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | In progress | Codex | PR #54 / branch `codex/resume-project-implementation` adds `generate resume-project` from a validated `review-response`, without agent invocation, fix application, GitHub posting, merge, publish, or packet-version bump. |
+| - | - | - | No active implementation plan is open after PR #54 merged. |
 
 ## Implemented Or Historical Plans
 
@@ -146,6 +146,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Done | Planned and implemented repo-local ignored case-insensitive literal private redaction rules, explicit `--redaction-rules`, fail-closed invalid config, allowlisted packet-field redaction, audit no-leak guards, package smoke, Claude review fix, and merge closeout through PR #45. |
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Done | Planned and implemented the `0.1.0` changelog, dual-mode release preflight, GitHub Release-triggered trusted-publishing workflow, npm release runbook, package metadata, verification, and merge closeout through PR #48 without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Done | Planned and implemented `render --template neutral\|claude\|codex`, pure prompt rendering, parser/CLI tests, package exports, README and protocol docs, installed-package smoke coverage, and governance closeout without agent invocation, packet schema changes, GitHub posting, merge, publish, or live release claims. |
+| `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Done | Planned and implemented `resume-project/0.1`, `generate resume-project`, generic render and Codex prompt support, examples, docs, package smoke, review, and merge closeout through PR #54 without agent invocation, fix application, GitHub posting, merge automation, publish, or packet-version bump. |
 
 ## Superseded Or Dormant Plans
 
