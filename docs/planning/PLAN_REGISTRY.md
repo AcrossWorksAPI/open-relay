@@ -69,8 +69,10 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Release workflow and first npm publish gate implementation plan | Active |
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Agent-ready prompt rendering design | Active |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Resume-project packet design | Active |
+| `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md` | Implementation-handoff packet design | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
+| `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | Implementation-handoff packet implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
 | `docs/protocol/review-response-packet.md` | Review-response packet protocol | Active |
 | `docs/protocol/review-response-producer.md` | Review-response producer workflow protocol | Active |
@@ -120,7 +122,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active implementation plan is open after PR #54 merged. |
+| `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | In progress | Codex | Plans `implementation-handoff/0.1` as an explicit draft-to-packet local producer without schema changes in this planning slice, agent invocation, GitHub posting, merge automation, publish, or external orchestration. |
 
 ## Implemented Or Historical Plans
 

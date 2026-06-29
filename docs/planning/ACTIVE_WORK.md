@@ -28,16 +28,20 @@ publish gate, `0.1.0` package metadata, changelog/tag flow, trusted publishing
 path, release preflight, and no-live-claim runbook are in place before any live
 release claim. No `v0.1.0` tag, GitHub Release, npm publish, registry package,
 or live claim exists yet. Native GitHub review import, response storage, fix
-automation, merge automation, implementation-handoff, external agent
-invocation, and custom prompt-template systems remain later slices.
+automation, merge automation, implementation-handoff runtime behavior, external
+agent invocation, and custom prompt-template systems remain later slices.
 Agent-ready prompt rendering is merged as optional Claude/Codex wrappers around
 the existing validated packet Markdown renderer. Roadmap version labels now use
 PR-indexed pre-release values (`v0.1.0-pre.<PR_NUMBER>`) before the first public
 npm publish, with `v0.1.0-pre.next` reserved for planned slices that do not yet
 have a PR. Resume-project packet implementation is merged, so validated
 `review-response` packets can become local continuation packets without
-invoking agents or applying fixes. The approved first runtime direction is a
-TypeScript CLI on Node.js with npm.
+invoking agents or applying fixes. Implementation-handoff packet planning is
+now active as the pre-work counterpart to `review-request`; this planning slice
+defines an explicit draft-file producer, packet fields, safety gates,
+verification-plan semantics, renderer expectations, and implementation tasks
+without changing packet schemas or runtime behavior yet. The approved first
+runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Current Implementation Source
 
@@ -129,10 +133,12 @@ TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-28-private-redaction-rules-design.md` | Active | Design for repo-local private redaction rules before generated review-request output. |
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
+| `docs/superpowers/specs/2026-06-29-implementation-handoff-packet-design.md` | Active | Design for an explicit-draft `implementation-handoff/0.1` packet before work begins. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Active | Implementation plan for `resume-project/0.1` schema, producer, renderer, CLI, docs, package smoke, and closeout. |
+| `docs/superpowers/plans/2026-06-29-implementation-handoff-packet.md` | Active | Implementation plan for `implementation-handoff/0.1` schema, explicit draft producer, renderer, CLI, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-review-response-packet-implementation.md` | Active | Implementation plan for review-response schema, renderer, generic CLI rendering, tests, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-27-github-pr-transport.md` | Active | Implementation plan for GitHub PR exact-packet transport. |
 | `docs/superpowers/plans/2026-06-27-review-response-producer-workflow.md` | Active | Implementation plan for producing and sending reviewer-authored `review-response` packets from a request packet plus review draft. |
@@ -160,7 +166,7 @@ TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Native review import, automation, implementation-handoff, and fix/merge automation remain planned. |
+| Native review import and automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, and PR #54 turns a validated `review-response` into a local `resume-project` continuation packet. Implementation-handoff is now planned as an explicit local draft-to-packet producer; native review import, automation, runtime implementation-handoff behavior, and fix/merge automation remain unbuilt until their implementation PRs merge. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; external agent invocation remains deferred. |
 | Relay session/thread identity absent | Low | Candidate rule flagged: future trials should use a random Open Relay-generated `relay_session_id` in linked thread titles such as `<id>-OR-CX` and `<id>-OR-CD`; the source-of-truth manifest or packet field is deferred until session/profile orchestration is designed. |
@@ -169,16 +175,15 @@ TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Decide whether to publish `0.1.0` now that request-to-response-to-resume is
-   packet-native, or plan the remaining implementation-handoff packet type for
-   `0.1.x`.
-2. If publishing first, confirm npm owner/org and trusted publishing setup for
+1. Review and merge the implementation-handoff packet planning PR if the
+   explicit draft-file boundary is accepted.
+2. Decide whether to implement `implementation-handoff/0.1` before publishing
+   `0.1.0`, or publish now that request-to-response-to-resume is packet-native.
+3. If publishing first, confirm npm owner/org and trusted publishing setup for
    `@acrossworks/open-relay`.
-3. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
+4. Create the owner-controlled non-prerelease `v0.1.0` GitHub Release only when
    ready to publish, then run post-publish registry-install smoke before
    marking any version `Live`.
-4. If continuing feature work first, draft the implementation-handoff packet
-   design and plan against the existing protocol envelope.
 5. Keep Relay Session ID/thread-title linking as a candidate for the first
    project/session orchestration slice, not the immediate packet schema.
 

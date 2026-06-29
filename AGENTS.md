@@ -9,8 +9,8 @@ owner instructions when they exist.
 - Current known scope: local-first AI handoff/review protocol, TypeScript CLI
   validation, review-request packet generation, Markdown/JSON relay packet
   schema, Markdown rendering, direct Markdown generation, local handoff workflow
-  command, repo-local packet storage, package-readiness smoke, and Across Works
-  roadmap governance.
+  command, repo-local packet storage, package-readiness smoke,
+  implementation-handoff packet planning, and Across Works roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
