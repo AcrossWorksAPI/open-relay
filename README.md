@@ -196,11 +196,13 @@ Code surfaces:
 open-relay experimental watcher-proof \
   --relay-session-id R7M4Q9K2 \
   --codex-thread-id <codex-thread-id> \
-  --output /private/tmp/open-relay-watcher-proof.json
+  --output /private/tmp/open-relay-watcher-proof.json \
+  --confirm-live
 ```
 
 Use `--dry-run` for CI or package-smoke checks that must not invoke agents.
-The live command writes a receipt with the Codex turn id and Claude session id
+The live command requires `--confirm-live` because it spends local Codex and
+Claude quota. It writes a receipt with the Codex turn id and Claude session id
 when both proof turns return their expected tokens. It does not change packet
 schemas, post to GitHub, apply fixes, merge, publish, or install a daemon.
 

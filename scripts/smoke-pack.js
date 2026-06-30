@@ -392,6 +392,10 @@ function assertPackageContents(packManifest) {
   assert.ok(paths.includes("schemas/review-request.schema.json"), "tarball is missing public schema");
   assert.ok(paths.includes("schemas/review-response.schema.json"), "tarball is missing public review-response schema");
   assert.ok(paths.includes("schemas/resume-project.schema.json"), "tarball is missing public resume-project schema");
+  assert.ok(
+    paths.includes("examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json"),
+    "tarball is missing sanitized watcher proof receipt evidence"
+  );
   assert.ok(paths.includes("README.md"), "tarball is missing README.md");
   assert.ok(paths.includes("LICENSE"), "tarball is missing LICENSE");
 

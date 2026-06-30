@@ -20,7 +20,8 @@ open-relay experimental watcher-proof \
   --codex-thread-id <codex-thread-id> \
   --codex-url ws://127.0.0.1:43210 \
   --claude-model haiku \
-  --output /private/tmp/open-relay-watcher-proof.json
+  --output /private/tmp/open-relay-watcher-proof.json \
+  --confirm-live
 ```
 
 Use `--dry-run` to validate command routing and produce a receipt without
@@ -47,6 +48,8 @@ open-relay experimental watcher-proof \
 | `--secrets-env <path>` | No | `$HOME/.config/open-relay/secrets.env` | Optional local env file for Claude automation credentials. |
 | `--timeout-ms <ms>` | No | `120000` | Shared Codex/Claude timeout. |
 | `--output <receipt.json>` | No | stdout | Writes the machine-readable receipt. |
+| `--dry-run` | No | `false` | Produces a no-agent receipt. |
+| `--confirm-live` | Live only | `false` | Required before the command connects to Codex or launches Claude. |
 
 ## Secret Handling
 
@@ -56,7 +59,9 @@ The secrets env loader only imports these keys:
 - `ANTHROPIC_API_KEY`
 
 Unknown keys are ignored. Secret values are not printed in receipts, stderr, or
-stdout. Keep the file outside the repository, for example:
+stdout. If the secrets file is group/world-readable, the live receipt records a
+warning without printing the path or secret value. Keep the file outside the
+repository, for example:
 
 ```bash
 $HOME/.config/open-relay/secrets.env
@@ -70,6 +75,7 @@ The command writes a JSON receipt with:
 - `created_at`
 - `mode`
 - Overall `status`
+- Top-level or Claude-specific warnings, when local setup should be tightened.
 - Codex app-server URL, thread id/search, turn id, expected text, final text,
   and status.
 - Claude command, model, session id, expected text, final text, and status.

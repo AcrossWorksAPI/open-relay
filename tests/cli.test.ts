@@ -93,7 +93,7 @@ test("prints experimental watcher proof command in help", () => {
 
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay experimental watcher-proof/);
-  assert.match(result.stdout, /triggers local Codex and Claude proof turns unless --dry-run is set/);
+  assert.match(result.stdout, /triggers local Codex and Claude proof turns only with --confirm-live/);
 });
 
 test("experimental watcher proof dry-run prints a receipt", () => {

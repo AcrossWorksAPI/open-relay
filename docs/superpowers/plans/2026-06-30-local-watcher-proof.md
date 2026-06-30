@@ -28,9 +28,11 @@ orchestration policy.
   outside the repository.
 - Write a machine-readable JSON receipt with Codex and Claude status,
   identifiers, expected proof text, final proof text, and errors.
+- Require `--confirm-live` before connecting to Codex or launching Claude.
 - Add dry-run behavior for CI/package smoke that never invokes agents.
 - Add tests and package smoke coverage for parser, secrets parsing, dry-run
-  receipts, and installed CLI dry-run behavior.
+  receipts, injected live Codex/Claude trigger paths, and installed CLI dry-run
+  behavior.
 
 ## Non-Goals
 
@@ -78,16 +80,24 @@ orchestration policy.
   `node dist/src/cli.js experimental watcher-proof --relay-session-id R7M4Q9K2 --codex-thread-id <id> --dry-run`
 - Live local proof, when the Codex app-server is running and Claude credentials
   are configured:
-  `node dist/src/cli.js experimental watcher-proof --relay-session-id R7M4Q9K2 --codex-thread-id <id> --output /private/tmp/open-relay-watcher-proof.json`
+  `node dist/src/cli.js experimental watcher-proof --relay-session-id R7M4Q9K2 --codex-thread-id <id> --output /private/tmp/open-relay-watcher-proof.json --confirm-live`
 
 ## Verification Evidence
 
-- `npm run check` passed with 210 tests.
+- `npm run check` passed with 215 tests.
 - `npm run smoke:pack` passed.
+- `npm run release:preflight -- 0.1.0` passed.
 - `git diff --check` passed.
+- Claude review fixes added coverage for injected live Codex app-server RPC
+  flow, injected Claude stream-json flow, `--confirm-live`, Codex thread-search
+  failure states, Claude failure/timeout states, secrets-file permission
+  warnings, stderr draining, and timeout cleanup.
 - Live local proof passed and wrote
-  `/private/tmp/open-relay-watcher-proof-r7m4q9k2.json` with `status:
-  passed`; Codex turn `019f170b-8c20-7800-91bd-93bd335780c4` returned
+  `/private/tmp/open-relay-watcher-proof-r7m4q9k2-confirmed.json` with
+  `status: passed`; committed sanitized receipt
+  `examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json` records the
+  same proof without local paths or secrets. Codex turn
+  `019f1721-af71-7af3-ba85-f576ca411789` returned
   `OPEN_RELAY_CODEX_WATCHER_PROOF_OK`, and Claude session
-  `3d1911ab-d184-4ddf-804b-bab19b161e0e` returned
+  `f39fa68a-c2cf-4e50-8d8b-80e97944fc0f` returned
   `OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK`.

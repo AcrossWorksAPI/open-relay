@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -28,6 +28,7 @@ export type WatcherProofOptions = {
   secretsEnv: string;
   timeoutMs: number;
   dryRun: boolean;
+  confirmLive: boolean;
 };
 
 export type WatcherProofCliOptions = WatcherProofOptions & {
@@ -44,6 +45,7 @@ export type WatcherProofReceipt = {
   cwd: string;
   mode: "dry-run" | "live";
   status: "dry-run" | "passed" | "failed";
+  warnings?: string[];
   codex: CodexProofReceipt;
   claude: ClaudeProofReceipt;
 };
@@ -66,6 +68,7 @@ export type ClaudeProofReceipt = {
   session_id?: string;
   expected_text: string;
   final_text?: string;
+  warnings?: string[];
   error?: string;
 };
 
@@ -79,7 +82,13 @@ type WatcherProofDeps = {
   webSocketFactory?: WebSocketFactory;
   spawnProcess?: typeof spawn;
   readSecretsFile?: (path: string) => Promise<string>;
+  statSecretsFile?: (path: string) => Promise<{ mode: number }>;
   env?: NodeJS.ProcessEnv;
+};
+
+type SecretsEnvLoadResult = {
+  values: Record<string, string>;
+  warnings: string[];
 };
 
 export function defaultSecretsEnvPath(): string {
@@ -105,6 +114,7 @@ export function parseWatcherProofArgs(
   let timeoutMs = DEFAULT_TIMEOUT_MS;
   let output: string | undefined;
   let dryRun = false;
+  let confirmLive = false;
 
   const seen = new Set<string>();
   const valueFlags = new Set([
@@ -123,6 +133,14 @@ export function parseWatcherProofArgs(
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
+
+    if (arg === "--confirm-live") {
+      if (confirmLive) {
+        return { ok: false, message: "Duplicate flag: --confirm-live" };
+      }
+      confirmLive = true;
+      continue;
+    }
 
     if (arg === "--dry-run") {
       if (dryRun) {
@@ -184,6 +202,10 @@ export function parseWatcherProofArgs(
     return { ok: false, message: "Missing required flag: --relay-session-id" };
   }
 
+  if (dryRun && confirmLive) {
+    return { ok: false, message: "Cannot combine --dry-run and --confirm-live." };
+  }
+
   if (!isPositiveNumberString(claudeMaxBudgetUsd)) {
     return { ok: false, message: "Invalid Claude budget: expected a positive number." };
   }
@@ -202,6 +224,7 @@ export function parseWatcherProofArgs(
       secretsEnv,
       timeoutMs,
       dryRun,
+      confirmLive,
       ...(output ? { output } : {})
     }
   };
@@ -237,6 +260,34 @@ export async function runWatcherProof(
     return { ok: true, receipt };
   }
 
+  if (!options.confirmLive) {
+    return {
+      ok: false,
+      receipt: {
+        ...receipt,
+        status: "failed",
+        warnings: [
+          "Live watcher proof requires --confirm-live; use --dry-run for a no-agent receipt."
+        ],
+        codex: {
+          status: "failed",
+          url: options.codexUrl,
+          ...(options.codexThreadId ? { thread_id: options.codexThreadId } : {}),
+          ...(options.codexThreadId ? {} : { thread_search: options.codexSearch }),
+          expected_text: CODEX_WATCHER_PROOF_TEXT,
+          error: "Live watcher proof was not confirmed."
+        },
+        claude: {
+          status: "failed",
+          command: options.claudeCommand,
+          model: options.claudeModel,
+          expected_text: CLAUDE_WATCHER_PROOF_TEXT,
+          error: "Live watcher proof was not confirmed."
+        }
+      }
+    };
+  }
+
   const codex = await runCodexProof(options, deps).catch((error: unknown): CodexProofReceipt => ({
     status: "failed",
     url: options.codexUrl,
@@ -267,13 +318,22 @@ export async function runWatcherProof(
 
 export async function loadSecretsEnvFile(
   path: string,
-  readSecretsFile: (path: string) => Promise<string> = (filePath) => readFile(filePath, "utf8")
-): Promise<Record<string, string>> {
+  readSecretsFile: (path: string) => Promise<string> = (filePath) => readFile(filePath, "utf8"),
+  statSecretsFile: (path: string) => Promise<{ mode: number }> = (filePath) => stat(filePath)
+): Promise<SecretsEnvLoadResult> {
+  const warnings: string[] = [];
   try {
-    return parseSecretsEnvText(await readSecretsFile(path));
+    const stats = await statSecretsFile(path);
+    if ((stats.mode & 0o077) !== 0) {
+      warnings.push("Secrets env file is group/world-readable; use chmod 600.");
+    }
+    return {
+      values: parseSecretsEnvText(await readSecretsFile(path)),
+      warnings
+    };
   } catch (error: unknown) {
     if (isErrnoException(error) && error.code === "ENOENT") {
-      return {};
+      return { values: {}, warnings: [] };
     }
     throw error;
   }
@@ -432,7 +492,8 @@ async function runClaudeProof(
   const prompt = `Relay Session ID: ${options.relaySessionId}. Headless Claude watcher proof. Reply exactly: ${CLAUDE_WATCHER_PROOF_TEXT}`;
   const secrets = await loadSecretsEnvFile(
     options.secretsEnv,
-    deps.readSecretsFile ?? ((filePath) => readFile(filePath, "utf8"))
+    deps.readSecretsFile ?? ((filePath) => readFile(filePath, "utf8")),
+    deps.statSecretsFile ?? ((filePath) => stat(filePath))
   );
   const args = buildClaudeProofArgs({
     prompt,
@@ -446,7 +507,7 @@ async function runClaudeProof(
     timeoutMs: options.timeoutMs,
     env: {
       ...(deps.env ?? process.env),
-      ...secrets
+      ...secrets.values
     },
     spawnProcess: deps.spawnProcess ?? spawn
   });
@@ -460,6 +521,7 @@ async function runClaudeProof(
       ...(result.sessionId ? { session_id: result.sessionId } : {}),
       expected_text: CLAUDE_WATCHER_PROOF_TEXT,
       ...(finalText ? { final_text: finalText } : {}),
+      ...(secrets.warnings.length > 0 ? { warnings: secrets.warnings } : {}),
       error: "Claude command failed."
     };
   }
@@ -472,6 +534,7 @@ async function runClaudeProof(
       ...(result.sessionId ? { session_id: result.sessionId } : {}),
       expected_text: CLAUDE_WATCHER_PROOF_TEXT,
       final_text: finalText,
+      ...(secrets.warnings.length > 0 ? { warnings: secrets.warnings } : {}),
       error: "Claude watcher proof did not return the expected text."
     };
   }
@@ -482,7 +545,8 @@ async function runClaudeProof(
     model: options.claudeModel,
     ...(result.sessionId ? { session_id: result.sessionId } : {}),
     expected_text: CLAUDE_WATCHER_PROOF_TEXT,
-    final_text: finalText
+    final_text: finalText,
+    ...(secrets.warnings.length > 0 ? { warnings: secrets.warnings } : {})
   };
 }
 
@@ -538,6 +602,10 @@ function runClaudeCommand(input: {
     child.on("error", (error) => {
       clearTimeout(timer);
       reject(error);
+    });
+
+    child.stderr?.on("data", () => {
+      // Drain stderr so a verbose CLI cannot block on a full pipe.
     });
 
     child.stdout?.on("data", (chunk: Buffer) => {
@@ -688,8 +756,19 @@ class CodexRpcClient {
       this.pending.set(id, { resolve, reject });
     });
 
-    this.socket.send(JSON.stringify({ id, method, params }));
-    return withTimeout(promise, this.timeoutMs, `Timed out waiting for Codex ${method}.`);
+    try {
+      this.socket.send(JSON.stringify({ id, method, params }));
+    } catch (error: unknown) {
+      this.pending.delete(id);
+      return Promise.reject(error);
+    }
+
+    return withTimeout(
+      promise,
+      this.timeoutMs,
+      `Timed out waiting for Codex ${method}.`,
+      () => this.pending.delete(id)
+    );
   }
 
   waitForTurn(turnId: string): Promise<CompletedTurn> {
@@ -698,15 +777,27 @@ class CodexRpcClient {
       return Promise.resolve(completed);
     }
 
+    let pendingWaiter: PendingRequest | undefined;
     const promise = new Promise<CompletedTurn>((resolve, reject) => {
+      pendingWaiter = { resolve: resolve as (value: unknown) => void, reject };
       const waiters = this.turnWaiters.get(turnId) ?? [];
-      waiters.push({ resolve: resolve as (value: unknown) => void, reject });
+      waiters.push(pendingWaiter);
       this.turnWaiters.set(turnId, waiters);
     });
-    return withTimeout(promise, this.timeoutMs, "Timed out waiting for Codex turn completion.");
+    return withTimeout(
+      promise,
+      this.timeoutMs,
+      "Timed out waiting for Codex turn completion.",
+      () => {
+        if (pendingWaiter) {
+          this.removeTurnWaiter(turnId, pendingWaiter);
+        }
+      }
+    );
   }
 
   close(): void {
+    this.rejectAll(new Error("Codex app-server WebSocket closed."));
     this.socket.close();
   }
 
@@ -788,6 +879,20 @@ class CodexRpcClient {
     }
     this.turnWaiters.clear();
   }
+
+  private removeTurnWaiter(turnId: string, waiter: PendingRequest): void {
+    const waiters = this.turnWaiters.get(turnId);
+    if (!waiters) {
+      return;
+    }
+
+    const remaining = waiters.filter((candidate) => candidate !== waiter);
+    if (remaining.length === 0) {
+      this.turnWaiters.delete(turnId);
+    } else {
+      this.turnWaiters.set(turnId, remaining);
+    }
+  }
 }
 
 function defaultWebSocketFactory(url: string): MinimalWebSocket {
@@ -803,9 +908,17 @@ function defaultWebSocketFactory(url: string): MinimalWebSocket {
   return new WebSocketCtor(url);
 }
 
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  message: string,
+  onTimeout?: () => void
+): Promise<T> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+    const timer = setTimeout(() => {
+      onTimeout?.();
+      reject(new Error(message));
+    }, timeoutMs);
     promise.then(
       (value) => {
         clearTimeout(timer);

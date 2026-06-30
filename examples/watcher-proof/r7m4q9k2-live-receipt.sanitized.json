@@ -1,0 +1,23 @@
+{
+  "relay_session_id": "R7M4Q9K2",
+  "created_at": "2026-06-30T06:05:10.006Z",
+  "cwd": "<redacted-local-path>",
+  "mode": "live",
+  "status": "passed",
+  "codex": {
+    "status": "passed",
+    "url": "ws://127.0.0.1:43210",
+    "thread_id": "019f15e2-facf-7162-a60c-e5a8c3266519",
+    "turn_id": "019f1721-af71-7af3-ba85-f576ca411789",
+    "expected_text": "OPEN_RELAY_CODEX_WATCHER_PROOF_OK",
+    "final_text": "OPEN_RELAY_CODEX_WATCHER_PROOF_OK"
+  },
+  "claude": {
+    "status": "passed",
+    "command": "claude",
+    "model": "haiku",
+    "session_id": "f39fa68a-c2cf-4e50-8d8b-80e97944fc0f",
+    "expected_text": "OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK",
+    "final_text": "OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK"
+  }
+}

@@ -44,7 +44,7 @@ or old plan files as inactive until this registry and current code agree.
 | `src/storage.ts` | Repo-local review-request storage writer | Active |
 | `src/transport/gh.ts` | Sanitized local `gh` CLI runner for GitHub transport | Active |
 | `src/transport/githubPr.ts` | GitHub PR exact-packet transport helpers | Active |
-| `src/watcherProof.ts` | Experimental local watcher proof module | Active |
+| `src/watcherProof.ts` | Experimental local watcher proof module with live confirmation, local agent trigger, receipt, permission-warning, and timeout handling | Active |
 | `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, and save routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
@@ -63,7 +63,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/resumeProjectProducer.test.ts` | Resume-project producer tests | Active |
 | `tests/storage.test.ts` | Repo-local storage tests | Active |
 | `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
-| `tests/watcherProof.test.ts` | Watcher proof parser, secret parsing, and dry-run receipt tests | Active |
+| `tests/watcherProof.test.ts` | Watcher proof parser, secret parsing, dry-run receipt, injected live trigger, and timeout cleanup tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `.github/workflows/release.yml` | GitHub Release-triggered npm publish workflow | Active |
 | `docs/release/npm-release.md` | npm release runbook | Active |
@@ -87,6 +87,7 @@ or old plan files as inactive until this registry and current code agree.
 | `examples/review-response/relay.json` | Machine-readable synthetic review-response packet | Active |
 | `examples/resume-project/relay.md` | Human-readable synthetic resume-project packet | Active |
 | `examples/resume-project/relay.json` | Machine-readable synthetic resume-project packet | Active |
+| `examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json` | Sanitized R7M4Q9K2 live watcher proof receipt evidence | Active |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Runtime/schema CLI design | Active |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Git-state review-request generator design | Active |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Review-request Markdown renderer design | Active |
@@ -124,7 +125,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
+| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage, Claude review fixes, committed sanitized live receipt evidence, and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
 
 ## Implemented Or Historical Plans
 

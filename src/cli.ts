@@ -55,14 +55,14 @@ Usage:
   open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
-  open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run]
+  open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
   open-relay --help
 
 Notes:
   handoff review-request creates local review handoff Markdown; it does not send it anywhere.
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
-  experimental watcher-proof triggers local Codex and Claude proof turns unless --dry-run is set.
+  experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
 `;
 
 export async function run(argv: string[]): Promise<number> {

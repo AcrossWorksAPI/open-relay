@@ -56,7 +56,7 @@ with npm.
 | `package.json` | Active | npm package metadata and build/test/check scripts. |
 | `package-lock.json` | Active | Locked npm dependency graph. |
 | `CHANGELOG.md` | Active | Manual release notes for the first public release target. |
-| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, explicit private redaction rules, Claude/Codex prompt rendering, and watcher-proof dry-run behavior. |
+| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, explicit private redaction rules, Claude/Codex prompt rendering, watcher-proof dry-run behavior, and sanitized watcher-proof example packaging. |
 | `scripts/release-preflight.js` | Active | Dependency-free release gate for version, private-field mode, changelog, package metadata, lockfile, and packlist drift. |
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
@@ -84,7 +84,7 @@ with npm.
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
 | `src/transport/gh.ts` | Active | Sanitized local `gh` CLI runner for GitHub transport. |
 | `src/transport/githubPr.ts` | Active | GitHub PR packet comment marker, send, update, and fetch helpers. |
-| `src/watcherProof.ts` | Active | Experimental local watcher proof module for Codex app-server and headless Claude proof turns, dry-run receipts, and local Claude credential env loading. |
+| `src/watcherProof.ts` | Active | Experimental local watcher proof module for Codex app-server and headless Claude proof turns, `--confirm-live`, dry-run receipts, local Claude credential env loading, permission warnings, and timeout cleanup. |
 | `src/cli.ts` | Active | Local CLI entrypoint for packet validation, review-request generation/handoff/save, generic rendering, GitHub PR transport, and experimental watcher proof routing. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
@@ -104,7 +104,7 @@ with npm.
 | `tests/resumeProjectProducer.test.ts` | Active | Resume-project producer status mapping and task projection tests. |
 | `tests/storage.test.ts` | Active | Repo-local packet storage id, write, collision, and cleanup tests. |
 | `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
-| `tests/watcherProof.test.ts` | Active | Watcher proof parser, secrets env, Claude command argument, and dry-run receipt tests. |
+| `tests/watcherProof.test.ts` | Active | Watcher proof parser, secrets env, Claude command argument, dry-run receipt, injected live Codex/Claude trigger path, failure, permission-warning, and timeout cleanup tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `.github/workflows/release.yml` | Active | GitHub Release-triggered npm publish workflow using trusted publishing, provenance, package smoke, and release preflight. |
 | `docs/release/npm-release.md` | Active | Owner runbook for trusted publishing setup, tag/release steps, post-publish smoke, and rollback. |
@@ -123,6 +123,7 @@ with npm.
 | `examples/review-response/relay.json` | Active | Machine-readable synthetic review-response packet example. |
 | `examples/resume-project/relay.md` | Active | Human-readable synthetic resume-project packet example. |
 | `examples/resume-project/relay.json` | Active | Machine-readable synthetic resume-project packet example. |
+| `examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json` | Active | Sanitized R7M4Q9K2 live watcher proof receipt showing confirmed Codex and Claude proof turns without local paths or secrets. |
 | `docs/superpowers/specs/2026-06-26-runtime-schema-cli-design.md` | Active | Runtime/schema CLI design and approved TypeScript direction. |
 | `docs/superpowers/specs/2026-06-26-git-state-generator-design.md` | Active | Design for JSON-first review-request packet generation from local git state. |
 | `docs/superpowers/specs/2026-06-26-render-review-request-design.md` | Active | Design for deterministic review-request JSON-to-Markdown rendering. |
@@ -172,13 +173,14 @@ with npm.
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
 | Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; the watcher proof branch is a bounded trigger proof and does not install a daemon or packet-triggered orchestrator. |
 | Relay session/thread identity absent | Low | Candidate rule flagged: future trials should use a random Open Relay-generated `relay_session_id` in linked thread titles such as `<id>-OR-CX` and `<id>-OR-CD`; the source-of-truth manifest or packet field is deferred until session/profile orchestration is designed. |
-| Production external agent invocation remains deferred | Low | `experimental watcher-proof` can trigger bounded local Codex and Claude proof turns and write a receipt; production prompt routing, packet-triggered orchestration, fix automation, merge, publish, and deployment remain deferred. |
+| Production external agent invocation remains deferred | Low | `experimental watcher-proof` can trigger bounded local Codex and Claude proof turns only after `--confirm-live` and write a receipt; production prompt routing, packet-triggered orchestration, fix automation, merge, publish, and deployment remain deferred. |
 | Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
 ## Next Recommended Work
 
-1. Review PR #59 for the local watcher proof implementation, including the
-   recorded dry-run, package-smoke, and live receipt evidence.
+1. Re-review PR #59 for the local watcher proof implementation after Claude
+   review fixes, including the injected live-path tests, recorded dry-run,
+   package-smoke, committed sanitized receipt, and live receipt evidence.
 2. Decide whether to publish `0.1.0` after the watcher proof, or plan the
    remaining implementation-handoff packet type for `0.1.x`.
 3. If publishing first, confirm npm owner/org and trusted publishing setup for
