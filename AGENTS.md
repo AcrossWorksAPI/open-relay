@@ -9,8 +9,8 @@ owner instructions when they exist.
 - Current known scope: local-first AI handoff/review protocol, TypeScript CLI
   validation, review-request packet generation, Markdown/JSON relay packet
   schema, Markdown rendering, direct Markdown generation, local handoff workflow
-  command, repo-local packet storage, package-readiness smoke, and Across Works
-  roadmap governance.
+  command, repo-local packet storage, package-readiness smoke, experimental
+  local watcher proof, and Across Works roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
@@ -31,8 +31,11 @@ owner instructions when they exist.
 - Resume behavior: `open-relay generate resume-project` creates a local
   continuation packet from a validated `review-response` without applying fixes
   or invoking agents.
+- Watcher proof behavior: `open-relay experimental watcher-proof` can trigger
+  bounded local Codex app-server and headless Claude proof turns and write a
+  local receipt without changing packet schemas or posting packets.
 - Non-goals for the current runtime slice: MCP server support, package
-  registry publishing, hosted deployment, external agent invocation,
+  registry publishing, hosted deployment, production external agent invocation,
   automatic fixes, automatic merge or publish, custom prompt-template systems,
   global packet storage, storage list/read/delete/archive commands, retention
   policies, and hosted sync.

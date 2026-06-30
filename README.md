@@ -44,6 +44,7 @@ The first loop uses two packet types plus exact-packet transport:
 - Resume project spec: `docs/protocol/resume-project-packet.md`
 - GitHub PR exact-packet transport: `docs/protocol/github-pr-transport.md`
 - Agent-ready prompt rendering: `docs/protocol/agent-ready-prompt-rendering.md`
+- Local watcher proof: `docs/protocol/local-watcher-proof.md`
 - Review request example: `examples/review-request/relay.json`
 - Review response example: `examples/review-response/relay.json`
 - Resume project example: `examples/resume-project/relay.json`
@@ -186,6 +187,23 @@ The reviewer still authors `review-draft.json`. Open Relay derives packet
 envelope fields, validates the final `review-response/0.1`, renders it, and can
 post the exact packet through GitHub PR transport.
 
+## Experimental Local Watcher Proof
+
+Run a bounded local trigger proof for the Codex app-server and headless Claude
+Code surfaces:
+
+```bash
+open-relay experimental watcher-proof \
+  --relay-session-id R7M4Q9K2 \
+  --codex-thread-id <codex-thread-id> \
+  --output /private/tmp/open-relay-watcher-proof.json
+```
+
+Use `--dry-run` for CI or package-smoke checks that must not invoke agents.
+The live command writes a receipt with the Codex turn id and Claude session id
+when both proof turns return their expected tokens. It does not change packet
+schemas, post to GitHub, apply fixes, merge, publish, or install a daemon.
+
 ## Runtime Plan
 
 - Runtime/schema CLI design:
@@ -208,7 +226,7 @@ state while keeping Markdown rendering deferred.
 - Hosted cloud product
 - Universal memory database
 - Complex GUI
-- Automatic agent execution across vendors
+- Production-grade automatic agent execution across vendors
 - Deep IDE integration
 
 ## Planning System

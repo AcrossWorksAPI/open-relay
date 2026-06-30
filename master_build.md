@@ -1,6 +1,6 @@
 # Open Relay Master Build
 
-Last updated: 2026-06-29
+Last updated: 2026-06-30
 
 This is the executive entrypoint for Open Relay. It links the current roadmap,
 status, plan registry, and version ledger used by Across Works Codex workflow.
@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | None yet | No `v0.1.0` tag, GitHub Release, npm publish, registry smoke, or live version claim exists |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, and merged resume-project packet implementation | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; merged-main verification passed `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`; no `v0.1.0` tag exists and `package.json` remains `private: true` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, merged resume-project packet implementation, and local watcher proof implementation ready for review | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; local watcher proof implementation adds an experimental bounded trigger command without packet schema changes, GitHub posting, merge automation, publish, or daemon installation; no `v0.1.0` tag exists and `package.json` remains `private: true` |
 
 ## Scope
 
@@ -56,6 +56,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - PR-indexed pre-release roadmap version tracking
 - agent-ready prompt rendering design, implementation plan, and implementation
 - resume-project packet design, implementation plan, and implementation
+- experimental local watcher proof implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -67,7 +68,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - MCP server support
 - Package publishing beyond local tarball smoke
 - Hosted deployment setup
-- External agent invocation and custom prompt template systems
+- Production external agent invocation and custom prompt template systems
 - External service provisioning
 - Importing assumptions from Hosted Portal, Studio, npm, Python, Cloudflare,
   Render, or any other project
@@ -113,6 +114,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement agent-ready prompt rendering | Done | No |
 | P1 | Plan resume-project packet type | Done | No |
 | P1 | Implement resume-project packet type | Done | No |
+| P1 | Implement local watcher proof | Ready for review | No |
 
 ## Known Gaps
 
@@ -122,7 +124,8 @@ Current scope is the first local protocol and validation CLI baseline:
   rendering remains available through
   `open-relay render review-request`.
 - Local `handoff review-request` is merged as a Markdown-first convenience
-  command; external agent invocation remains deferred.
+  command; production external agent invocation remains deferred outside the
+  bounded watcher proof command.
 - Repo-local packet storage is merged as explicit `.open-relay/review-requests`
   bundles; global storage, list/read/delete/archive, retention, and hosted sync
   remain deferred.

@@ -36,6 +36,10 @@ import {
   parseGithubPrTarget,
   sendPacketToGithubPr
 } from "./transport/githubPr";
+import {
+  parseWatcherProofArgs,
+  runWatcherProof
+} from "./watcherProof";
 
 const usage = `Open Relay
 
@@ -51,12 +55,14 @@ Usage:
   open-relay respond github-pr --request <review-request.json> --review <review-response-draft.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
+  open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run]
   open-relay --help
 
 Notes:
   handoff review-request creates local review handoff Markdown; it does not send it anywhere.
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
+  experimental watcher-proof triggers local Codex and Claude proof turns unless --dry-run is set.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -101,6 +107,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "respond" && args[1] === "github-pr") {
     return respondGithubPrCommand(args.slice(2));
+  }
+
+  if (args[0] === "experimental" && args[1] === "watcher-proof") {
+    return experimentalWatcherProofCommand(args.slice(2));
   }
 
   if (args[0] === "render") {
@@ -653,6 +663,36 @@ async function generateReviewResponseCommand(args: string[]): Promise<number> {
     process.stdout.write(successMessage);
   } else {
     process.stdout.write(output);
+  }
+
+  return 0;
+}
+
+async function experimentalWatcherProofCommand(args: string[]): Promise<number> {
+  const parsed = parseWatcherProofArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  const result = await runWatcherProof(parsed.options);
+  const output = `${JSON.stringify(result.receipt, null, 2)}\n`;
+
+  if (parsed.options.output) {
+    try {
+      await writeFile(parsed.options.output, output, "utf8");
+    } catch {
+      process.stderr.write("Could not write watcher proof receipt.\n");
+      return 1;
+    }
+    process.stdout.write("Wrote watcher proof receipt.\n");
+  } else {
+    process.stdout.write(output);
+  }
+
+  if (!result.ok) {
+    process.stderr.write("Watcher proof failed.\n");
+    return 1;
   }
 
   return 0;

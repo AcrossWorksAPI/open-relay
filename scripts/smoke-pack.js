@@ -57,6 +57,19 @@ try {
   runCli(cli, ["--help"], { contains: "open-relay render review-request" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental watcher-proof" });
+  const watcherDryRun = runCli(cli, [
+    "experimental",
+    "watcher-proof",
+    "--relay-session-id", "SMOKE123",
+    "--codex-thread-id", "codex-thread",
+    "--dry-run"
+  ], {
+    contains: "OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK"
+  });
+  const watcherReceipt = JSON.parse(watcherDryRun);
+  assert.equal(watcherReceipt.mode, "dry-run");
+  assert.equal(watcherReceipt.status, "dry-run");
   runCli(cli, ["validate", join(fixtureDir, "examples", "review-request", "relay.json")], {
     contains: "valid packet"
   });

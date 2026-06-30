@@ -1,6 +1,6 @@
 # Open Relay Status
 
-Last updated: 2026-06-29
+Last updated: 2026-06-30
 
 ## Current Baseline
 
@@ -12,7 +12,7 @@ Node.js with npm, the validation CLI is merged, and the first JSON-only
 git-state review-request generator is merged to `main`. The first package
 version target is `0.1.0`; live release timing remains owner-controlled. The
 neutral `review-request` JSON-to-Markdown renderer is merged for Codex, Claude,
-or another reviewer, and this branch adds optional Claude/Codex prompt wrappers
+or another reviewer, and optional Claude/Codex prompt wrappers are merged
 without changing neutral packet Markdown. npm
 package metadata, an allowlisted package packlist, and local tarball install
 smoke are merged as the release-readiness gate before publishing. Direct
@@ -44,6 +44,11 @@ Markdown; it does not invoke agents, post to GitHub, merge, publish, run
 commands, or change packet schemas. Resume-project packet implementation is
 merged, so validated `review-response` packets can become local continuation
 packets without applying fixes or invoking agents.
+Local watcher proof implementation is ready for review as the first
+experimental external trigger command. It targets Codex through the local
+app-server WebSocket and Claude through headless `claude -p`, writes a local
+JSON receipt, and keeps production daemon behavior, packet schema changes,
+GitHub posting, fixes, merge automation, publish, and deployment out of scope.
 Roadmap version tracking now uses
 PR-indexed pre-release labels (`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap
 views can track changes by version without implying an npm publish or live
@@ -84,7 +89,8 @@ release.
 | Roadmap PR-indexed pre-release tracking | Done | PR #51 updated the roadmap `Version` column from `Baseline`/`Unversioned` labels to `v0.1.0-pre.<PR_NUMBER>` for historical PR-backed slices and `v0.1.0-pre.next` for future planned slices without a PR. |
 | Agent-ready prompt rendering implementation | Done | Branch `codex/agent-ready-prompt-rendering-implementation` adds pure prompt rendering, `render --template neutral\|claude\|codex`, package exports, installed-package smoke, README docs, and a protocol doc without agent invocation or schema changes. |
 | Resume-project packet implementation | Done | PR #54 merged `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, and agent-ready prompt rendering are in place; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, automation, external agent invocation, and external orchestration remain unbuilt. |
+| Local watcher proof implementation | Ready for review | Branch `codex/local-watcher-proof` adds experimental `open-relay experimental watcher-proof`, Codex app-server trigger support, Claude headless trigger support, local secrets-env loading for Claude credentials, dry-run/live receipts, tests, package smoke coverage, and protocol docs without packet schema changes, GitHub posting, merge automation, publish, or daemon installation. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, agent-ready prompt rendering, and local watcher proof implementation are in place or in progress; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, production automation, and production external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -92,6 +98,7 @@ release.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-06-30 | Local watcher proof implementation branch check | Passed | Branch `codex/local-watcher-proof` adds the experimental watcher proof command; `npm run check` passed with 210 tests, `npm run smoke:pack` passed, `git diff --check` passed, and live receipt `/private/tmp/open-relay-watcher-proof-r7m4q9k2.json` recorded `status: passed` with Codex turn `019f170b-8c20-7800-91bd-93bd335780c4` returning `OPEN_RELAY_CODEX_WATCHER_PROOF_OK` and Claude session `3d1911ab-d184-4ddf-804b-bab19b161e0e` returning `OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK`. |
 | 2026-06-29 | Relay session identifier candidate branch check | Passed | PR #56 merged at commit `e495a14`; the branch flags Relay Session IDs as a future workflow candidate for linked Codex/Claude thread titles and defers manifest or packet-field implementation until project/session orchestration; `git diff --check` passed and `Governance Checks` passed. |
 | 2026-06-29 | PR #54 merged-main closeout | Passed | PR #54 merged at commit `9b0204e`; Claude review dogfooded request-to-response-to-resume and reported no findings; fresh `main` verification passed `npm run check` with 201 tests, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`. |
 | 2026-06-29 | Resume-project packet implementation branch checks | Passed | PR #54 / branch `codex/resume-project-implementation` adds `resume-project/0.1` schema validation, producer, Markdown renderer, generic render dispatch, `generate resume-project`, Codex prompt wording, examples, protocol docs, README docs, and installed-package smoke coverage; targeted RED/GREEN tests passed, `npm run check` passed with 201 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
@@ -162,9 +169,9 @@ release.
 
 ## Next Step
 
-Choose the next gate: either publish `0.1.0` after npm trusted publishing is
-configured and the owner is ready to create the non-prerelease `v0.1.0` GitHub
-Release, or plan the remaining implementation-handoff packet type for `0.1.x`.
+Open and review the local watcher proof implementation PR. After that, choose
+whether to publish `0.1.0` or plan the remaining implementation-handoff packet
+type for `0.1.x`.
 
 ## Owner Decisions Needed
 

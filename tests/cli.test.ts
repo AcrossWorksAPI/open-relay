@@ -86,6 +86,37 @@ test("prints resume-project producer command in help", () => {
   assert.match(result.stdout, /open-relay generate resume-project/);
 });
 
+test("prints experimental watcher proof command in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay experimental watcher-proof/);
+  assert.match(result.stdout, /triggers local Codex and Claude proof turns unless --dry-run is set/);
+});
+
+test("experimental watcher proof dry-run prints a receipt", () => {
+  const result = spawnSync(process.execPath, [
+    cliPath,
+    "experimental",
+    "watcher-proof",
+    "--relay-session-id", "R7M4Q9K2",
+    "--codex-thread-id", "codex-thread",
+    "--dry-run"
+  ], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stderr, "");
+  const receipt = JSON.parse(result.stdout) as Record<string, unknown>;
+  assert.equal(receipt.relay_session_id, "R7M4Q9K2");
+  assert.equal(receipt.mode, "dry-run");
+  assert.match(result.stdout, /OPEN_RELAY_CODEX_WATCHER_PROOF_OK/);
+  assert.match(result.stdout, /OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK/);
+});
+
 test("validates the example packet", () => {
   const result = spawnSync(
     process.execPath,
