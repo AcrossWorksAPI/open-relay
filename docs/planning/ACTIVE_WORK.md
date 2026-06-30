@@ -40,8 +40,9 @@ invoking agents or applying fixes. Local watcher proof implementation is ready
 for review as an experimental bounded trigger command for Codex app-server and
 headless Claude Code proof turns; it writes a receipt and does not install a
 daemon, change packet schemas, post to GitHub, apply fixes, merge, publish, or
-deploy. Local relay watch implementation is in progress as the first foreground
-packet-native orchestrator: it fetches a PR `review-request/0.1` packet,
+deploy. Local relay watch implementation is ready for review as the first
+foreground packet-native orchestrator: it fetches a PR `review-request/0.1`
+packet,
 renders a Claude prompt, invokes headless Claude only with explicit live
 confirmation, validates and posts or updates a `review-response/0.1` only with
 explicit GitHub write confirmation, and records local receipt/state evidence
@@ -147,7 +148,7 @@ is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-28-agent-ready-prompt-rendering-design.md` | Active | Design for optional `render --template neutral\|claude\|codex` prompt wrappers around validated packet Markdown. |
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
 | `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Active | Implementation plan for the bounded local Codex/Claude watcher proof command and receipt. |
-| `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Active | Implementation plan for the foreground GitHub PR request-to-Claude-to-response packet watcher. |
+| `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Active | Implementation plan for PR #60's foreground GitHub PR request-to-Claude-to-response packet watcher. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
@@ -188,7 +189,7 @@ is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Review the local relay watch branch after PR #59, including fake-`gh`
+1. Review PR #60 after PR #59, including fake-`gh`
    dry-run coverage, injected live Claude-to-GitHub posting coverage, receipt
    and state semantics, confirmation gates, and no-daemon/non-goals.
 2. Run an owner-approved live relay-watch pass against a disposable PR packet
