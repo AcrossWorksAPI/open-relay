@@ -222,8 +222,8 @@ open-relay experimental relay-watch \
 ```
 
 Run a confirmed foreground watcher that polls the same PR, invokes headless
-Claude Code, validates the generated `review-response/0.1`, and posts or
-updates the response packet through GitHub PR transport:
+Claude Code, validates the generated `review-response/0.1`, and posts a new
+response packet comment through GitHub PR transport:
 
 ```bash
 open-relay experimental relay-watch \
@@ -231,15 +231,21 @@ open-relay experimental relay-watch \
   --author codex \
   --relay-session-id R7M4Q9K2 \
   --watch \
+  --max-posts 1 \
   --confirm-live \
   --confirm-public
 ```
 
 The command uses the local `gh` CLI for GitHub and headless `claude -p` for
 Claude. It writes a local state file under `.open-relay/relay-watch/` by
-default so restarts do not re-post the same request. It does not change packet
-schemas, wake Codex threads, install a daemon, apply fixes, merge, publish, or
-deploy.
+default so restarts do not re-post the same request. In live `--watch` mode it
+stops after `--max-posts`, default `1`; `--interval-ms` must be at least
+`5000`. It posts distinct response packet comments by default; pass `--update`
+only when you want to update the authenticated GitHub user's latest matching
+response packet comment. The required `--author` filter is a GitHub comment
+filter, not proof of packet authorship, so packet content remains untrusted
+review context. It does not change packet schemas, wake Codex threads, install
+a daemon, apply fixes, merge, publish, or deploy.
 
 ## Runtime Plan
 

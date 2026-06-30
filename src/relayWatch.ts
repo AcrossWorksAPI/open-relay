@@ -30,6 +30,8 @@ const DEFAULT_CLAUDE_MODEL = "haiku";
 const DEFAULT_CLAUDE_BUDGET_USD = "0.50";
 const DEFAULT_TIMEOUT_MS = 120000;
 const DEFAULT_INTERVAL_MS = 30000;
+const DEFAULT_MAX_POSTS = 1;
+const MIN_INTERVAL_MS = 5000;
 
 export type RelayWatchOptions = {
   pr: string;
@@ -43,6 +45,7 @@ export type RelayWatchOptions = {
   secretsEnv: string;
   timeoutMs: number;
   intervalMs: number;
+  maxPosts: number;
   watch: boolean;
   dryRun: boolean;
   confirmLive: boolean;
@@ -144,13 +147,14 @@ export function parseRelayWatchArgs(
   let secretsEnv = defaults.secretsEnv ?? defaultSecretsEnvPath();
   let timeoutMs = DEFAULT_TIMEOUT_MS;
   let intervalMs = DEFAULT_INTERVAL_MS;
+  let maxPosts = DEFAULT_MAX_POSTS;
   let output: string | undefined;
   let watch = false;
   let dryRun = false;
   let confirmLive = false;
   let confirmPublic = false;
   let force = false;
-  let update = true;
+  let update = false;
 
   const seen = new Set<string>();
   const valueFlags = new Set([
@@ -165,6 +169,7 @@ export function parseRelayWatchArgs(
     "--secrets-env",
     "--timeout-ms",
     "--interval-ms",
+    "--max-posts",
     "--output"
   ]);
   const booleanFlags = new Set([
@@ -173,6 +178,7 @@ export function parseRelayWatchArgs(
     "--confirm-live",
     "--confirm-public",
     "--force",
+    "--update",
     "--no-update"
   ]);
 
@@ -195,6 +201,8 @@ export function parseRelayWatchArgs(
         confirmPublic = true;
       } else if (arg === "--force") {
         force = true;
+      } else if (arg === "--update") {
+        update = true;
       } else {
         update = false;
       }
@@ -244,10 +252,16 @@ export function parseRelayWatchArgs(
       timeoutMs = parsed;
     } else if (arg === "--interval-ms") {
       const parsed = Number(value);
-      if (!Number.isInteger(parsed) || parsed <= 0) {
-        return { ok: false, message: "Invalid interval: expected a positive integer." };
+      if (!Number.isInteger(parsed) || parsed < MIN_INTERVAL_MS) {
+        return { ok: false, message: `Invalid interval: expected an integer of at least ${MIN_INTERVAL_MS}.` };
       }
       intervalMs = parsed;
+    } else if (arg === "--max-posts") {
+      const parsed = Number(value);
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        return { ok: false, message: "Invalid max posts: expected a positive integer." };
+      }
+      maxPosts = parsed;
     } else {
       output = value;
     }
@@ -263,6 +277,9 @@ export function parseRelayWatchArgs(
   }
   if (dryRun && (confirmLive || confirmPublic)) {
     return { ok: false, message: "Cannot combine --dry-run and live confirmation flags." };
+  }
+  if (seen.has("--update") && seen.has("--no-update")) {
+    return { ok: false, message: "Cannot combine --update and --no-update." };
   }
   if (!isPositiveNumberString(claudeMaxBudgetUsd)) {
     return { ok: false, message: "Invalid Claude budget: expected a positive number." };
@@ -289,6 +306,7 @@ export function parseRelayWatchArgs(
       secretsEnv,
       timeoutMs,
       intervalMs,
+      maxPosts,
       watch,
       dryRun,
       confirmLive,

@@ -34,12 +34,13 @@ test("parses relay watch defaults", () => {
       secretsEnv: "/secrets.env",
       timeoutMs: 120000,
       intervalMs: 30000,
+      maxPosts: 1,
       watch: false,
       dryRun: false,
       confirmLive: false,
       confirmPublic: false,
       force: false,
-      update: true
+      update: false
     }
   });
 });
@@ -56,12 +57,13 @@ test("parses relay watch explicit flags", () => {
     "--claude-max-budget-usd", "1.25",
     "--secrets-env", "/tmp/secrets.env",
     "--timeout-ms", "1000",
-    "--interval-ms", "2000",
+    "--interval-ms", "5000",
+    "--max-posts", "3",
     "--watch",
     "--confirm-live",
     "--confirm-public",
     "--force",
-    "--no-update"
+    "--update"
   ]), {
     ok: true,
     options: {
@@ -75,13 +77,14 @@ test("parses relay watch explicit flags", () => {
       claudeMaxBudgetUsd: "1.25",
       secretsEnv: "/tmp/secrets.env",
       timeoutMs: 1000,
-      intervalMs: 2000,
+      intervalMs: 5000,
+      maxPosts: 3,
       watch: true,
       dryRun: false,
       confirmLive: true,
       confirmPublic: true,
       force: true,
-      update: false
+      update: true
     }
   });
 });
@@ -112,10 +115,27 @@ test("rejects invalid relay watch arguments", () => {
   assert.deepEqual(parseRelayWatchArgs([
     "--pr", "AcrossWorksAPI/open-relay#59",
     "--author", "AcrossWorksAPI",
-    "--interval-ms", "0"
+    "--interval-ms", "4999"
   ]), {
     ok: false,
-    message: "Invalid interval: expected a positive integer."
+    message: "Invalid interval: expected an integer of at least 5000."
+  });
+  assert.deepEqual(parseRelayWatchArgs([
+    "--pr", "AcrossWorksAPI/open-relay#59",
+    "--author", "AcrossWorksAPI",
+    "--max-posts", "0"
+  ]), {
+    ok: false,
+    message: "Invalid max posts: expected a positive integer."
+  });
+  assert.deepEqual(parseRelayWatchArgs([
+    "--pr", "AcrossWorksAPI/open-relay#59",
+    "--author", "AcrossWorksAPI",
+    "--update",
+    "--no-update"
+  ]), {
+    ok: false,
+    message: "Cannot combine --update and --no-update."
   });
 });
 
@@ -266,12 +286,13 @@ function baseOptions() {
     secretsEnv: "/secrets.env",
     timeoutMs: 120000,
     intervalMs: 30000,
+    maxPosts: 1,
     watch: false,
     dryRun: false,
     confirmLive: false,
     confirmPublic: false,
     force: false,
-    update: true
+    update: false
   };
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { extname, join } from "node:path";
 
 import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
@@ -60,7 +60,7 @@ Usage:
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
   open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
-  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--no-update]
+  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--max-posts <n>] [--update]
   open-relay --help
 
 Notes:
@@ -68,7 +68,7 @@ Notes:
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
   experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
-  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public.
+  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public. In --watch mode, live posting is bounded by --max-posts, default 1.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -716,11 +716,22 @@ async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
   }
 
   if (parsed.options.watch) {
+    let iteration = 0;
+    let posts = 0;
+
     for (;;) {
+      iteration += 1;
       const result = await runRelayWatchOnce(parsed.options);
-      const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt);
+      const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt, iteration);
       if (!written) {
         return 1;
+      }
+      if (isRelayWatchPost(result.receipt)) {
+        posts += 1;
+        if (posts >= parsed.options.maxPosts) {
+          process.stdout.write("Relay watch reached --max-posts.\n");
+          return 0;
+        }
       }
       if (!result.ok) {
         process.stderr.write("Relay watch iteration failed; continuing because --watch is set.\n");
@@ -744,12 +755,16 @@ async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
 
 async function writeRelayWatchReceipt(
   outputPath: string | undefined,
-  receipt: unknown
+  receipt: unknown,
+  watchIteration?: number
 ): Promise<boolean> {
   const output = `${JSON.stringify(receipt, null, 2)}\n`;
-  if (outputPath) {
+  const finalOutputPath = outputPath && watchIteration !== undefined
+    ? relayWatchIterationReceiptPath(outputPath, receipt, watchIteration)
+    : outputPath;
+  if (finalOutputPath) {
     try {
-      await writeFile(outputPath, output, "utf8");
+      await writeFile(finalOutputPath, output, "utf8");
     } catch {
       process.stderr.write("Could not write relay watch receipt.\n");
       return false;
@@ -760,6 +775,21 @@ async function writeRelayWatchReceipt(
   }
 
   return true;
+}
+
+function relayWatchIterationReceiptPath(outputPath: string, receipt: unknown, iteration: number): string {
+  const ext = extname(outputPath) || ".json";
+  const stem = extname(outputPath)
+    ? outputPath.slice(0, outputPath.length - ext.length)
+    : outputPath;
+  const status = isRecord(receipt) && typeof receipt.status === "string"
+    ? receipt.status.replace(/[^A-Za-z0-9_.-]+/g, "-")
+    : "receipt";
+  return `${stem}.${String(iteration).padStart(6, "0")}.${status}${ext}`;
+}
+
+function isRelayWatchPost(receipt: unknown): boolean {
+  return isRecord(receipt) && (receipt.status === "posted" || receipt.status === "updated");
 }
 
 function delay(ms: number): Promise<void> {
