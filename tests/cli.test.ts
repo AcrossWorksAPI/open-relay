@@ -96,6 +96,16 @@ test("prints experimental watcher proof command in help", () => {
   assert.match(result.stdout, /triggers local Codex and Claude proof turns only with --confirm-live/);
 });
 
+test("prints experimental relay watch command in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay experimental relay-watch/);
+  assert.match(result.stdout, /fetches review-request packets from GitHub PR comments/);
+});
+
 test("experimental watcher proof dry-run prints a receipt", () => {
   const result = spawnSync(process.execPath, [
     cliPath,
@@ -115,6 +125,65 @@ test("experimental watcher proof dry-run prints a receipt", () => {
   assert.equal(receipt.mode, "dry-run");
   assert.match(result.stdout, /OPEN_RELAY_CODEX_WATCHER_PROOF_OK/);
   assert.match(result.stdout, /OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK/);
+});
+
+test("experimental relay watch dry-run fetches packet through fake gh and prints a receipt", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-relay-watch-"));
+  const binDir = join(directory, "bin");
+  const statePath = join(directory, "state.json");
+
+  try {
+    const packet = JSON.parse(readFileSync("examples/review-request/relay.json", "utf8"));
+    const payload = Buffer.from(`${JSON.stringify(packet, null, 2)}\n`, "utf8").toString("base64");
+    const body = [
+      "<!-- open-relay-packet",
+      "packet_type: review-request",
+      "packet_version: 0.1",
+      `payload_base64: ${payload}`,
+      "-->",
+      "# Open Relay Packet: review-request/0.1",
+      "",
+      "# Review Request Relay Packet",
+      ""
+    ].join("\n");
+    const comments = JSON.stringify([[
+      { id: 77, body, created_at: "2026-06-30T00:00:00Z", user: { login: "codex" } }
+    ]]);
+
+    writeFakeGh(binDir, comments);
+
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "experimental",
+      "relay-watch",
+      "--pr",
+      "AcrossWorksAPI/open-relay#59",
+      "--author",
+      "codex",
+      "--relay-session-id",
+      "R7M4Q9K2",
+      "--state-file",
+      statePath,
+      "--dry-run"
+    ], {
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH ?? ""}`
+      }
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, "");
+    const receipt = JSON.parse(result.stdout) as Record<string, unknown>;
+    assert.equal(receipt.relay_session_id, "R7M4Q9K2");
+    assert.equal(receipt.status, "dry-run");
+    assert.equal(receipt.mode, "dry-run");
+    assert.equal((receipt.request as Record<string, unknown>).comment_id, 77);
+    assert.match(result.stdout, /Claude Review Prompt/);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test("validates the example packet", () => {
@@ -1914,7 +1983,7 @@ test("exports the validator and renderer from the package entrypoint", () => {
     process.execPath,
     [
       "-e",
-      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewResponseMarkdown !== 'function') process.exit(1); if (typeof relay.buildResumeProjectPacket !== 'function') process.exit(1);"
+      "const relay = require('.'); if (typeof relay.validatePacket !== 'function') process.exit(1); if (typeof relay.renderPacketMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewRequestMarkdown !== 'function') process.exit(1); if (typeof relay.renderReviewResponseMarkdown !== 'function') process.exit(1); if (typeof relay.buildResumeProjectPacket !== 'function') process.exit(1); if (typeof relay.parseRelayWatchArgs !== 'function') process.exit(1);"
     ],
     {
       encoding: "utf8"

@@ -15,6 +15,17 @@ export {
 export {
   buildResumeProjectPacket
 } from "./resumeProjectProducer";
+export {
+  buildRelayWatchClaudePrompt,
+  defaultRelayWatchStateFile,
+  parseRelayWatchArgs,
+  runRelayWatchOnce,
+  type RelayWatchCliOptions,
+  type RelayWatchOptions,
+  type RelayWatchParseResult,
+  type RelayWatchReceipt,
+  type RelayWatchRunResult
+} from "./relayWatch";
 export type {
   ResumeProjectPacket,
   ResumeProjectStatus,

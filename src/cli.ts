@@ -18,6 +18,10 @@ import { parseGenerateResumeProjectArgs } from "./resumeProjectArgs";
 import type { ResumeProjectPacket } from "./resumeProject";
 import { buildResumeProjectPacket } from "./resumeProjectProducer";
 import {
+  parseRelayWatchArgs,
+  runRelayWatchOnce
+} from "./relayWatch";
+import {
   parseGenerateReviewResponseArgs,
   parseRespondGithubPrArgs
 } from "./reviewResponseArgs";
@@ -56,6 +60,7 @@ Usage:
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
   open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
+  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--no-update]
   open-relay --help
 
 Notes:
@@ -63,6 +68,7 @@ Notes:
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
   experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
+  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -111,6 +117,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "experimental" && args[1] === "watcher-proof") {
     return experimentalWatcherProofCommand(args.slice(2));
+  }
+
+  if (args[0] === "experimental" && args[1] === "relay-watch") {
+    return experimentalRelayWatchCommand(args.slice(2));
   }
 
   if (args[0] === "render") {
@@ -696,6 +706,66 @@ async function experimentalWatcherProofCommand(args: string[]): Promise<number> 
   }
 
   return 0;
+}
+
+async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
+  const parsed = parseRelayWatchArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  if (parsed.options.watch) {
+    for (;;) {
+      const result = await runRelayWatchOnce(parsed.options);
+      const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt);
+      if (!written) {
+        return 1;
+      }
+      if (!result.ok) {
+        process.stderr.write("Relay watch iteration failed; continuing because --watch is set.\n");
+      }
+      await delay(parsed.options.intervalMs);
+    }
+  }
+
+  const result = await runRelayWatchOnce(parsed.options);
+  const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt);
+  if (!written) {
+    return 1;
+  }
+  if (!result.ok) {
+    process.stderr.write("Relay watch failed.\n");
+    return 1;
+  }
+
+  return 0;
+}
+
+async function writeRelayWatchReceipt(
+  outputPath: string | undefined,
+  receipt: unknown
+): Promise<boolean> {
+  const output = `${JSON.stringify(receipt, null, 2)}\n`;
+  if (outputPath) {
+    try {
+      await writeFile(outputPath, output, "utf8");
+    } catch {
+      process.stderr.write("Could not write relay watch receipt.\n");
+      return false;
+    }
+    process.stdout.write("Wrote relay watch receipt.\n");
+  } else {
+    process.stdout.write(output);
+  }
+
+  return true;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 async function generateResumeProjectCommand(args: string[]): Promise<number> {

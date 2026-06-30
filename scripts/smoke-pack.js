@@ -58,6 +58,7 @@ try {
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
   runCli(cli, ["--help"], { contains: "open-relay experimental watcher-proof" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental relay-watch" });
   const watcherDryRun = runCli(cli, [
     "experimental",
     "watcher-proof",
