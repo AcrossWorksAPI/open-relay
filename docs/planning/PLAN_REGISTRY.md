@@ -124,7 +124,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks the experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
+| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
 
 ## Implemented Or Historical Plans
 

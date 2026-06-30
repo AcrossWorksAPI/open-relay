@@ -177,7 +177,7 @@ with npm.
 
 ## Next Recommended Work
 
-1. Open and review the local watcher proof implementation PR, including the
+1. Review PR #59 for the local watcher proof implementation, including the
    recorded dry-run, package-smoke, and live receipt evidence.
 2. Decide whether to publish `0.1.0` after the watcher proof, or plan the
    remaining implementation-handoff packet type for `0.1.x`.
