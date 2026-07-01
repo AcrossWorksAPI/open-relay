@@ -130,8 +130,8 @@
 - [x] Add the local response-watch slice to the roadmap as `v0.1.0-pre.next` until a PR exists.
 - [x] Record source files, tests, protocol docs, risks, and evidence.
 - [x] Run `npm run check`, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`.
-- [ ] Open a draft PR stacked on `codex/local-relay-status-indicator`.
-- [ ] Replace temporary roadmap tracking with the PR-numbered pre-release label.
+- [x] Open a draft PR stacked on `codex/local-relay-status-indicator`.
+- [x] Replace temporary roadmap tracking with the PR-numbered pre-release label.
 
 ## Verification Plan
 
