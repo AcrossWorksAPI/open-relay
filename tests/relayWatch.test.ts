@@ -35,6 +35,7 @@ test("parses relay watch defaults", () => {
       timeoutMs: 120000,
       intervalMs: 30000,
       maxPosts: 1,
+      maxFailures: 1,
       watch: false,
       dryRun: false,
       confirmLive: false,
@@ -59,6 +60,7 @@ test("parses relay watch explicit flags", () => {
     "--timeout-ms", "1000",
     "--interval-ms", "5000",
     "--max-posts", "3",
+    "--max-failures", "2",
     "--watch",
     "--confirm-live",
     "--confirm-public",
@@ -79,6 +81,7 @@ test("parses relay watch explicit flags", () => {
       timeoutMs: 1000,
       intervalMs: 5000,
       maxPosts: 3,
+      maxFailures: 2,
       watch: true,
       dryRun: false,
       confirmLive: true,
@@ -127,6 +130,14 @@ test("rejects invalid relay watch arguments", () => {
   ]), {
     ok: false,
     message: "Invalid max posts: expected a positive integer."
+  });
+  assert.deepEqual(parseRelayWatchArgs([
+    "--pr", "AcrossWorksAPI/open-relay#59",
+    "--author", "AcrossWorksAPI",
+    "--max-failures", "0"
+  ]), {
+    ok: false,
+    message: "Invalid max failures: expected a positive integer."
   });
   assert.deepEqual(parseRelayWatchArgs([
     "--pr", "AcrossWorksAPI/open-relay#59",
@@ -287,6 +298,7 @@ function baseOptions() {
     timeoutMs: 120000,
     intervalMs: 30000,
     maxPosts: 1,
+    maxFailures: 1,
     watch: false,
     dryRun: false,
     confirmLive: false,

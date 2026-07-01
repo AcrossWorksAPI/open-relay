@@ -135,6 +135,8 @@
 - Modify: governance closeout docs
 
 - [x] Add `--max-posts`, default `1`, so live `--watch` posting is bounded.
+- [x] Add `--max-failures`, default `1`, so failed live `--watch`
+      iterations do not retry forever during owner-approved proof runs.
 - [x] Make distinct response packet comments the default and require `--update` for update behavior.
 - [x] Reject foreground poll intervals below `5000` milliseconds.
 - [x] Write per-iteration receipt files in `--watch` mode when `--output` is set.
@@ -147,4 +149,8 @@
 - Package smoke: `npm run smoke:pack`
 - Release preflight: `npm run release:preflight -- 0.1.0`
 - Whitespace: `git diff --check`
-- Optional live smoke, only when owner wants a real post: run `open-relay experimental relay-watch --pr <pr> --author <login> --relay-session-id R7M4Q9K2 --confirm-live --confirm-public --force --max-posts 1 --output /private/tmp/open-relay-relay-watch.json`
+- Optional live smoke, only when owner wants a real post: run `open-relay experimental relay-watch --pr <pr> --author <login> --relay-session-id R7M4Q9K2 --confirm-live --confirm-public --force --max-posts 1 --max-failures 1 --output /private/tmp/open-relay-relay-watch.json`
+- 2026-07-01 owner-approved live proof against PR #60 fetched the current
+  request packet and exited safely at `--max-failures` after Claude timed out;
+  no new response packet was posted. Run a narrower disposable packet or a
+  longer-timeout PR #60 pass before marking the live return leg proven.

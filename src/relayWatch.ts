@@ -31,6 +31,7 @@ const DEFAULT_CLAUDE_BUDGET_USD = "0.50";
 const DEFAULT_TIMEOUT_MS = 120000;
 const DEFAULT_INTERVAL_MS = 30000;
 const DEFAULT_MAX_POSTS = 1;
+const DEFAULT_MAX_FAILURES = 1;
 const MIN_INTERVAL_MS = 5000;
 
 export type RelayWatchOptions = {
@@ -46,6 +47,7 @@ export type RelayWatchOptions = {
   timeoutMs: number;
   intervalMs: number;
   maxPosts: number;
+  maxFailures: number;
   watch: boolean;
   dryRun: boolean;
   confirmLive: boolean;
@@ -148,6 +150,7 @@ export function parseRelayWatchArgs(
   let timeoutMs = DEFAULT_TIMEOUT_MS;
   let intervalMs = DEFAULT_INTERVAL_MS;
   let maxPosts = DEFAULT_MAX_POSTS;
+  let maxFailures = DEFAULT_MAX_FAILURES;
   let output: string | undefined;
   let watch = false;
   let dryRun = false;
@@ -170,6 +173,7 @@ export function parseRelayWatchArgs(
     "--timeout-ms",
     "--interval-ms",
     "--max-posts",
+    "--max-failures",
     "--output"
   ]);
   const booleanFlags = new Set([
@@ -262,6 +266,12 @@ export function parseRelayWatchArgs(
         return { ok: false, message: "Invalid max posts: expected a positive integer." };
       }
       maxPosts = parsed;
+    } else if (arg === "--max-failures") {
+      const parsed = Number(value);
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        return { ok: false, message: "Invalid max failures: expected a positive integer." };
+      }
+      maxFailures = parsed;
     } else {
       output = value;
     }
@@ -307,6 +317,7 @@ export function parseRelayWatchArgs(
       timeoutMs,
       intervalMs,
       maxPosts,
+      maxFailures,
       watch,
       dryRun,
       confirmLive,

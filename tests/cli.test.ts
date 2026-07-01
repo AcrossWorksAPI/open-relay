@@ -104,9 +104,11 @@ test("prints experimental relay watch command in help", () => {
   assert.equal(result.status, 0);
   assert.match(result.stdout, /open-relay experimental relay-watch/);
   assert.match(result.stdout, /--max-posts <n>/);
+  assert.match(result.stdout, /--max-failures <n>/);
   assert.match(result.stdout, /--update/);
   assert.match(result.stdout, /fetches review-request packets from GitHub PR comments/);
   assert.match(result.stdout, /live posting is bounded by --max-posts, default 1/);
+  assert.match(result.stdout, /failed iterations are bounded by --max-failures, default 1/);
 });
 
 test("experimental watcher proof dry-run prints a receipt", () => {
@@ -276,6 +278,77 @@ test("experimental relay watch live watch stops at max posts and writes per-iter
     assert.equal(receipt.status, "posted");
     assert.equal((receipt.request as Record<string, unknown>).comment_id, 78);
     assert.equal((receipt.response as Record<string, unknown>).outcome, "approved");
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test("experimental relay watch live watch stops at max failures and writes failed receipt", () => {
+  const directory = mkdtempSync(join(tmpdir(), "open-relay-relay-watch-failure-"));
+  const binDir = join(directory, "bin");
+  const statePath = join(directory, "state.json");
+  const outputPath = join(directory, "watch-receipt.json");
+
+  try {
+    const packet = JSON.parse(readFileSync("examples/review-request/relay.json", "utf8"));
+    const payload = Buffer.from(`${JSON.stringify(packet, null, 2)}\n`, "utf8").toString("base64");
+    const body = [
+      "<!-- open-relay-packet",
+      "packet_type: review-request",
+      "packet_version: 0.1",
+      `payload_base64: ${payload}`,
+      "-->",
+      "# Open Relay Packet: review-request/0.1",
+      "",
+      "# Review Request Relay Packet",
+      ""
+    ].join("\n");
+    const comments = JSON.stringify([[
+      { id: 79, body, created_at: "2026-06-30T00:00:00Z", user: { login: "codex" } }
+    ]]);
+
+    writeRelayWatchFakeTools(binDir, comments, "not json");
+
+    const result = spawnSync(process.execPath, [
+      cliPath,
+      "experimental",
+      "relay-watch",
+      "--pr",
+      "AcrossWorksAPI/open-relay#59",
+      "--author",
+      "codex",
+      "--relay-session-id",
+      "R7M4Q9K2",
+      "--state-file",
+      statePath,
+      "--watch",
+      "--max-posts",
+      "1",
+      "--max-failures",
+      "1",
+      "--confirm-live",
+      "--confirm-public",
+      "--output",
+      outputPath
+    ], {
+      encoding: "utf8",
+      timeout: 5000,
+      env: {
+        ...process.env,
+        PATH: `${binDir}:${process.env.PATH ?? ""}`
+      }
+    });
+
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(result.stdout, /Wrote relay watch receipt/);
+    assert.match(result.stderr, /Relay watch reached --max-failures\./);
+
+    const receiptFiles = readdirSync(directory)
+      .filter((name) => /^watch-receipt\.000001\.failed\.json$/.test(name));
+    assert.deepEqual(receiptFiles, ["watch-receipt.000001.failed.json"]);
+    const receipt = JSON.parse(readFileSync(join(directory, receiptFiles[0]), "utf8")) as Record<string, unknown>;
+    assert.equal(receipt.status, "failed");
+    assert.match(String(receipt.error), /Claude review draft was not valid JSON/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

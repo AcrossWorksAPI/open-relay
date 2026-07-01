@@ -47,6 +47,7 @@ open-relay experimental relay-watch \
   --watch \
   --interval-ms 30000 \
   --max-posts 1 \
+  --max-failures 1 \
   --confirm-live \
   --confirm-public
 ```
@@ -67,6 +68,7 @@ open-relay experimental relay-watch \
 | `--timeout-ms <ms>` | No | `120000` | Claude process timeout. |
 | `--interval-ms <ms>` | No | `30000` | Delay between foreground poll iterations when `--watch` is set; minimum is `5000`. |
 | `--max-posts <n>` | No | `1` | Live `--watch` only: stop after this many successful posted or updated response packets. |
+| `--max-failures <n>` | No | `1` | Live `--watch` only: stop after this many failed iterations. |
 | `--output <receipt.json>` | No | stdout | Writes a machine-readable receipt. In `--watch` mode with an output path, each iteration writes `<stem>.<iteration>.<status>.json` so receipts are not overwritten. |
 | `--dry-run` | No | `false` | Fetches and renders only; does not invoke Claude or post. |
 | `--confirm-live` | Live only | `false` | Required before the command can launch Claude. |
@@ -141,6 +143,7 @@ repeat posting when the watcher is restarted.
 - Claude spend is blocked unless `--confirm-live` is present.
 - GitHub writes are blocked unless `--confirm-public` is present.
 - Live `--watch` posting is bounded by `--max-posts`, default `1`.
+- Live `--watch` failures are bounded by `--max-failures`, default `1`.
 - Foreground polling rejects intervals below `5000` milliseconds.
 - Malformed Claude JSON, unknown draft keys, reserved packet fields, or schema
   failures produce failed receipts and do not write state.

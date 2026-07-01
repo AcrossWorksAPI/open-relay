@@ -60,7 +60,7 @@ Usage:
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
   open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
-  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--max-posts <n>] [--update]
+  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--max-posts <n>] [--max-failures <n>] [--update]
   open-relay --help
 
 Notes:
@@ -68,7 +68,7 @@ Notes:
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
   experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
-  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public. In --watch mode, live posting is bounded by --max-posts, default 1.
+  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public. In --watch mode, live posting is bounded by --max-posts, default 1, and failed iterations are bounded by --max-failures, default 1.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -718,6 +718,7 @@ async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
   if (parsed.options.watch) {
     let iteration = 0;
     let posts = 0;
+    let failures = 0;
 
     for (;;) {
       iteration += 1;
@@ -728,12 +729,20 @@ async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
       }
       if (isRelayWatchPost(result.receipt)) {
         posts += 1;
+        failures = 0;
         if (posts >= parsed.options.maxPosts) {
           process.stdout.write("Relay watch reached --max-posts.\n");
           return 0;
         }
+      } else if (result.ok) {
+        failures = 0;
       }
       if (!result.ok) {
+        failures += 1;
+        if (failures >= parsed.options.maxFailures) {
+          process.stderr.write("Relay watch reached --max-failures.\n");
+          return 1;
+        }
         process.stderr.write("Relay watch iteration failed; continuing because --watch is set.\n");
       }
       await delay(parsed.options.intervalMs);
