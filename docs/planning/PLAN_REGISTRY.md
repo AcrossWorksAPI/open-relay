@@ -1,6 +1,6 @@
 # Open Relay Plan Registry
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 This registry classifies active and historical planning sources. Treat unlisted
 or old plan files as inactive until this registry and current code agree.
@@ -49,7 +49,8 @@ or old plan files as inactive until this registry and current code agree.
 | `src/relayWatch.ts` | Experimental foreground relay watcher for GitHub PR request packets, headless Claude response drafts, bounded validated response posting, receipts, and state | Active |
 | `src/relayWatchStatus.ts` | Optional local operator status JSON and macOS notification helpers for the foreground relay watcher | Active |
 | `src/responseWatch.ts` | Experimental foreground response watcher for GitHub PR response packets, resume-project derivation, bounded Codex wakeup, receipts, and state | Active |
-| `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, save, transport, watcher-proof, relay-watch, and response-watch routing | Active |
+| `src/orchestraStatus.ts` | Experimental local orchestra dashboard status builder, static HTML renderer, status JSON endpoint, and browser open helper | Active |
+| `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, save, transport, watcher-proof, relay-watch, response-watch, and orchestra routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
 | `tests/args.test.ts` | Generator argument parser tests | Active |
@@ -71,6 +72,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/relayWatch.test.ts` | Relay watch parser, dry-run, state skip, injected Claude review, bounded response posting, malformed-output, and confirmation-gate tests | Active |
 | `tests/relayWatchStatus.test.ts` | Relay watch status projection, JSON writer, notification copy, and macOS notifier tests | Active |
 | `tests/responseWatch.test.ts` | Response watch parser, dry-run, state skip, injected Codex wakeup, and failure tests | Active |
+| `tests/orchestraStatus.test.ts` | Orchestra parser, injected status snapshot, and dashboard HTML shell tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `.github/workflows/release.yml` | GitHub Release-triggered npm publish workflow | Active |
 | `docs/release/npm-release.md` | npm release runbook | Active |
@@ -82,6 +84,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Local relay watch implementation plan | Active |
 | `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Local relay status indicator implementation plan | Active |
 | `docs/superpowers/plans/2026-07-01-local-response-watch.md` | Local response watch implementation plan | Active |
+| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | Local orchestra status GUI implementation plan | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -93,6 +96,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/protocol/local-watcher-proof.md` | Experimental local watcher proof protocol | Active |
 | `docs/protocol/local-relay-watch.md` | Experimental foreground relay-watch protocol | Active |
 | `docs/protocol/local-response-watch.md` | Experimental foreground response-watch protocol | Active |
+| `docs/protocol/local-orchestra-dashboard.md` | Experimental local orchestra dashboard protocol | Active |
 | `examples/review-request/relay.md` | Human-readable synthetic review packet | Active |
 | `examples/review-request/relay.json` | Machine-readable synthetic review packet | Active |
 | `examples/review-response/relay.md` | Human-readable synthetic review-response packet | Active |
@@ -137,10 +141,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage, Claude review fixes, committed sanitized live receipt evidence, and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
-| `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Ready for review | Codex | Tracks PR #60 / branch `codex/local-relay-watch`, the experimental foreground GitHub PR request-to-Claude-to-response watcher with dry-run, explicit live/public confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, local state, receipt evidence, trust-model docs, fake-`gh` and injected live-path tests, and no packet schema change, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
-| `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | In progress | Codex | Tracks PR #61 / branch `codex/local-relay-status-indicator`, adding optional `--status-file` JSON and `--notify` macOS desktop notifications for the foreground relay watcher without packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
-| `docs/superpowers/plans/2026-07-01-local-response-watch.md` | In progress | Codex | Tracks PR #62 / branch `codex/local-response-watch`, adding the reverse foreground GitHub PR response-to-Codex watcher with dry-run, explicit live confirmation, bounded `--max-turns`, bounded failed iterations, local state, receipt evidence, trust-model docs, fake-`gh` tests, injected live Codex wake tests, and no packet schema change, daemon install, Claude invocation, GitHub posting, fixes, merge, publish, or deployment. |
+| - | - | - | No active plans; next slice is owner decision. |
 
 ## Implemented Or Historical Plans
 
@@ -167,6 +168,11 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-28-release-workflow.md` | Done | Planned and implemented the `0.1.0` changelog, dual-mode release preflight, GitHub Release-triggered trusted-publishing workflow, npm release runbook, package metadata, verification, and merge closeout through PR #48 without creating a tag, GitHub Release, npm publish, registry package, or live claim. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Done | Planned and implemented `render --template neutral\|claude\|codex`, pure prompt rendering, parser/CLI tests, package exports, README and protocol docs, installed-package smoke coverage, and governance closeout without agent invocation, packet schema changes, GitHub posting, merge, publish, or live release claims. |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Done | Planned and implemented `resume-project/0.1`, `generate resume-project`, generic render and Codex prompt support, examples, docs, package smoke, review, and merge closeout through PR #54 without agent invocation, fix application, GitHub posting, merge automation, publish, or packet-version bump. |
+| `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Done | Planned and implemented PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage, Claude review fixes, committed sanitized live receipt evidence, and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
+| `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Done | Planned and implemented PR #60's experimental foreground GitHub PR request-to-Claude-to-response watcher with dry-run, explicit live/public confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, local state, receipt evidence, trust-model docs, fake-`gh` and injected live-path tests, and no packet schema change, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Done | Planned and implemented PR #61's optional `--status-file` JSON and `--notify` macOS desktop notifications for the foreground relay watcher without packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-01-local-response-watch.md` | Done | Planned and implemented PR #62's reverse foreground GitHub PR response-to-Codex watcher with dry-run, explicit live confirmation, bounded `--max-turns`, bounded failed iterations, local state, receipt evidence, trust-model docs, fake-`gh` tests, injected live Codex wake tests, and no packet schema change, daemon install, Claude invocation, GitHub posting, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | Done | Planned and implemented PR #63's passive local dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deployment. |
 
 ## Superseded Or Dormant Plans
 

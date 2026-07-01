@@ -123,6 +123,16 @@ test("prints experimental response watch command in help", () => {
   assert.match(result.stdout, /live Codex turns are bounded by --max-turns, default 1/);
 });
 
+test("prints experimental orchestra command in help", () => {
+  const result = spawnSync(process.execPath, [cliPath, "--help"], {
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stdout, /open-relay experimental orchestra/);
+  assert.match(result.stdout, /local dashboard/);
+});
+
 test("experimental watcher proof dry-run prints a receipt", () => {
   const result = spawnSync(process.execPath, [
     cliPath,

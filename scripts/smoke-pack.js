@@ -60,9 +60,22 @@ try {
   runCli(cli, ["--help"], { contains: "open-relay experimental watcher-proof" });
   runCli(cli, ["--help"], { contains: "open-relay experimental relay-watch" });
   runCli(cli, ["--help"], { contains: "open-relay experimental response-watch" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental orchestra" });
   runCli(cli, ["--help"], { contains: "--max-posts <n>" });
   runCli(cli, ["--help"], { contains: "--max-turns <n>" });
   runCli(cli, ["--help"], { contains: "--status-file <path>" });
+  runCli(cli, ["--help"], { contains: "--response-state-file <path>" });
+  const orchestraCheck = runCli(cli, [
+    "experimental",
+    "orchestra",
+    "--relay-session-id", "SMOKE123",
+    "--check"
+  ], {
+    contains: "\"overall\""
+  });
+  const orchestraStatus = JSON.parse(orchestraCheck);
+  assert.equal(orchestraStatus.relay_session_id, "SMOKE123");
+  assert.ok(orchestraStatus.version.package_version);
   const watcherDryRun = runCli(cli, [
     "experimental",
     "watcher-proof",
