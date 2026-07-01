@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | None yet | No `v0.1.0` tag, GitHub Release, npm publish, registry smoke, or live version claim exists |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, merged resume-project packet implementation, local watcher proof implementation ready for review, local relay watch implementation ready for review after bounded-watch review fixes, and local relay status indicator in progress | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; local watcher proof implementation adds an experimental bounded trigger command without packet schema changes, GitHub posting, merge automation, publish, or daemon installation; PR #60 local relay watch implementation adds a foreground GitHub PR request-to-Claude-to-response packet loop with explicit spend/write confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, per-iteration watch receipts, and no packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deploy; the local relay status indicator branch adds optional foreground watcher status JSON and macOS notifications without becoming a daemon or changing packet transport; no `v0.1.0` tag exists and `package.json` remains `private: true` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, merged resume-project packet implementation, local watcher proof implementation ready for review, local relay watch implementation ready for review after bounded-watch review fixes, local relay status indicator in progress, and local response watch in progress | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; local watcher proof implementation adds an experimental bounded trigger command without packet schema changes, GitHub posting, merge automation, publish, or daemon installation; PR #60 local relay watch implementation adds a foreground GitHub PR request-to-Claude-to-response packet loop with explicit spend/write confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, per-iteration watch receipts, and no packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deploy; the local relay status indicator branch adds optional foreground watcher status JSON and macOS notifications without becoming a daemon or changing packet transport; the local response watch branch adds the reverse foreground GitHub PR response-to-Codex resume loop with explicit live confirmation and bounded turns without packet schema changes, daemon install, Claude invocation, GitHub posting, fixes, merge, publish, or deploy; no `v0.1.0` tag exists and `package.json` remains `private: true` |
 
 ## Scope
 
@@ -59,6 +59,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - experimental local watcher proof implementation
 - experimental local relay watch implementation with bounded watch posting
 - experimental local relay status indicator implementation
+- experimental local response watch implementation with bounded Codex turns
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -119,6 +120,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement local watcher proof | Ready for review | No |
 | P1 | Implement local relay watch foreground orchestrator | Ready for review | No |
 | P1 | Implement local relay status indicator | In progress | No |
+| P1 | Implement local response watch foreground orchestrator | In progress | No |
 
 ## Known Gaps
 
@@ -142,11 +144,10 @@ Current scope is the first local protocol and validation CLI baseline:
   enrichment are merged, and the local relay watch branch adds a bounded
   foreground GitHub PR request-to-Claude-to-response packet loop. The
   request/response/resume loop can move as packets with changed-file churn
-  evidence and without human packet-body copy/paste when both sides emit Open
-  Relay packet drafts or the foreground watcher is running.
-  Implementation-handoff, production daemon orchestration, Codex-side PR
-  packet wakeup, stronger packet authorship, and automatic test capture remain
-  deferred.
+  evidence and without human packet-body copy/paste when both foreground
+  watchers are running.
+  Implementation-handoff, production daemon orchestration, stronger packet
+  authorship, and automatic test capture remain deferred.
   Optional local status JSON and macOS notifications are in progress for the
   foreground relay watcher; production daemon orchestration remains deferred.
 - Package publishing and deployment evidence are not present yet; local package

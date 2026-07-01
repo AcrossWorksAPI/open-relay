@@ -71,10 +71,10 @@
 - Modify: `src/watcherProof.ts`
 - Modify: `tests/watcherProof.test.ts`
 
-- [ ] Add failing tests by running existing watcher proof tests after moving no code; expected failure is import/module missing once `watcherProof` imports `codexApp`.
-- [ ] Create `src/codexApp.ts` with `CodexAppClient`, `startCodexTurn`, `findCodexThreadId`, and WebSocket types moved from `watcherProof`.
-- [ ] Update `watcherProof` to call `startCodexTurn` with its proof prompt.
-- [ ] Re-run `npm run build && node --test dist/tests/watcherProof.test.js`.
+- [x] Add failing tests by running existing watcher proof tests after moving no code; expected failure is import/module missing once `watcherProof` imports `codexApp`.
+- [x] Create `src/codexApp.ts` with `CodexAppClient`, `startCodexTurn`, `findCodexThreadId`, and WebSocket types moved from `watcherProof`.
+- [x] Update `watcherProof` to call `startCodexTurn` with its proof prompt.
+- [x] Re-run `npm run build && node --test dist/tests/watcherProof.test.js`.
 
 ### Task 2: Response Watch Parser And Dry Run
 
@@ -82,11 +82,11 @@
 - Create: `tests/responseWatch.test.ts`
 - Create: `src/responseWatch.ts`
 
-- [ ] Write failing parser tests for defaults, explicit flags, invalid PR target, duplicate flags, invalid interval, invalid max values, and `--dry-run` plus `--confirm-live`.
-- [ ] Write failing dry-run test that fetches a fake `review-response/0.1`, validates it, builds a resume packet, renders Codex prompt preview, and does not contact Codex.
-- [ ] Run `npm run build && node --test dist/tests/responseWatch.test.js`; expected failure: `Cannot find module '../src/responseWatch'`.
-- [ ] Implement parser, receipt types, default state path, dry-run flow, state skip, and prompt builder.
-- [ ] Re-run the targeted response-watch test.
+- [x] Write failing parser tests for defaults, explicit flags, invalid PR target, duplicate flags, invalid interval, invalid max values, and `--dry-run` plus `--confirm-live`.
+- [x] Write failing dry-run test that fetches a fake `review-response/0.1`, validates it, builds a resume packet, renders Codex prompt preview, and does not contact Codex.
+- [x] Run `npm run build && node --test dist/tests/responseWatch.test.js`; expected failure: `Cannot find module '../src/responseWatch'`.
+- [x] Implement parser, receipt types, default state path, dry-run flow, state skip, and prompt builder.
+- [x] Re-run the targeted response-watch test.
 
 ### Task 3: Live Codex Wake And State
 
@@ -94,11 +94,11 @@
 - Modify: `tests/responseWatch.test.ts`
 - Modify: `src/responseWatch.ts`
 
-- [ ] Add failing tests for unconfirmed live mode not contacting Codex.
-- [ ] Add failing tests for confirmed live mode calling injected Codex turn starter, writing handled state after successful Codex completion, and returning a receipt with `turn_id`.
-- [ ] Add failing tests for Codex failure returning a failed receipt without writing state.
-- [ ] Implement live confirmation gate, Codex turn call, state write, and failure receipts.
-- [ ] Re-run targeted response-watch tests.
+- [x] Add failing tests for unconfirmed live mode not contacting Codex.
+- [x] Add failing tests for confirmed live mode calling injected Codex turn starter, writing handled state after successful Codex completion, and returning a receipt with `turn_id`.
+- [x] Add failing tests for Codex failure returning a failed receipt without writing state.
+- [x] Implement live confirmation gate, Codex turn call, state write, and failure receipts.
+- [x] Re-run targeted response-watch tests.
 
 ### Task 4: CLI And Package Smoke
 
@@ -110,11 +110,11 @@
 - Modify: `README.md`
 - Create: `docs/protocol/local-response-watch.md`
 
-- [ ] Add failing CLI help and fake-`gh` dry-run tests.
-- [ ] Wire `experimental response-watch` into the CLI with one-shot and bounded watch behavior.
-- [ ] Export parser, runner, and prompt helper from `src/index.ts`.
-- [ ] Document command contract, confirmations, state, trust model, and non-goals.
-- [ ] Re-run targeted CLI tests and package smoke.
+- [x] Add failing CLI help and fake-`gh` dry-run tests.
+- [x] Wire `experimental response-watch` into the CLI with one-shot and bounded watch behavior.
+- [x] Export parser, runner, and prompt helper from `src/index.ts`.
+- [x] Document command contract, confirmations, state, trust model, and non-goals.
+- [x] Re-run targeted CLI tests and package smoke.
 
 ### Task 5: Governance Closeout
 
@@ -127,9 +127,9 @@
 - Modify: `docs/planning/VERSION_LEDGER.md`
 - Modify: `docs/planning/ENTITY_LIFECYCLE_SCOPE_MATRIX.md`
 
-- [ ] Add the local response-watch slice to the roadmap as `v0.1.0-pre.next` until a PR exists.
-- [ ] Record source files, tests, protocol docs, risks, and evidence.
-- [ ] Run `npm run check`, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`.
+- [x] Add the local response-watch slice to the roadmap as `v0.1.0-pre.next` until a PR exists.
+- [x] Record source files, tests, protocol docs, risks, and evidence.
+- [x] Run `npm run check`, `npm run smoke:pack`, `npm run release:preflight -- 0.1.0`, and `git diff --check`.
 - [ ] Open a draft PR stacked on `codex/local-relay-status-indicator`.
 - [ ] Replace temporary roadmap tracking with the PR-numbered pre-release label.
 
