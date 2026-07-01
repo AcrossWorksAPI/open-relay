@@ -136,6 +136,7 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
   const directory = mkdtempSync(join(tmpdir(), "open-relay-relay-watch-"));
   const binDir = join(directory, "bin");
   const statePath = join(directory, "state.json");
+  const statusPath = join(directory, "status.json");
 
   try {
     const packet = JSON.parse(readFileSync("examples/review-request/relay.json", "utf8"));
@@ -156,6 +157,7 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
     ]]);
 
     writeFakeGh(binDir, comments);
+    writeFailingOsascript(binDir);
 
     const result = spawnSync(process.execPath, [
       cliPath,
@@ -169,6 +171,9 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
       "R7M4Q9K2",
       "--state-file",
       statePath,
+      "--status-file",
+      statusPath,
+      "--notify",
       "--dry-run"
     ], {
       encoding: "utf8",
@@ -179,7 +184,7 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
     });
 
     assert.equal(result.status, 0, result.stderr);
-    assert.equal(result.stderr, "");
+    assert.equal(result.stderr, "Relay watch notification failed.\n");
     const receipt = JSON.parse(result.stdout) as Record<string, unknown>;
     assert.equal(receipt.relay_session_id, "R7M4Q9K2");
     assert.equal(receipt.status, "dry-run");
@@ -187,6 +192,12 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
     assert.equal((receipt.request as Record<string, unknown>).comment_id, 77);
     assert.match(result.stdout, /Draft schema contract/);
     assert.match(result.stdout, /findings must be an array/);
+
+    const status = JSON.parse(readFileSync(statusPath, "utf8")) as Record<string, unknown>;
+    assert.equal(status.relay_session_id, "R7M4Q9K2");
+    assert.equal(status.status, "dry-run");
+    assert.equal(status.watch, false);
+    assert.equal((status.request as Record<string, unknown>).comment_id, 77);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
@@ -2214,6 +2225,13 @@ function writeFakeGh(binDir: string, output: string): void {
   const ghPath = join(binDir, "gh");
   writeFileSync(ghPath, `#!/bin/sh\ncat <<'JSON'\n${output}\nJSON\n`, "utf8");
   chmodSync(ghPath, 0o755);
+}
+
+function writeFailingOsascript(binDir: string): void {
+  mkdirSync(binDir, { recursive: true });
+  const osascriptPath = join(binDir, "osascript");
+  writeFileSync(osascriptPath, "#!/bin/sh\nexit 1\n", "utf8");
+  chmodSync(osascriptPath, 0o755);
 }
 
 function writeRelayWatchFakeTools(binDir: string, commentsOutput: string, reviewDraft: string): void {

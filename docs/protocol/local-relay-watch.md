@@ -10,8 +10,9 @@ a review-response draft JSON object, validates the resulting
 existing response packet comment is opt-in with `--update`.
 
 This command is intentionally foreground and explicit. It is not a daemon,
-background service, hosted relay, notification system, merge command, fix
-automation, or packet schema change.
+background service, hosted relay, menu-bar app, merge command, fix automation,
+or packet schema change. Optional local operator indicators can write a status
+JSON file and request macOS desktop notifications.
 
 ## Command
 
@@ -34,6 +35,8 @@ open-relay experimental relay-watch \
   --relay-session-id R7M4Q9K2 \
   --confirm-live \
   --confirm-public \
+  --status-file /private/tmp/open-relay-status.json \
+  --notify \
   --output /private/tmp/open-relay-relay-watch.json
 ```
 
@@ -70,6 +73,8 @@ open-relay experimental relay-watch \
 | `--max-posts <n>` | No | `1` | Live `--watch` only: stop after this many successful posted or updated response packets. |
 | `--max-failures <n>` | No | `1` | Live `--watch` only: stop after this many failed iterations. |
 | `--output <receipt.json>` | No | stdout | Writes a machine-readable receipt. In `--watch` mode with an output path, each iteration writes `<stem>.<iteration>.<status>.json` so receipts are not overwritten. |
+| `--status-file <path>` | No | - | Writes the latest local operator status JSON for each completed iteration or one-shot run. |
+| `--notify` | No | `false` | Requests a macOS desktop notification for each completed iteration or one-shot run. Notification failures are warnings and do not change relay outcome. |
 | `--dry-run` | No | `false` | Fetches and renders only; does not invoke Claude or post. |
 | `--confirm-live` | Live only | `false` | Required before the command can launch Claude. |
 | `--confirm-public` | Posting only | `false` | Required before the command can write to GitHub. |
@@ -100,7 +105,9 @@ be combined with the compatibility `--no-update` flag.
     authenticated user's latest matching response packet only when `--update`
     is set.
 13. Write the state file only after a successful post or update.
-14. In `--watch` mode, stop after `--max-posts` successful posts or updates.
+14. Write optional status JSON and request an optional desktop notification
+    when configured.
+15. In `--watch` mode, stop after `--max-posts` successful posts or updates.
 
 ## Trust Model
 
@@ -134,6 +141,12 @@ Claude session id, response summary, and failure reason when applicable. In
 `--watch` mode with `--output`, receipts are written per iteration as
 `<stem>.<iteration>.<status>.json`.
 
+When `--status-file` is set, the command also writes a local status JSON
+projection containing the latest receipt identity, status, optional iteration,
+request summary, response summary, reason, and error. This file is for local
+operator visibility only; it is not a packet, state lock, daemon manifest, or
+source of truth for packet transport.
+
 The state file stores only the last handled request comment id, request head
 commit, response status, response outcome, and handled timestamp. It prevents
 repeat posting when the watcher is restarted.
@@ -152,11 +165,16 @@ repeat posting when the watcher is restarted.
 - Generated `review-response` validation failures are summarized in the failed
   receipt and are not posted to GitHub.
 - The state file is written only after a successful PR post or update.
+- Status-file write failures fail the command because the user explicitly
+  requested local operator evidence.
+- macOS notification failures warn but do not change relay outcome because
+  packet transport and receipts remain the source of truth.
 
 ## Non-Goals
 
 - No packet schemas are changed.
 - No Claude Desktop GUI injection is attempted.
 - No Codex thread wakeup is performed by this command.
-- No daemon, LaunchAgent, scheduler, or notification integration is installed.
+- No daemon, LaunchAgent, scheduler, menu-bar app, or notification service is
+  installed.
 - No fixes, merges, tags, releases, package publishes, or deploys are run.

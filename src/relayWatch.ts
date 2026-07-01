@@ -48,6 +48,7 @@ export type RelayWatchOptions = {
   intervalMs: number;
   maxPosts: number;
   maxFailures: number;
+  notify: boolean;
   watch: boolean;
   dryRun: boolean;
   confirmLive: boolean;
@@ -58,6 +59,7 @@ export type RelayWatchOptions = {
 
 export type RelayWatchCliOptions = RelayWatchOptions & {
   output?: string;
+  statusFile?: string;
 };
 
 export type RelayWatchParseResult =
@@ -152,6 +154,8 @@ export function parseRelayWatchArgs(
   let maxPosts = DEFAULT_MAX_POSTS;
   let maxFailures = DEFAULT_MAX_FAILURES;
   let output: string | undefined;
+  let statusFile: string | undefined;
+  let notify = false;
   let watch = false;
   let dryRun = false;
   let confirmLive = false;
@@ -174,6 +178,7 @@ export function parseRelayWatchArgs(
     "--interval-ms",
     "--max-posts",
     "--max-failures",
+    "--status-file",
     "--output"
   ]);
   const booleanFlags = new Set([
@@ -182,6 +187,7 @@ export function parseRelayWatchArgs(
     "--confirm-live",
     "--confirm-public",
     "--force",
+    "--notify",
     "--update",
     "--no-update"
   ]);
@@ -205,6 +211,8 @@ export function parseRelayWatchArgs(
         confirmPublic = true;
       } else if (arg === "--force") {
         force = true;
+      } else if (arg === "--notify") {
+        notify = true;
       } else if (arg === "--update") {
         update = true;
       } else {
@@ -272,6 +280,8 @@ export function parseRelayWatchArgs(
         return { ok: false, message: "Invalid max failures: expected a positive integer." };
       }
       maxFailures = parsed;
+    } else if (arg === "--status-file") {
+      statusFile = value;
     } else {
       output = value;
     }
@@ -318,12 +328,14 @@ export function parseRelayWatchArgs(
       intervalMs,
       maxPosts,
       maxFailures,
+      notify,
       watch,
       dryRun,
       confirmLive,
       confirmPublic,
       force,
       update,
+      ...(statusFile ? { statusFile } : {}),
       ...(output ? { output } : {})
     }
   };

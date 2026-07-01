@@ -1,6 +1,6 @@
 # Open Relay Plan Registry
 
-Last updated: 2026-06-30
+Last updated: 2026-07-01
 
 This registry classifies active and historical planning sources. Treat unlisted
 or old plan files as inactive until this registry and current code agree.
@@ -46,6 +46,7 @@ or old plan files as inactive until this registry and current code agree.
 | `src/transport/githubPr.ts` | GitHub PR exact-packet transport helpers | Active |
 | `src/watcherProof.ts` | Experimental local watcher proof module with live confirmation, local agent trigger, receipt, permission-warning, and timeout handling | Active |
 | `src/relayWatch.ts` | Experimental foreground relay watcher for GitHub PR request packets, headless Claude response drafts, bounded validated response posting, receipts, and state | Active |
+| `src/relayWatchStatus.ts` | Optional local operator status JSON and macOS notification helpers for the foreground relay watcher | Active |
 | `src/cli.ts` | Local CLI entrypoint, validation, generation, rendering, handoff, save, transport, watcher-proof, and relay-watch routing | Active |
 | `tests/schema.test.ts` | Schema validation tests | Active |
 | `tests/cli.test.ts` | CLI behavior tests | Active |
@@ -66,6 +67,7 @@ or old plan files as inactive until this registry and current code agree.
 | `tests/githubPrTransport.test.ts` | GitHub PR packet transport helper and fake-`gh` orchestration tests | Active |
 | `tests/watcherProof.test.ts` | Watcher proof parser, secret parsing, dry-run receipt, injected live trigger, and timeout cleanup tests | Active |
 | `tests/relayWatch.test.ts` | Relay watch parser, dry-run, state skip, injected Claude review, bounded response posting, malformed-output, and confirmation-gate tests | Active |
+| `tests/relayWatchStatus.test.ts` | Relay watch status projection, JSON writer, notification copy, and macOS notifier tests | Active |
 | `.github/workflows/ci.yml` | Governance, runtime, and package smoke CI guardrail | Active |
 | `.github/workflows/release.yml` | GitHub Release-triggered npm publish workflow | Active |
 | `docs/release/npm-release.md` | npm release runbook | Active |
@@ -75,6 +77,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Resume-project packet design | Active |
 | `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Local watcher proof implementation plan | Active |
 | `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Local relay watch implementation plan | Active |
+| `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Local relay status indicator implementation plan | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -131,6 +134,7 @@ or old plan files as inactive until this registry and current code agree.
 | --- | --- | --- | --- |
 | `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Ready for review | Codex | Tracks PR #59's experimental bounded local trigger proof for Codex app-server and headless Claude Code, including dry-run/package-smoke/live proof coverage, Claude review fixes, committed sanitized live receipt evidence, and no packet schema, GitHub posting, merge, publish, deployment, or daemon behavior. |
 | `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Ready for review | Codex | Tracks PR #60 / branch `codex/local-relay-watch`, the experimental foreground GitHub PR request-to-Claude-to-response watcher with dry-run, explicit live/public confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, local state, receipt evidence, trust-model docs, fake-`gh` and injected live-path tests, and no packet schema change, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | In progress | Codex | Tracks branch `codex/local-relay-status-indicator`, adding optional `--status-file` JSON and `--notify` macOS desktop notifications for the foreground relay watcher without packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
 
 ## Implemented Or Historical Plans
 

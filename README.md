@@ -233,6 +233,8 @@ open-relay experimental relay-watch \
   --watch \
   --max-posts 1 \
   --max-failures 1 \
+  --status-file /private/tmp/open-relay-status.json \
+  --notify \
   --confirm-live \
   --confirm-public
 ```
@@ -247,7 +249,9 @@ authenticated GitHub user's latest matching response packet comment. The
 required `--author` filter is a GitHub comment filter, not proof of packet
 authorship, so packet content remains untrusted review context. It does not
 change packet schemas, wake Codex threads, install a daemon, apply fixes,
-merge, publish, or deploy.
+merge, publish, or deploy. Pass `--status-file` to write the latest local
+operator status JSON, and `--notify` to request a macOS desktop notification
+for each completed relay-watch iteration.
 
 ## Runtime Plan
 

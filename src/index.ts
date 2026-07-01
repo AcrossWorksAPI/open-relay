@@ -26,6 +26,15 @@ export {
   type RelayWatchReceipt,
   type RelayWatchRunResult
 } from "./relayWatch";
+export {
+  buildRelayWatchNotification,
+  relayWatchStatusFromReceipt,
+  sendMacNotification,
+  writeRelayWatchStatus,
+  type RelayWatchNotification,
+  type RelayWatchStatus,
+  type RelayWatchStatusOptions
+} from "./relayWatchStatus";
 export type {
   ResumeProjectPacket,
   ResumeProjectStatus,
