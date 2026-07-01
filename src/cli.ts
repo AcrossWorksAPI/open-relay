@@ -9,6 +9,12 @@ import {
   parsePrivateRedactionRules,
   type PrivateRedactionRule
 } from "./privateRedactionRules";
+import {
+  buildOrchestraStatus,
+  openDashboard,
+  parseOrchestraArgs,
+  startOrchestraServer
+} from "./orchestraStatus";
 import { renderPacketMarkdown } from "./renderPacket";
 import {
   renderPacketForTemplate,
@@ -76,6 +82,7 @@ Usage:
   open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
   open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--status-file <path>] [--notify] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--max-posts <n>] [--max-failures <n>] [--update]
   open-relay experimental response-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--codex-url <ws-url>] [--codex-thread-id <id>|--codex-search <text>] [--output <receipt.json>] [--dry-run|--confirm-live] [--force] [--watch] [--interval-ms <ms>] [--max-turns <n>] [--max-failures <n>]
+  open-relay experimental orchestra [--relay-session-id <id>] [--cwd <path>] [--host <host>] [--port <n>] [--codex-url <ws-url>] [--relay-status-file <path>] [--response-state-file <path>] [--docs-url <url>] [--refresh-ms <ms>] [--open] [--check]
   open-relay --help
 
 Notes:
@@ -85,6 +92,7 @@ Notes:
   experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
   experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public. In --watch mode, live posting is bounded by --max-posts, default 1, and failed iterations are bounded by --max-failures, default 1. Use --status-file for local operator status JSON and --notify for macOS desktop notifications.
   experimental response-watch fetches review-response packets from GitHub PR comments; live mode resumes a local Codex thread only with --confirm-live. In --watch mode, live Codex turns are bounded by --max-turns, default 1, and failed iterations are bounded by --max-failures, default 1.
+  experimental orchestra serves a local dashboard and status JSON for operator visibility; --check prints one status snapshot without starting the server.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -141,6 +149,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "experimental" && args[1] === "response-watch") {
     return experimentalResponseWatchCommand(args.slice(2));
+  }
+
+  if (args[0] === "experimental" && args[1] === "orchestra") {
+    return experimentalOrchestraCommand(args.slice(2));
   }
 
   if (args[0] === "render") {
@@ -842,6 +854,40 @@ async function experimentalResponseWatchCommand(args: string[]): Promise<number>
     process.stderr.write("Response watch failed.\n");
     return 1;
   }
+
+  return 0;
+}
+
+async function experimentalOrchestraCommand(args: string[]): Promise<number> {
+  const parsed = parseOrchestraArgs(args, { cwd: process.cwd() });
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  if (parsed.options.check) {
+    const status = await buildOrchestraStatus(parsed.options);
+    process.stdout.write(`${JSON.stringify(status, null, 2)}\n`);
+    return 0;
+  }
+
+  const orchestra = await startOrchestraServer(parsed.options);
+  process.stdout.write(`Open Relay orchestra dashboard: ${orchestra.url}\n`);
+  if (parsed.options.open) {
+    try {
+      await openDashboard(orchestra.url);
+    } catch {
+      process.stderr.write("Could not open Open Relay orchestra dashboard.\n");
+    }
+  }
+
+  await new Promise<void>((resolve) => {
+    const close = () => {
+      void orchestra.close().finally(resolve);
+    };
+    process.once("SIGINT", close);
+    process.once("SIGTERM", close);
+  });
 
   return 0;
 }

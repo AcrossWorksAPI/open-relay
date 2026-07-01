@@ -36,6 +36,22 @@ export {
   type RelayWatchStatusOptions
 } from "./relayWatchStatus";
 export {
+  buildOrchestraStatus,
+  openDashboard,
+  parseOrchestraArgs,
+  renderOrchestraHtml,
+  startOrchestraServer,
+  type CommandResult,
+  type OrchestraCliOptions,
+  type OrchestraDeps,
+  type OrchestraOptions,
+  type OrchestraParseResult,
+  type OrchestraServer,
+  type OrchestraService,
+  type OrchestraServiceStatus,
+  type OrchestraStatus
+} from "./orchestraStatus";
+export {
   buildResponseWatchCodexPrompt,
   defaultResponseWatchStateFile,
   parseResponseWatchArgs,

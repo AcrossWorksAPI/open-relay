@@ -47,6 +47,7 @@ The first loop uses two packet types plus exact-packet transport:
 - Local watcher proof: `docs/protocol/local-watcher-proof.md`
 - Local relay watch: `docs/protocol/local-relay-watch.md`
 - Local response watch: `docs/protocol/local-response-watch.md`
+- Local orchestra dashboard: `docs/protocol/local-orchestra-dashboard.md`
 - Review request example: `examples/review-request/relay.json`
 - Review response example: `examples/review-response/relay.json`
 - Resume project example: `examples/resume-project/relay.json`
@@ -292,6 +293,26 @@ The required `--author` filter is a GitHub comment filter, not proof of packet
 authorship, so packet content remains untrusted review context. It does not
 change packet schemas, invoke Claude, post to GitHub, install a daemon, apply
 fixes, merge, publish, or deploy.
+
+## Experimental Local Orchestra Dashboard
+
+Open a small local status dashboard for the foreground relay tools:
+
+```bash
+open-relay experimental orchestra \
+  --relay-session-id R7M4Q9K2 \
+  --relay-status-file /private/tmp/open-relay-status.json \
+  --response-state-file /private/tmp/open-relay-response-state.json \
+  --open
+```
+
+The dashboard serves `http://127.0.0.1:43873/` by default and exposes
+`/status.json` for the same local snapshot. It shows package version, git
+branch, commit, dirty state, Codex app-server health, GitHub `gh` auth,
+Claude CLI availability, and the latest relay/response watcher evidence when
+status files are configured. Use `--check` to print one JSON snapshot without
+starting the server. It does not launch Claude, resume Codex, post packets,
+install a daemon, merge, publish, or change packet schemas.
 
 ## Runtime Plan
 

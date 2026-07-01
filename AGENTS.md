@@ -10,7 +10,8 @@ owner instructions when they exist.
   validation, review-request packet generation, Markdown/JSON relay packet
   schema, Markdown rendering, direct Markdown generation, local handoff workflow
   command, repo-local packet storage, package-readiness smoke, experimental
-  local watcher proof, and Across Works roadmap governance.
+  local watcher proof, foreground local relay orchestration, local orchestra
+  status dashboard, and Across Works roadmap governance.
 - Product purpose: Create structured, source-linked relay packets for moving
   project context between AI coding agents, humans, and local repositories.
 - Runtime target: TypeScript on Node.js for the first CLI implementation.
