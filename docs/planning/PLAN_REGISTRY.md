@@ -141,7 +141,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | In progress | Codex | Tracks branch `codex/local-orchestra-status-gui`, adding the passive local dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | In progress | Codex | Tracks PR #63 / branch `codex/local-orchestra-status-gui`, adding the passive local dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deployment. |
 
 ## Implemented Or Historical Plans
 

@@ -41,8 +41,8 @@ local relay status indicator, and local response watch are merged, proving the
 experimental foreground packet-native request/response/resume loop without
 installing a daemon, changing packet schemas, applying fixes, merging,
 publishing, or deploying. The approved first runtime direction is a TypeScript
-CLI on Node.js with npm. Local orchestra status GUI work is in progress on
-`codex/local-orchestra-status-gui`; it adds a passive local dashboard and
+CLI on Node.js with npm. Local orchestra status GUI work is in progress on PR
+#63 / `codex/local-orchestra-status-gui`; it adds a passive local dashboard and
 `/status.json` snapshot for package/git version, Codex app-server health,
 GitHub auth, Claude CLI availability, and watcher evidence files without
 changing packet schemas, invoking agents, posting packets, installing a daemon,

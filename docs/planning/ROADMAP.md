@@ -41,7 +41,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | v0.1.0-pre.60 | Local relay watch foreground orchestrator | Done | High | Required | Local watcher proof; Boundary/transport decision; Reviewer-produced review-response workflow; Agent-ready prompt rendering | docs/superpowers/plans/2026-06-30-local-relay-watch.md |
 | v0.1.0-pre.61 | Local relay status indicator | Done | High | Required | Local relay watch foreground orchestrator | docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md |
 | v0.1.0-pre.62 | Local response watch foreground orchestrator | Done | High | Required | Local relay watch foreground orchestrator; Local relay status indicator; Resume-project packet type | docs/superpowers/plans/2026-07-01-local-response-watch.md |
-| v0.1.0-pre.next | Local orchestra status GUI | In progress | High | Required | Local relay watch foreground orchestrator; Local response watch foreground orchestrator; Local relay status indicator | docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md |
+| v0.1.0-pre.63 | Local orchestra status GUI | In progress | High | Required | Local relay watch foreground orchestrator; Local response watch foreground orchestrator; Local relay status indicator | docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md |
 | v0.1.0-pre.next | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | v0.1.0-pre.54 | Resume-project packet type | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-29-resume-project-packet.md |
 

@@ -103,7 +103,7 @@ test stack, no new dependencies.
 - [x] Document command inputs, status model, failure boundaries, and non-goals.
 - [x] Record source files, tests, risks, and evidence in roadmap governance.
 - [x] Run full local verification.
-- [ ] Push the branch and open a PR.
+- [x] Push the branch and open a PR.
 - [ ] Run the dashboard locally and open it for operator review.
 
 ## Verification Plan
