@@ -85,6 +85,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Local relay status indicator implementation plan | Active |
 | `docs/superpowers/plans/2026-07-01-local-response-watch.md` | Local response watch implementation plan | Active |
 | `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | Local orchestra status GUI implementation plan | Active |
+| `docs/superpowers/plans/2026-07-02-orchestra-session-manager.md` | Orchestra session manager implementation plan | Active |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Agent-ready prompt rendering implementation plan | Active |
 | `docs/superpowers/plans/2026-06-29-resume-project-packet.md` | Resume-project packet implementation plan | Active |
 | `docs/protocol/review-request-packet.md` | First review-request packet protocol | Active |
@@ -141,7 +142,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| - | - | - | No active plans; next slice is owner decision. |
+| `docs/superpowers/plans/2026-07-02-orchestra-session-manager.md` | Planned | Codex | Next implementation slice: make Orchestra the user-facing session manager; live no-turn proof confirmed Codex app-server thread creation and naming are available. |
 
 ## Implemented Or Historical Plans
 

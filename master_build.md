@@ -125,6 +125,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement local relay status indicator | Done | No |
 | P1 | Implement local response watch foreground orchestrator | Done | No |
 | P1 | Implement local orchestra status GUI | Done | No |
+| P1 | Implement Orchestra session manager | Planned | No |
 
 ## Known Gaps
 
@@ -162,9 +163,9 @@ Current scope is the first local protocol and validation CLI baseline:
 - Private redaction rules are merged as repo-local ignored case-insensitive
   literal rules before generated packet output; global profiles, regex rules,
   environment reads, raw-diff scanning, and remote rule loading remain deferred.
-- Relay session identifiers are flagged as a future workflow candidate: a
-  random Open Relay-generated session id should visibly link participating
-  Codex and Claude thread titles, while a manifest or packet field remains
-  deferred until the project/session orchestration layer is designed.
+- Relay session identifiers are promoted into the planned Orchestra session
+  manager slice: a random Open Relay-generated session id should visibly link
+  participating thread titles, and a local session manifest should be added in
+  the project/session orchestration layer without changing packet schemas.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
 - No live version, deployment, or registry package evidence exists yet.
