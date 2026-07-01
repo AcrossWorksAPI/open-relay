@@ -104,7 +104,7 @@ test stack, no new dependencies.
 - [x] Record source files, tests, risks, and evidence in roadmap governance.
 - [x] Run full local verification.
 - [x] Push the branch and open a PR.
-- [ ] Run the dashboard locally and open it for operator review.
+- [x] Run the dashboard locally and open it for operator review.
 
 ## Verification Plan
 
