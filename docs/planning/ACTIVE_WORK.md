@@ -1,6 +1,6 @@
 # Open Relay Active Work
 
-Last updated: 2026-06-30
+Last updated: 2026-07-01
 
 ## Current Direction
 
@@ -51,6 +51,16 @@ contract in the Claude prompt, and records local receipt/state evidence without
 installing a daemon, waking Codex, changing packet schemas, applying fixes,
 merging, publishing, or deploying. The approved
 first runtime direction is a TypeScript CLI on Node.js with npm.
+Local relay status indicator work is in progress on
+`codex/local-relay-status-indicator`; it adds optional status JSON and optional
+macOS desktop notifications for the foreground watcher without changing packet
+schemas, installing a daemon, waking Codex, applying fixes, merging,
+publishing, or deploying. Local response watch work is in progress on
+`codex/local-response-watch`; it adds the reverse foreground watcher that
+fetches PR `review-response/0.1` packets, derives `resume-project/0.1`, and
+resumes a local Codex thread only after explicit confirmation, without changing
+packet schemas, invoking Claude, posting to GitHub, installing a daemon,
+applying fixes, merging, publishing, or deploying.
 
 ## Current Implementation Source
 
@@ -65,7 +75,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `package.json` | Active | npm package metadata and build/test/check scripts. |
 | `package-lock.json` | Active | Locked npm dependency graph. |
 | `CHANGELOG.md` | Active | Manual release notes for the first public release target. |
-| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, explicit private redaction rules, Claude/Codex prompt rendering, watcher-proof dry-run behavior, relay-watch command help, and sanitized watcher-proof example packaging. |
+| `scripts/smoke-pack.js` | Active | Local npm pack/install smoke for the built package tarball, installed CLI, generated review-request evidence, explicit private redaction rules, Claude/Codex prompt rendering, watcher-proof dry-run behavior, relay-watch and response-watch command help, and sanitized watcher-proof example packaging. |
 | `scripts/release-preflight.js` | Active | Dependency-free release gate for version, private-field mode, changelog, package metadata, lockfile, and packlist drift. |
 | `tsconfig.json` | Active | TypeScript compiler configuration. |
 | `schemas/review-request.schema.json` | Active | Formal JSON Schema for the first review-request packet. |
@@ -93,9 +103,12 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `src/storage.ts` | Active | Repo-local review-request bundle storage writer. |
 | `src/transport/gh.ts` | Active | Sanitized local `gh` CLI runner for GitHub transport. |
 | `src/transport/githubPr.ts` | Active | GitHub PR packet comment marker, send, update, and fetch helpers. |
+| `src/codexApp.ts` | Active | Shared Codex app-server WebSocket helper for foreground local Codex thread resume and turn-start flows. |
 | `src/watcherProof.ts` | Active | Experimental local watcher proof module for Codex app-server and headless Claude proof turns, `--confirm-live`, dry-run receipts, local Claude credential env loading, permission warnings, and timeout cleanup. |
 | `src/relayWatch.ts` | Active | Experimental foreground relay watcher that fetches GitHub PR request packets, renders Claude prompts with the review-response draft schema contract, invokes headless Claude with explicit confirmation, validates response packets, posts through GitHub PR transport by default, updates only with explicit `--update`, bounds watch posting with `--max-posts`, bounds failed watch iterations with `--max-failures`, and writes local receipt/state evidence. |
-| `src/cli.ts` | Active | Local CLI entrypoint for packet validation, review-request generation/handoff/save, generic rendering, GitHub PR transport, experimental watcher proof routing, and experimental relay watch routing. |
+| `src/relayWatchStatus.ts` | Active | Optional local operator status JSON and macOS notification helpers for the foreground relay watcher. |
+| `src/responseWatch.ts` | Active | Experimental foreground response watcher that fetches GitHub PR response packets, derives resume-project packets, renders Codex prompts, gates Codex wakeup behind `--confirm-live`, bounds live Codex turns with `--max-turns`, bounds failed iterations with `--max-failures`, and writes local receipt/state evidence. |
+| `src/cli.ts` | Active | Local CLI entrypoint for packet validation, review-request generation/handoff/save, generic rendering, GitHub PR transport, experimental watcher proof routing, experimental relay watch routing, and experimental response watch routing. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
 | `tests/args.test.ts` | Active | Generator argument parser tests. |
@@ -116,6 +129,8 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `tests/githubPrTransport.test.ts` | Active | GitHub PR packet transport helper and fake-`gh` orchestration tests. |
 | `tests/watcherProof.test.ts` | Active | Watcher proof parser, secrets env, Claude command argument, dry-run receipt, injected live Codex/Claude trigger path, failure, permission-warning, and timeout cleanup tests. |
 | `tests/relayWatch.test.ts` | Active | Relay watch parser, dry-run, duplicate-state skip, injected Claude review, GitHub response posting, bounded watch posting, malformed-output, and confirmation-gate tests. |
+| `tests/relayWatchStatus.test.ts` | Active | Relay watch status projection, status JSON writing, desktop notification copy, and macOS notifier tests. |
+| `tests/responseWatch.test.ts` | Active | Response watch parser, dry-run fetch/resume derivation, handled-state skip, confirmed Codex wakeup, unconfirmed-live gate, and failure/no-state tests. |
 | `.github/workflows/ci.yml` | Active | Governance, TypeScript runtime, and package smoke CI workflow. |
 | `.github/workflows/release.yml` | Active | GitHub Release-triggered npm publish workflow using trusted publishing, provenance, package smoke, and release preflight. |
 | `docs/release/npm-release.md` | Active | Owner runbook for trusted publishing setup, tag/release steps, post-publish smoke, and rollback. |
@@ -129,6 +144,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/protocol/agent-ready-prompt-rendering.md` | Active | Prompt-template command contract and safety model for neutral/Claude/Codex render wrappers. |
 | `docs/protocol/local-watcher-proof.md` | Active | Experimental local watcher proof command contract, inputs, secret handling, receipt shape, and non-goals. |
 | `docs/protocol/local-relay-watch.md` | Active | Experimental foreground relay-watch command contract, packet flow, confirmations, state file, secret handling, receipts, failure boundaries, and non-goals. |
+| `docs/protocol/local-response-watch.md` | Active | Experimental foreground response-watch command contract, packet flow, confirmations, state file, Codex wakeup, receipts, failure boundaries, and non-goals. |
 | `examples/review-request/relay.md` | Active | Human-readable synthetic review packet example. |
 | `examples/review-request/relay.json` | Active | Machine-readable synthetic review packet example. |
 | `examples/review-response/relay.md` | Active | Human-readable synthetic review-response packet example. |
@@ -151,6 +167,8 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `docs/superpowers/specs/2026-06-29-resume-project-packet-design.md` | Active | Design for deriving a local continuation packet from a validated `review-response`. |
 | `docs/superpowers/plans/2026-06-30-local-watcher-proof.md` | Active | Implementation plan for the bounded local Codex/Claude watcher proof command and receipt. |
 | `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Active | Implementation plan for PR #60's foreground GitHub PR request-to-Claude-to-response packet watcher. |
+| `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Active | Implementation plan for optional status JSON and macOS notification indicators around the foreground relay watcher. |
+| `docs/superpowers/plans/2026-07-01-local-response-watch.md` | Active | Implementation plan for the reverse foreground GitHub PR response-to-Codex resume watcher. |
 | `docs/superpowers/plans/2026-06-28-review-request-evidence-enrichment.md` | Active | Implementation plan for best-effort `--numstat -z --find-renames` diff stats in generated review-request packets. |
 | `docs/superpowers/plans/2026-06-28-private-redaction-rules.md` | Active | Implementation plan for strict case-insensitive literal private redaction rules, generator integration, tests, docs, package smoke, and closeout. |
 | `docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md` | Active | Implementation plan for pure prompt rendering, render CLI template parsing, package smoke, docs, and closeout. |
@@ -182,25 +200,20 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | Runtime CI covers generator behavior | Low | CI runs build and tests for validation plus generator behavior on merged `main`. |
 | Live/deploy evidence absent | Medium | Do not mark live. |
 | Roadmap version labels are tracking labels only | Low | Pre-release roadmap labels such as `v0.1.0-pre.51` do not create npm tags, GitHub Releases, registry packages, or live claims; live status still requires post-publish smoke evidence. |
-| Native review import and production automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, PR #54 turns a validated `review-response` into a local `resume-project` continuation packet, the local watcher proof branch adds a bounded trigger command, and the local relay watch branch adds a foreground PR packet watcher with explicit live/public confirmations, `--max-posts`, `--max-failures`, and `--author` treated only as a weak comment filter. Native review import, production daemon automation, implementation-handoff, Codex-side automatic wakeup from PR packets, stronger packet authorship, and fix/merge automation remain planned. |
+| Native review import and production automation absent | Medium | The merged producer turns a reviewer-authored draft plus a `review-request` packet into a valid `review-response` and can send it through GitHub PR exact-packet transport, PR #54 turns a validated `review-response` into a local `resume-project` continuation packet, the local watcher proof branch adds a bounded trigger command, the local relay watch branch adds a foreground PR packet watcher with explicit live/public confirmations, and the local response-watch branch adds bounded Codex wakeup from PR response packets after explicit live confirmation. Native review import, production daemon automation, implementation-handoff, stronger packet authorship, and fix/merge automation remain planned. |
 | Packet evidence is thinner than brief | Low | Diff summary capture is merged as per-file diff-stat evidence; test capture remains explicit `--verification` input rather than automatic command execution. |
-| Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; the watcher proof branch is a bounded trigger proof; the relay watch branch is a foreground packet-triggered orchestrator for GitHub PR request-to-Claude response only, with bounded live watch posting, bounded failed watch iterations, and no automatic fixes or merges. Production daemon install, cross-app scheduling, Codex wakeup, and notifications remain deferred. |
+| Higher-level handoff workflow external orchestration absent | Low | Local `handoff review-request` is merged as a Markdown-first workflow command; the watcher proof branch is a bounded trigger proof; the relay watch branch is a foreground packet-triggered orchestrator for GitHub PR request-to-Claude response only; the response-watch branch is the reverse foreground orchestrator for GitHub PR response-to-Codex resume only. Optional local status JSON and macOS notifications are in progress for relay-watch; production daemon install, cross-app scheduling, broader notification service behavior, automatic fixes, and merges remain deferred. |
 | Relay session/thread identity absent | Low | Candidate rule flagged: future trials should use a random Open Relay-generated `relay_session_id` in linked thread titles such as `<id>-OR-CX` and `<id>-OR-CD`; the source-of-truth manifest or packet field is deferred until session/profile orchestration is designed. |
-| Production external agent invocation remains deferred | Low | `experimental watcher-proof` can trigger bounded local Codex and Claude proof turns only after `--confirm-live` and write a receipt; `experimental relay-watch` can invoke headless Claude and post a validated response packet only after explicit confirmations, bounded by `--max-posts` and `--max-failures` in watch mode. Production prompt routing, daemonized packet orchestration, Codex wakeup, fix automation, merge, publish, and deployment remain deferred. |
+| Production external agent invocation remains deferred | Low | `experimental watcher-proof` can trigger bounded local Codex and Claude proof turns only after `--confirm-live` and write a receipt; `experimental relay-watch` can invoke headless Claude and post a validated response packet only after explicit confirmations, bounded by `--max-posts` and `--max-failures` in watch mode; `experimental response-watch` can resume a local Codex thread from a validated response packet only after `--confirm-live`, bounded by `--max-turns` and `--max-failures` in watch mode. Production prompt routing, daemonized packet orchestration, fix automation, merge, publish, and deployment remain deferred. |
 | Private redaction extension scope deferred | Low | PR #45 merged repo-local ignored case-insensitive literal rule files plus explicit `--redaction-rules`; global profiles, regex, raw-diff scanning, environment reads, and remote rule loading remain deferred. |
 
 ## Next Recommended Work
 
-1. Push the PR #60 prompt-contract safety update, refresh the PR #60
-   review-request packet for the new head, and request Claude review of the
-   bounded-failure and draft-contract fixes.
-2. Run an owner-approved live relay-watch pass against the refreshed PR #60
-   packet or a disposable narrow packet before treating the end-to-end return
-   leg as proven. The 2026-07-01 runs fetched packets and exited safely at
-   `--max-failures`; the first timed out, and the fresh-packet pass completed
-   Claude but failed response validation before posting. The latest validation
-   failure was an unsupported `provenance[].type`, so the prompt now names the
-   allowed provenance enum.
+1. Finish the local response-watch PR, including full verification and a
+   PR-numbered roadmap label after the PR is opened.
+2. Run an owner-approved response-watch pass against a fresh
+   `review-response/0.1` packet so the reverse Codex wake path has live local
+   receipt evidence.
 3. Review PR #60 after PR #59, including fake-`gh`
    dry-run coverage, injected live Claude-to-GitHub posting coverage, bounded
    `--max-posts` and `--max-failures` behavior, default distinct comments,
