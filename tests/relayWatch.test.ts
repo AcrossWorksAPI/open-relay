@@ -7,6 +7,7 @@ import { test } from "node:test";
 
 import type { ReviewRequestPacket } from "../src/reviewRequest";
 import {
+  buildRelayWatchClaudePrompt,
   parseRelayWatchArgs,
   runRelayWatchOnce
 } from "../src/relayWatch";
@@ -148,6 +149,19 @@ test("rejects invalid relay watch arguments", () => {
     ok: false,
     message: "Cannot combine --update and --no-update."
   });
+});
+
+test("builds Claude prompt with review-response draft contract", () => {
+  const prompt = buildRelayWatchClaudePrompt({
+    request: reviewRequestFixture(),
+    relaySessionId: "R7M4Q9K2"
+  });
+
+  assert.match(prompt, /Return exactly one JSON object/);
+  assert.match(prompt, /findings must be an array/);
+  assert.match(prompt, /provenance type must be pull_request, ci_run, commit, issue, user_note, or external_url/);
+  assert.match(prompt, /changes_requested requires at least one blocking finding/);
+  assert.match(prompt, /# Claude Review Prompt/);
 });
 
 test("dry-run fetches and renders request without invoking Claude or posting", async () => {

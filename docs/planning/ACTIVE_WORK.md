@@ -198,7 +198,9 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
    packet or a disposable narrow packet before treating the end-to-end return
    leg as proven. The 2026-07-01 runs fetched packets and exited safely at
    `--max-failures`; the first timed out, and the fresh-packet pass completed
-   Claude but failed response validation before posting.
+   Claude but failed response validation before posting. The latest validation
+   failure was an unsupported `provenance[].type`, so the prompt now names the
+   allowed provenance enum.
 3. Review PR #60 after PR #59, including fake-`gh`
    dry-run coverage, injected live Claude-to-GitHub posting coverage, bounded
    `--max-posts` and `--max-failures` behavior, default distinct comments,

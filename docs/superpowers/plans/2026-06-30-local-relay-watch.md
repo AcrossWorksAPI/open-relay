@@ -139,6 +139,8 @@
       iterations do not retry forever during owner-approved proof runs.
 - [x] Add an explicit review-response draft schema contract to the Claude
       prompt and include validation-error summaries in failed receipts.
+- [x] Add the allowed `provenance[].type` enum to the Claude prompt after the
+      first prompt-contract live pass failed validation on provenance type.
 - [x] Make distinct response packet comments the default and require `--update` for update behavior.
 - [x] Reject foreground poll intervals below `5000` milliseconds.
 - [x] Write per-iteration receipt files in `--watch` mode when `--output` is set.
@@ -156,5 +158,7 @@
   request packet and exited safely at `--max-failures` after Claude timed out;
   no new response packet was posted. A later fresh-packet pass completed Claude
   but failed generated response validation before posting, so the prompt
-  contract was tightened. Run a refreshed PR #60 packet or narrower disposable
-  packet before marking the live return leg proven.
+  contract was tightened. A follow-up fresh-packet pass failed validation on
+  `provenance[].type`, so the provenance enum was added. Run a refreshed PR #60
+  packet or narrower disposable packet before marking the live return leg
+  proven.
