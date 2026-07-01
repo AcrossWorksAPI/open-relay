@@ -56,7 +56,7 @@ Roadmap version tracking now uses
 PR-indexed pre-release labels (`v0.1.0-pre.<PR_NUMBER>`) so Hosted Roadmap
 views can track changes by version without implying an npm publish or live
 release.
-Local orchestra status GUI work is in progress on PR #63 /
+Local orchestra status GUI work is complete on PR #63 /
 `codex/local-orchestra-status-gui`. It adds a passive local dashboard and
 `/status.json` snapshot for package/git version, Codex app-server health,
 GitHub auth, Claude CLI availability, and watcher evidence files without
@@ -102,8 +102,8 @@ applying fixes, merging, publishing, or deploying.
 | Local relay watch implementation | Done | PR #60 merged experimental `open-relay experimental relay-watch` to fetch a PR review-request packet, render a Claude prompt with the review-response draft schema contract, invoke headless Claude after `--confirm-live`, validate and post a review-response packet after `--confirm-public`, bound live watch posting with `--max-posts`, bound failed watch iterations with `--max-failures`, update only with explicit `--update`, and maintain local receipt/state evidence without schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deploy. |
 | Local relay status indicator | Done | PR #61 merged optional `--status-file` and `--notify` support for the foreground relay watcher, including local status JSON, best-effort macOS notification warnings, parser/CLI/status tests, README/protocol docs, and package-smoke help coverage without daemon install, Codex wakeup, packet schema changes, fixes, merge, publish, or deploy. |
 | Local response watch implementation | Done | PR #62 merged experimental `open-relay experimental response-watch` to fetch a PR review-response packet, derive a resume-project packet, render a Codex prompt, and resume a local Codex thread after `--confirm-live`, with handled-response state, `--max-turns`, `--max-failures`, per-iteration receipts, fake-`gh` CLI dry-run coverage, and injected live Codex wake tests without schema changes, Claude invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. |
-| Local orchestra status GUI | In progress | PR #63 / branch `codex/local-orchestra-status-gui` adds experimental `open-relay experimental orchestra`, a passive local HTTP dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. |
-| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, agent-ready prompt rendering, local watcher proof, local relay watch, local relay status indicator, local response watch, and local orchestra status GUI are in place or in progress; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, production daemon automation, and production external orchestration remain unbuilt. |
+| Local orchestra status GUI | Done | PR #63 / branch `codex/local-orchestra-status-gui` adds experimental `open-relay experimental orchestra`, a passive local HTTP dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. |
+| Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, agent-ready prompt rendering, local watcher proof, local relay watch, local relay status indicator, local response watch, and local orchestra status GUI are in place; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, production daemon automation, and production external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
 
@@ -187,10 +187,8 @@ applying fixes, merging, publishing, or deploying.
 
 ## Next Step
 
-Finish the local orchestra status GUI branch, run full verification, push/open
-the PR, and start the local dashboard for operator review. After that, choose
-whether to publish `0.1.0` or plan the remaining implementation-handoff packet
-type for `0.1.x`.
+Choose whether to publish `0.1.0` or plan the remaining implementation-handoff
+packet type for `0.1.x`.
 
 ## Owner Decisions Needed
 

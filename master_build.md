@@ -25,7 +25,7 @@ status, plan registry, and version ledger used by Across Works Codex workflow.
 | Package manager | npm | Runtime/schema design |
 | Deployment target | Local CLI, no hosted MVP | Owner brief |
 | Current live version | None yet | No `v0.1.0` tag, GitHub Release, npm publish, registry smoke, or live version claim exists |
-| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, merged resume-project packet implementation, merged local watcher proof, merged local relay watch foreground orchestrator, merged local relay status indicator, merged local response watch foreground orchestrator, and local orchestra status GUI in progress | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; PR #59 merged the experimental bounded Codex app-server and headless Claude watcher proof; PR #60 merged the foreground GitHub PR request-to-Claude-to-response packet loop with explicit spend/write confirmations and bounded watch posting/failures; PR #61 merged optional relay-watch status JSON and macOS notifications; PR #62 merged the reverse foreground GitHub PR response-to-Codex resume loop with explicit live confirmation and bounded Codex turns; the local orchestra status GUI branch adds a passive local dashboard and `/status.json` snapshot without packet schema changes, daemon installation, agent invocation, GitHub posting, fixes, merge automation, publish, or deploy; no `v0.1.0` tag exists and `package.json` remains `private: true` |
+| Current baseline | Open Relay project brief, governance baseline, review-request protocol baseline, TypeScript schema-validation CLI baseline, merged git-state generator CLI MVP, merged review-request Markdown renderer, merged package/release smoke implementation, merged direct Markdown generation, merged local handoff workflow, repo-local packet storage, merged protocol envelope dispatch, review-loop roadmap re-anchoring, merged review-response packet spec, merged review-response validation/rendering implementation, merged GitHub PR exact-packet transport, merged reviewer-produced review-response workflow, merged packet evidence enrichment, merged private redaction rules implementation, merged release workflow implementation, PR-indexed pre-release roadmap tracking, merged agent-ready prompt rendering, merged resume-project packet planning, merged resume-project packet implementation, merged local watcher proof, merged local relay watch foreground orchestrator, merged local relay status indicator, merged local response watch foreground orchestrator, and merged local orchestra status GUI | PR #54 merged `resume-project/0.1` schema, producer, renderer, CLI, docs, examples, prompt rendering, and package smoke without invoking agents, applying fixes, posting to GitHub, merging, publishing, or changing packet versions; PR #59 merged the experimental bounded Codex app-server and headless Claude watcher proof; PR #60 merged the foreground GitHub PR request-to-Claude-to-response packet loop with explicit spend/write confirmations and bounded watch posting/failures; PR #61 merged optional relay-watch status JSON and macOS notifications; PR #62 merged the reverse foreground GitHub PR response-to-Codex resume loop with explicit live confirmation and bounded Codex turns; PR #63 adds a passive local dashboard and `/status.json` snapshot without packet schema changes, daemon installation, agent invocation, GitHub posting, fixes, merge automation, publish, or deploy; no `v0.1.0` tag exists and `package.json` remains `private: true` |
 
 ## Scope
 
@@ -62,7 +62,7 @@ Current scope is the first local protocol and validation CLI baseline:
 - merged experimental local relay status indicator implementation
 - merged experimental local response watch implementation with bounded Codex
   turns
-- experimental local orchestra status GUI implementation
+- merged experimental local orchestra status GUI implementation
 - local Codex roadmap skill
 - Superpowers plan folder
 - candidate register
@@ -124,7 +124,7 @@ Current scope is the first local protocol and validation CLI baseline:
 | P1 | Implement local relay watch foreground orchestrator | Done | No |
 | P1 | Implement local relay status indicator | Done | No |
 | P1 | Implement local response watch foreground orchestrator | Done | No |
-| P1 | Implement local orchestra status GUI | In progress | No |
+| P1 | Implement local orchestra status GUI | Done | No |
 
 ## Known Gaps
 
@@ -149,7 +149,7 @@ Current scope is the first local protocol and validation CLI baseline:
   foreground GitHub PR request-to-Claude-to-response packet loop. The
   request/response/resume loop can move as packets with changed-file churn
   evidence and without human packet-body copy/paste when both foreground
-  watchers are running. The local orchestra status GUI is in progress as a
+  watchers are running. The local orchestra status GUI is merged as a
   passive operator dashboard over the local app-server, GitHub auth, Claude CLI,
   and watcher evidence files.
   Implementation-handoff, production daemon orchestration, stronger packet

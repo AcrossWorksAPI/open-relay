@@ -141,7 +141,7 @@ or old plan files as inactive until this registry and current code agree.
 
 | Plan | Status | Owner | Notes |
 | --- | --- | --- | --- |
-| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | In progress | Codex | Tracks PR #63 / branch `codex/local-orchestra-status-gui`, adding the passive local dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deployment. |
+| - | - | - | No active plans; next slice is owner decision. |
 
 ## Implemented Or Historical Plans
 
@@ -172,6 +172,7 @@ or old plan files as inactive until this registry and current code agree.
 | `docs/superpowers/plans/2026-06-30-local-relay-watch.md` | Done | Planned and implemented PR #60's experimental foreground GitHub PR request-to-Claude-to-response watcher with dry-run, explicit live/public confirmations, bounded `--max-posts` watch posting, default distinct response comments, explicit `--update`, local state, receipt evidence, trust-model docs, fake-`gh` and injected live-path tests, and no packet schema change, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
 | `docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md` | Done | Planned and implemented PR #61's optional `--status-file` JSON and `--notify` macOS desktop notifications for the foreground relay watcher without packet schema changes, daemon install, Codex wakeup, fixes, merge, publish, or deployment. |
 | `docs/superpowers/plans/2026-07-01-local-response-watch.md` | Done | Planned and implemented PR #62's reverse foreground GitHub PR response-to-Codex watcher with dry-run, explicit live confirmation, bounded `--max-turns`, bounded failed iterations, local state, receipt evidence, trust-model docs, fake-`gh` tests, injected live Codex wake tests, and no packet schema change, daemon install, Claude invocation, GitHub posting, fixes, merge, publish, or deployment. |
+| `docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md` | Done | Planned and implemented PR #63's passive local dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deployment. |
 
 ## Superseded Or Dormant Plans
 
