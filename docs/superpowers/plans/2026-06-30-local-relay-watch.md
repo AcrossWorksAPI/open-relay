@@ -137,6 +137,8 @@
 - [x] Add `--max-posts`, default `1`, so live `--watch` posting is bounded.
 - [x] Add `--max-failures`, default `1`, so failed live `--watch`
       iterations do not retry forever during owner-approved proof runs.
+- [x] Add an explicit review-response draft schema contract to the Claude
+      prompt and include validation-error summaries in failed receipts.
 - [x] Make distinct response packet comments the default and require `--update` for update behavior.
 - [x] Reject foreground poll intervals below `5000` milliseconds.
 - [x] Write per-iteration receipt files in `--watch` mode when `--output` is set.
@@ -152,5 +154,7 @@
 - Optional live smoke, only when owner wants a real post: run `open-relay experimental relay-watch --pr <pr> --author <login> --relay-session-id R7M4Q9K2 --confirm-live --confirm-public --force --max-posts 1 --max-failures 1 --output /private/tmp/open-relay-relay-watch.json`
 - 2026-07-01 owner-approved live proof against PR #60 fetched the current
   request packet and exited safely at `--max-failures` after Claude timed out;
-  no new response packet was posted. Run a narrower disposable packet or a
-  longer-timeout PR #60 pass before marking the live return leg proven.
+  no new response packet was posted. A later fresh-packet pass completed Claude
+  but failed generated response validation before posting, so the prompt
+  contract was tightened. Run a refreshed PR #60 packet or narrower disposable
+  packet before marking the live return leg proven.

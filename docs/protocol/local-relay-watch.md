@@ -90,6 +90,8 @@ be combined with the compatibility `--no-update` flag.
 5. Render the Claude prompt with the existing Claude template.
 6. In dry-run mode, stop and write a receipt.
 7. In live mode, require `--confirm-live` and `--confirm-public`.
+8. In live mode, prepend an explicit review-response draft schema contract to
+   the Claude prompt before the rendered packet.
 8. Invoke headless Claude Code with `--output-format stream-json`.
 9. Parse the final Claude result as a review-response draft JSON object.
 10. Reject reserved or unknown draft fields before packet construction.
@@ -147,6 +149,8 @@ repeat posting when the watcher is restarted.
 - Foreground polling rejects intervals below `5000` milliseconds.
 - Malformed Claude JSON, unknown draft keys, reserved packet fields, or schema
   failures produce failed receipts and do not write state.
+- Generated `review-response` validation failures are summarized in the failed
+  receipt and are not posted to GitHub.
 - The state file is written only after a successful PR post or update.
 
 ## Non-Goals

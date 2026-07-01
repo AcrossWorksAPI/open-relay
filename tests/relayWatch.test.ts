@@ -171,7 +171,8 @@ test("dry-run fetches and renders request without invoking Claude or posting", a
   assert.ok(result.receipt.request);
   assert.ok(result.receipt.claude);
   assert.equal(result.receipt.request.head_commit, "head-1");
-  assert.match(result.receipt.claude.prompt_preview ?? "", /Claude Review Prompt/);
+  assert.match(result.receipt.claude.prompt_preview ?? "", /Draft schema contract/);
+  assert.match(result.receipt.claude.prompt_preview ?? "", /findings must be an array/);
   assert.equal(spawned, false);
   assert.equal(gh.posted.length, 0);
 });
@@ -265,6 +266,36 @@ test("live watch fails closed on malformed Claude draft output", async () => {
   assert.equal(result.ok, false);
   assert.equal(result.receipt.status, "failed");
   assert.match(result.receipt.error ?? "", /Claude review draft was not valid JSON/);
+  assert.equal(gh.posted.length, 0);
+});
+
+test("live watch reports response validation errors without posting", async () => {
+  const gh = makeGh([requestComment()]);
+  const claude = makeClaudeSpawn(reviewDraft({
+    outcome: "changes_requested",
+    findings: [],
+    next_action: "Fix blocking findings before merge."
+  }));
+
+  const result = await runRelayWatchOnce({
+    ...baseOptions(),
+    confirmLive: true,
+    confirmPublic: true
+  }, {
+    runGh: gh.runGh,
+    spawnProcess: claude.spawnProcess,
+    readSecretsFile: async () => "",
+    statSecretsFile: async () => ({ mode: 0o600 }),
+    readStateFile: async () => missingFile(),
+    writeStateFile: async () => {
+      throw new Error("State should not be written after failed response validation.");
+    }
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.receipt.status, "failed");
+  assert.match(result.receipt.error ?? "", /Generated review-response packet failed validation/);
+  assert.match(result.receipt.error ?? "", /changes_requested outcome requires at least one blocking finding/);
   assert.equal(gh.posted.length, 0);
 });
 

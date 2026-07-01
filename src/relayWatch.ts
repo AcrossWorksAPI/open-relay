@@ -431,7 +431,10 @@ export async function runRelayWatchOnce(
     });
     const responseValidation = validatePacket(response);
     if (!responseValidation.valid) {
-      return failed(receipt, "Generated review-response packet failed validation.");
+      return failed(
+        receipt,
+        `Generated review-response packet failed validation: ${responseValidation.errors.join("; ")}`
+      );
     }
 
     const sent = sendPacketToGithubPr({
@@ -503,6 +506,27 @@ export function buildRelayWatchClaudePrompt(input: {
     "Do not include Open Relay-owned fields: packet_type, packet_version, created_at, or response_to.",
     "Allowed top-level keys: reviewer, outcome, confidence, summary, findings, reviewed_scope, verification, provenance, redactions, sensitive_data, next_action.",
     "Use reviewer.name \"Claude\", reviewer.kind \"agent\", and reviewer.tool \"Open Relay local relay-watch\" unless the packet requires a more specific reviewer label.",
+    "",
+    "Draft schema contract:",
+    "- reviewer requires name and kind; kind must be agent, human, or unknown; tool and requested_by are optional strings.",
+    "- outcome must be approved, changes_requested, commentary, or blocked.",
+    "- confidence must be high, medium, or low.",
+    "- summary and next_action are required non-empty strings.",
+    "- findings must be an array; use [] when there are no findings.",
+    "- each finding requires id, severity, blocking, title, description, evidence, and recommendation.",
+    "- finding severity must be high, medium, low, or info; blocking must be a boolean.",
+    "- finding location is optional; when present it may contain path, line, and symbol, and path is required.",
+    "- reviewed_scope requires files and limitations arrays; each reviewed file requires path and may include notes.",
+    "- verification and redactions are arrays; use [] when none were reviewed or redacted.",
+    "- each verification entry requires kind, command, result, and evidence.",
+    "- verification kind must be command, ci, manual, or external; result must be passed, failed, not_run, or unknown.",
+    "- provenance is optional; each entry requires type, reference, and supports.",
+    "- redaction entries require field and reason, with optional replacement.",
+    "- sensitive_data is optional; when present it requires excluded boolean and notes string.",
+    "- approved and commentary outcomes must not include blocking findings.",
+    "- changes_requested requires at least one blocking finding.",
+    "- blocked requires at least one reviewed_scope.limitations entry.",
+    "- Do not invent command results; use unknown or not_run unless the packet or inspected evidence supports a stronger result.",
     "",
     rendered
   ].join("\n");

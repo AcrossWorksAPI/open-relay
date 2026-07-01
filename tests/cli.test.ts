@@ -185,7 +185,8 @@ test("experimental relay watch dry-run fetches packet through fake gh and prints
     assert.equal(receipt.status, "dry-run");
     assert.equal(receipt.mode, "dry-run");
     assert.equal((receipt.request as Record<string, unknown>).comment_id, 77);
-    assert.match(result.stdout, /Claude Review Prompt/);
+    assert.match(result.stdout, /Draft schema contract/);
+    assert.match(result.stdout, /findings must be an array/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

@@ -46,7 +46,8 @@ packet, renders a Claude prompt, invokes headless Claude only with explicit
 live confirmation, validates and posts a `review-response/0.1` only with
 explicit GitHub write confirmation, bounds live watch posting with
 `--max-posts`, bounds failed watch iterations with `--max-failures`, updates
-only with explicit `--update`, and records local receipt/state evidence without
+only with explicit `--update`, includes the review-response draft schema
+contract in the Claude prompt, and records local receipt/state evidence without
 installing a daemon, waking Codex, changing packet schemas, applying fixes,
 merging, publishing, or deploying. The approved
 first runtime direction is a TypeScript CLI on Node.js with npm.
@@ -93,7 +94,7 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 | `src/transport/gh.ts` | Active | Sanitized local `gh` CLI runner for GitHub transport. |
 | `src/transport/githubPr.ts` | Active | GitHub PR packet comment marker, send, update, and fetch helpers. |
 | `src/watcherProof.ts` | Active | Experimental local watcher proof module for Codex app-server and headless Claude proof turns, `--confirm-live`, dry-run receipts, local Claude credential env loading, permission warnings, and timeout cleanup. |
-| `src/relayWatch.ts` | Active | Experimental foreground relay watcher that fetches GitHub PR request packets, renders Claude prompts, invokes headless Claude with explicit confirmation, validates response packets, posts through GitHub PR transport by default, updates only with explicit `--update`, bounds watch posting with `--max-posts`, bounds failed watch iterations with `--max-failures`, and writes local receipt/state evidence. |
+| `src/relayWatch.ts` | Active | Experimental foreground relay watcher that fetches GitHub PR request packets, renders Claude prompts with the review-response draft schema contract, invokes headless Claude with explicit confirmation, validates response packets, posts through GitHub PR transport by default, updates only with explicit `--update`, bounds watch posting with `--max-posts`, bounds failed watch iterations with `--max-failures`, and writes local receipt/state evidence. |
 | `src/cli.ts` | Active | Local CLI entrypoint for packet validation, review-request generation/handoff/save, generic rendering, GitHub PR transport, experimental watcher proof routing, and experimental relay watch routing. |
 | `tests/schema.test.ts` | Active | Schema validation tests. |
 | `tests/cli.test.ts` | Active | CLI behavior tests. |
@@ -190,14 +191,14 @@ first runtime direction is a TypeScript CLI on Node.js with npm.
 
 ## Next Recommended Work
 
-1. Push the PR #60 `--max-failures` safety update, refresh the PR #60
+1. Push the PR #60 prompt-contract safety update, refresh the PR #60
    review-request packet for the new head, and request Claude review of the
-   bounded-failure fix.
-2. Run an owner-approved live relay-watch pass against either a disposable
-   narrow PR packet or a longer-timeout PR #60 packet before treating the
-   end-to-end return leg as proven. The 2026-07-01 full PR #60 pass fetched the
-   packet and exited safely at `--max-failures`, but Claude timed out before
-   posting a response.
+   bounded-failure and draft-contract fixes.
+2. Run an owner-approved live relay-watch pass against the refreshed PR #60
+   packet or a disposable narrow packet before treating the end-to-end return
+   leg as proven. The 2026-07-01 runs fetched packets and exited safely at
+   `--max-failures`; the first timed out, and the fresh-packet pass completed
+   Claude but failed response validation before posting.
 3. Review PR #60 after PR #59, including fake-`gh`
    dry-run coverage, injected live Claude-to-GitHub posting coverage, bounded
    `--max-posts` and `--max-failures` behavior, default distinct comments,
