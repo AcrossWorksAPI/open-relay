@@ -15,6 +15,37 @@ export {
 export {
   buildResumeProjectPacket
 } from "./resumeProjectProducer";
+export {
+  buildRelayWatchClaudePrompt,
+  defaultRelayWatchStateFile,
+  parseRelayWatchArgs,
+  runRelayWatchOnce,
+  type RelayWatchCliOptions,
+  type RelayWatchOptions,
+  type RelayWatchParseResult,
+  type RelayWatchReceipt,
+  type RelayWatchRunResult
+} from "./relayWatch";
+export {
+  buildRelayWatchNotification,
+  relayWatchStatusFromReceipt,
+  sendMacNotification,
+  writeRelayWatchStatus,
+  type RelayWatchNotification,
+  type RelayWatchStatus,
+  type RelayWatchStatusOptions
+} from "./relayWatchStatus";
+export {
+  buildResponseWatchCodexPrompt,
+  defaultResponseWatchStateFile,
+  parseResponseWatchArgs,
+  runResponseWatchOnce,
+  type ResponseWatchCliOptions,
+  type ResponseWatchOptions,
+  type ResponseWatchParseResult,
+  type ResponseWatchReceipt,
+  type ResponseWatchRunResult
+} from "./responseWatch";
 export type {
   ResumeProjectPacket,
   ResumeProjectStatus,

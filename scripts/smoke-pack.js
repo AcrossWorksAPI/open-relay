@@ -58,6 +58,11 @@ try {
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
   runCli(cli, ["--help"], { contains: "open-relay experimental watcher-proof" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental relay-watch" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental response-watch" });
+  runCli(cli, ["--help"], { contains: "--max-posts <n>" });
+  runCli(cli, ["--help"], { contains: "--max-turns <n>" });
+  runCli(cli, ["--help"], { contains: "--status-file <path>" });
   const watcherDryRun = runCli(cli, [
     "experimental",
     "watcher-proof",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { extname, join } from "node:path";
 
 import { parseGenerateReviewRequestArgs, type GenerateReviewRequestOptions } from "./args";
 import { collectGitContext } from "./git";
@@ -17,6 +17,24 @@ import {
 import { parseGenerateResumeProjectArgs } from "./resumeProjectArgs";
 import type { ResumeProjectPacket } from "./resumeProject";
 import { buildResumeProjectPacket } from "./resumeProjectProducer";
+import {
+  parseRelayWatchArgs,
+  runRelayWatchOnce,
+  type RelayWatchCliOptions,
+  type RelayWatchReceipt
+} from "./relayWatch";
+import {
+  parseResponseWatchArgs,
+  runResponseWatchOnce,
+  type ResponseWatchCliOptions,
+  type ResponseWatchReceipt
+} from "./responseWatch";
+import {
+  buildRelayWatchNotification,
+  relayWatchStatusFromReceipt,
+  sendMacNotification,
+  writeRelayWatchStatus
+} from "./relayWatchStatus";
 import {
   parseGenerateReviewResponseArgs,
   parseRespondGithubPrArgs
@@ -56,6 +74,8 @@ Usage:
   open-relay transport github-pr send <packet.json> --pr <url-or-owner/repo#number> [--dry-run] [--update] [--confirm-public]
   open-relay transport github-pr fetch --pr <url-or-owner/repo#number> --packet-type <type> --author <login> [--packet-version <version>] [--output <packet.json>]
   open-relay experimental watcher-proof --relay-session-id <id> [--codex-thread-id <id>|--codex-search <text>] [--codex-url <ws-url>] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live]
+  open-relay experimental relay-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--status-file <path>] [--notify] [--claude-command <path>] [--claude-model <model>] [--secrets-env <path>] [--output <receipt.json>] [--dry-run|--confirm-live --confirm-public] [--force] [--watch] [--interval-ms <ms>] [--max-posts <n>] [--max-failures <n>] [--update]
+  open-relay experimental response-watch --pr <url-or-owner/repo#number> --author <login> [--relay-session-id <id>] [--state-file <path>] [--codex-url <ws-url>] [--codex-thread-id <id>|--codex-search <text>] [--output <receipt.json>] [--dry-run|--confirm-live] [--force] [--watch] [--interval-ms <ms>] [--max-turns <n>] [--max-failures <n>]
   open-relay --help
 
 Notes:
@@ -63,6 +83,8 @@ Notes:
   transport github-pr uses the local gh CLI; Open Relay does not read GitHub token environment variables.
   transport github-pr fetch requires --author because packet shape is not proof of authorship.
   experimental watcher-proof triggers local Codex and Claude proof turns only with --confirm-live; use --dry-run for no-agent receipts.
+  experimental relay-watch fetches review-request packets from GitHub PR comments; live mode invokes Claude and posts review-response packets only with --confirm-live and --confirm-public. In --watch mode, live posting is bounded by --max-posts, default 1, and failed iterations are bounded by --max-failures, default 1. Use --status-file for local operator status JSON and --notify for macOS desktop notifications.
+  experimental response-watch fetches review-response packets from GitHub PR comments; live mode resumes a local Codex thread only with --confirm-live. In --watch mode, live Codex turns are bounded by --max-turns, default 1, and failed iterations are bounded by --max-failures, default 1.
 `;
 
 export async function run(argv: string[]): Promise<number> {
@@ -111,6 +133,14 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args[0] === "experimental" && args[1] === "watcher-proof") {
     return experimentalWatcherProofCommand(args.slice(2));
+  }
+
+  if (args[0] === "experimental" && args[1] === "relay-watch") {
+    return experimentalRelayWatchCommand(args.slice(2));
+  }
+
+  if (args[0] === "experimental" && args[1] === "response-watch") {
+    return experimentalResponseWatchCommand(args.slice(2));
   }
 
   if (args[0] === "render") {
@@ -696,6 +726,241 @@ async function experimentalWatcherProofCommand(args: string[]): Promise<number> 
   }
 
   return 0;
+}
+
+async function experimentalRelayWatchCommand(args: string[]): Promise<number> {
+  const parsed = parseRelayWatchArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  if (parsed.options.watch) {
+    let iteration = 0;
+    let posts = 0;
+    let failures = 0;
+
+    for (;;) {
+      iteration += 1;
+      const result = await runRelayWatchOnce(parsed.options);
+      const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt, iteration);
+      if (!written) {
+        return 1;
+      }
+      const statusWritten = await writeRelayWatchStatusForResult(parsed.options, result.receipt, iteration);
+      if (!statusWritten) {
+        return 1;
+      }
+      await notifyRelayWatchStatus(parsed.options, result.receipt, iteration);
+      if (isRelayWatchPost(result.receipt)) {
+        posts += 1;
+        failures = 0;
+        if (posts >= parsed.options.maxPosts) {
+          process.stdout.write("Relay watch reached --max-posts.\n");
+          return 0;
+        }
+      } else if (result.ok) {
+        failures = 0;
+      }
+      if (!result.ok) {
+        failures += 1;
+        if (failures >= parsed.options.maxFailures) {
+          process.stderr.write("Relay watch reached --max-failures.\n");
+          return 1;
+        }
+        process.stderr.write("Relay watch iteration failed; continuing because --watch is set.\n");
+      }
+      await delay(parsed.options.intervalMs);
+    }
+  }
+
+  const result = await runRelayWatchOnce(parsed.options);
+  const written = await writeRelayWatchReceipt(parsed.options.output, result.receipt);
+  if (!written) {
+    return 1;
+  }
+  const statusWritten = await writeRelayWatchStatusForResult(parsed.options, result.receipt);
+  if (!statusWritten) {
+    return 1;
+  }
+  await notifyRelayWatchStatus(parsed.options, result.receipt);
+  if (!result.ok) {
+    process.stderr.write("Relay watch failed.\n");
+    return 1;
+  }
+
+  return 0;
+}
+
+async function experimentalResponseWatchCommand(args: string[]): Promise<number> {
+  const parsed = parseResponseWatchArgs(args);
+  if (!parsed.ok) {
+    process.stderr.write(`${parsed.message}\n\n${usage}`);
+    return 2;
+  }
+
+  if (parsed.options.watch) {
+    let iteration = 0;
+    let turns = 0;
+    let failures = 0;
+
+    for (;;) {
+      iteration += 1;
+      const result = await runResponseWatchOnce(parsed.options);
+      const written = await writeResponseWatchReceipt(parsed.options.output, result.receipt, iteration);
+      if (!written) {
+        return 1;
+      }
+      if (isResponseWatchTurn(result.receipt)) {
+        turns += 1;
+        failures = 0;
+        if (turns >= parsed.options.maxTurns) {
+          process.stdout.write("Response watch reached --max-turns.\n");
+          return 0;
+        }
+      } else if (result.ok) {
+        failures = 0;
+      }
+      if (!result.ok) {
+        failures += 1;
+        if (failures >= parsed.options.maxFailures) {
+          process.stderr.write("Response watch reached --max-failures.\n");
+          return 1;
+        }
+        process.stderr.write("Response watch iteration failed; continuing because --watch is set.\n");
+      }
+      await delay(parsed.options.intervalMs);
+    }
+  }
+
+  const result = await runResponseWatchOnce(parsed.options);
+  const written = await writeResponseWatchReceipt(parsed.options.output, result.receipt);
+  if (!written) {
+    return 1;
+  }
+  if (!result.ok) {
+    process.stderr.write("Response watch failed.\n");
+    return 1;
+  }
+
+  return 0;
+}
+
+async function writeRelayWatchStatusForResult(
+  options: RelayWatchCliOptions,
+  receipt: RelayWatchReceipt,
+  watchIteration?: number
+): Promise<boolean> {
+  if (!options.statusFile) {
+    return true;
+  }
+
+  try {
+    await writeRelayWatchStatus(
+      options.statusFile,
+      relayWatchStatusFromReceipt(receipt, {
+        ...(watchIteration !== undefined ? { iteration: watchIteration } : {}),
+        watch: options.watch
+      })
+    );
+  } catch {
+    process.stderr.write("Could not write relay watch status.\n");
+    return false;
+  }
+
+  return true;
+}
+
+async function notifyRelayWatchStatus(
+  options: RelayWatchCliOptions,
+  receipt: RelayWatchReceipt,
+  watchIteration?: number
+): Promise<void> {
+  if (!options.notify) {
+    return;
+  }
+
+  try {
+    await sendMacNotification(buildRelayWatchNotification(relayWatchStatusFromReceipt(receipt, {
+      ...(watchIteration !== undefined ? { iteration: watchIteration } : {}),
+      watch: options.watch
+    })));
+  } catch {
+    process.stderr.write("Relay watch notification failed.\n");
+  }
+}
+
+async function writeRelayWatchReceipt(
+  outputPath: string | undefined,
+  receipt: unknown,
+  watchIteration?: number
+): Promise<boolean> {
+  const output = `${JSON.stringify(receipt, null, 2)}\n`;
+  const finalOutputPath = outputPath && watchIteration !== undefined
+    ? relayWatchIterationReceiptPath(outputPath, receipt, watchIteration)
+    : outputPath;
+  if (finalOutputPath) {
+    try {
+      await writeFile(finalOutputPath, output, "utf8");
+    } catch {
+      process.stderr.write("Could not write relay watch receipt.\n");
+      return false;
+    }
+    process.stdout.write("Wrote relay watch receipt.\n");
+  } else {
+    process.stdout.write(output);
+  }
+
+  return true;
+}
+
+function relayWatchIterationReceiptPath(outputPath: string, receipt: unknown, iteration: number): string {
+  const ext = extname(outputPath) || ".json";
+  const stem = extname(outputPath)
+    ? outputPath.slice(0, outputPath.length - ext.length)
+    : outputPath;
+  const status = isRecord(receipt) && typeof receipt.status === "string"
+    ? receipt.status.replace(/[^A-Za-z0-9_.-]+/g, "-")
+    : "receipt";
+  return `${stem}.${String(iteration).padStart(6, "0")}.${status}${ext}`;
+}
+
+function isRelayWatchPost(receipt: unknown): boolean {
+  return isRecord(receipt) && (receipt.status === "posted" || receipt.status === "updated");
+}
+
+async function writeResponseWatchReceipt(
+  outputPath: string | undefined,
+  receipt: ResponseWatchReceipt,
+  watchIteration?: number
+): Promise<boolean> {
+  const output = `${JSON.stringify(receipt, null, 2)}\n`;
+  const finalOutputPath = outputPath && watchIteration !== undefined
+    ? relayWatchIterationReceiptPath(outputPath, receipt, watchIteration)
+    : outputPath;
+  if (finalOutputPath) {
+    try {
+      await writeFile(finalOutputPath, output, "utf8");
+    } catch {
+      process.stderr.write("Could not write response watch receipt.\n");
+      return false;
+    }
+    process.stdout.write("Wrote response watch receipt.\n");
+  } else {
+    process.stdout.write(output);
+  }
+
+  return true;
+}
+
+function isResponseWatchTurn(receipt: unknown): boolean {
+  return isRecord(receipt) && receipt.status === "completed";
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 async function generateResumeProjectCommand(args: string[]): Promise<number> {

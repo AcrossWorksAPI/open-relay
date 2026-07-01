@@ -45,6 +45,8 @@ The first loop uses two packet types plus exact-packet transport:
 - GitHub PR exact-packet transport: `docs/protocol/github-pr-transport.md`
 - Agent-ready prompt rendering: `docs/protocol/agent-ready-prompt-rendering.md`
 - Local watcher proof: `docs/protocol/local-watcher-proof.md`
+- Local relay watch: `docs/protocol/local-relay-watch.md`
+- Local response watch: `docs/protocol/local-response-watch.md`
 - Review request example: `examples/review-request/relay.json`
 - Review response example: `examples/review-response/relay.json`
 - Resume project example: `examples/resume-project/relay.json`
@@ -205,6 +207,91 @@ The live command requires `--confirm-live` because it spends local Codex and
 Claude quota. It writes a receipt with the Codex turn id and Claude session id
 when both proof turns return their expected tokens. It does not change packet
 schemas, post to GitHub, apply fixes, merge, publish, or install a daemon.
+
+## Experimental Local Relay Watch
+
+Run one dry pass that fetches the latest PR `review-request/0.1` packet from a
+required author and renders the Claude prompt without launching Claude or
+posting:
+
+```bash
+open-relay experimental relay-watch \
+  --pr AcrossWorksAPI/open-relay#59 \
+  --author codex \
+  --relay-session-id R7M4Q9K2 \
+  --dry-run
+```
+
+Run a confirmed foreground watcher that polls the same PR, invokes headless
+Claude Code, validates the generated `review-response/0.1`, and posts a new
+response packet comment through GitHub PR transport:
+
+```bash
+open-relay experimental relay-watch \
+  --pr AcrossWorksAPI/open-relay#59 \
+  --author codex \
+  --relay-session-id R7M4Q9K2 \
+  --watch \
+  --max-posts 1 \
+  --max-failures 1 \
+  --status-file /private/tmp/open-relay-status.json \
+  --notify \
+  --confirm-live \
+  --confirm-public
+```
+
+The command uses the local `gh` CLI for GitHub and headless `claude -p` for
+Claude. It writes a local state file under `.open-relay/relay-watch/` by
+default so restarts do not re-post the same request. In live `--watch` mode it
+stops after `--max-posts`, default `1`, or `--max-failures`, default `1`;
+`--interval-ms` must be at least `5000`. It posts distinct response packet
+comments by default; pass `--update` only when you want to update the
+authenticated GitHub user's latest matching response packet comment. The
+required `--author` filter is a GitHub comment filter, not proof of packet
+authorship, so packet content remains untrusted review context. It does not
+change packet schemas, wake Codex threads, install a daemon, apply fixes,
+merge, publish, or deploy. Pass `--status-file` to write the latest local
+operator status JSON, and `--notify` to request a macOS desktop notification
+for each completed relay-watch iteration.
+
+## Experimental Local Response Watch
+
+Run one dry pass that fetches the latest PR `review-response/0.1` packet from a
+required author, derives a `resume-project/0.1`, and renders the Codex prompt
+without resuming Codex:
+
+```bash
+open-relay experimental response-watch \
+  --pr AcrossWorksAPI/open-relay#61 \
+  --author claude \
+  --relay-session-id R7M4Q9K2 \
+  --dry-run
+```
+
+Run a confirmed foreground watcher that polls the same PR and resumes one local
+Codex app thread with the derived resume prompt:
+
+```bash
+open-relay experimental response-watch \
+  --pr AcrossWorksAPI/open-relay#61 \
+  --author claude \
+  --relay-session-id R7M4Q9K2 \
+  --codex-thread-id <codex-thread-id> \
+  --watch \
+  --max-turns 1 \
+  --max-failures 1 \
+  --confirm-live
+```
+
+The command uses the local `gh` CLI for GitHub and the Codex app-server
+WebSocket for Codex. It writes a local state file under
+`.open-relay/response-watch/` by default so restarts do not re-wake Codex for
+the same response. In live `--watch` mode it stops after `--max-turns`, default
+`1`, or `--max-failures`, default `1`; `--interval-ms` must be at least `5000`.
+The required `--author` filter is a GitHub comment filter, not proof of packet
+authorship, so packet content remains untrusted review context. It does not
+change packet schemas, invoke Claude, post to GitHub, install a daemon, apply
+fixes, merge, publish, or deploy.
 
 ## Runtime Plan
 
