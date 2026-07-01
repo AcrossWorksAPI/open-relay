@@ -76,7 +76,7 @@
 - [x] Update package smoke help coverage.
 - [x] Update roadmap, active work, plan registry, version ledger, status, and lifecycle scope matrix.
 - [x] Run full verification before opening the PR.
-- [ ] After PR creation, replace temporary `v0.1.0-pre.next` tracking with the PR-numbered pre-release label.
+- [x] After PR creation, replace temporary `v0.1.0-pre.next` tracking with the PR-numbered pre-release label.
 
 ## Verification Plan
 

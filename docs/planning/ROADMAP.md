@@ -39,7 +39,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | v0.1.0-pre.52 | Agent-ready prompt rendering | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-28-agent-ready-prompt-rendering.md |
 | v0.1.0-pre.59 | Local watcher proof | In progress | High | Required | Agent-ready prompt rendering; Boundary/transport decision | docs/superpowers/plans/2026-06-30-local-watcher-proof.md |
 | v0.1.0-pre.60 | Local relay watch foreground orchestrator | In progress | High | Required | Local watcher proof; Boundary/transport decision; Reviewer-produced review-response workflow; Agent-ready prompt rendering | docs/superpowers/plans/2026-06-30-local-relay-watch.md |
-| v0.1.0-pre.next | Local relay status indicator | In progress | High | Required | Local relay watch foreground orchestrator | docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md |
+| v0.1.0-pre.61 | Local relay status indicator | In progress | High | Required | Local relay watch foreground orchestrator | docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md |
 | v0.1.0-pre.next | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | v0.1.0-pre.54 | Resume-project packet type | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-29-resume-project-packet.md |
 
