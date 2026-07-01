@@ -42,6 +42,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | v0.1.0-pre.61 | Local relay status indicator | Done | High | Required | Local relay watch foreground orchestrator | docs/superpowers/plans/2026-07-01-local-relay-status-indicator.md |
 | v0.1.0-pre.62 | Local response watch foreground orchestrator | Done | High | Required | Local relay watch foreground orchestrator; Local relay status indicator; Resume-project packet type | docs/superpowers/plans/2026-07-01-local-response-watch.md |
 | v0.1.0-pre.63 | Local orchestra status GUI | Done | High | Required | Local relay watch foreground orchestrator; Local response watch foreground orchestrator; Local relay status indicator | docs/superpowers/plans/2026-07-02-local-orchestra-status-gui.md |
+| v0.1.0-pre.next | Orchestra session manager | Planned | High | Required | Local orchestra status GUI; Local watcher proof | docs/superpowers/plans/2026-07-02-orchestra-session-manager.md |
 | v0.1.0-pre.next | Implementation-handoff packet type | Planned | Medium | No | Relay protocol envelope and multi-type validation | - |
 | v0.1.0-pre.54 | Resume-project packet type | Done | Medium | No | Review-response packet type | docs/superpowers/plans/2026-06-29-resume-project-packet.md |
 
@@ -60,6 +61,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Local relay status indicator | Product thesis and Feature 5: give the local foreground watcher visible operator status without turning it into a production daemon or changing packet transport. |
 | Local response watch foreground orchestrator | Product thesis and Feature 5: run the reverse packet-native local loop that fetches a PR response packet, derives a resume-project packet, and resumes Codex without human packet-body copy/paste while keeping live Codex turns bounded. |
 | Local orchestra status GUI | Product thesis and Feature 5: give the local operator a versioned dashboard that shows whether the packet-native relay systems are reachable and backed by watcher evidence without becoming production daemon orchestration. |
+| Orchestra session manager | Product thesis and Feature 5: make Orchestra the user-facing local session manager so a user can create a Relay Session ID, open a ready Codex thread, and view current/previous session state without handling logs or process commands. |
 | Release workflow and first npm publish gate | Product thesis: make the local CLI installable from a public package with release evidence before any live claim. |
 | Implementation-handoff packet type | Feature 5: support implementation handoff. |
 | Resume-project packet type | Feature 5: support resume project. |
@@ -70,7 +72,7 @@ Markdown/JSON relay packet schema, not a SaaS app.
 | Lane | Candidate | Proposed insertion | Status | Trigger | Source plan |
 | --- | --- | --- | --- | --- | --- |
 | Protocol | Packet-version migrators | After a second packet version exists | Candidate | A breaking packet version ships and old stored bundles must still load | - |
-| Workflow | Relay session identifiers | Before project/session orchestration, or when trials need linked Codex and Claude threads | Candidate | Multi-agent trials need a shared non-secret sync key such as `<relay_session_id>-OR-CX` and `<relay_session_id>-OR-CD` across thread titles, packet trails, and future manifests | - |
+| Workflow | Relay session identifiers | Promoted into the Orchestra session manager slice | Planned | Multi-agent trials need a shared non-secret sync key such as `<relay_session_id>-OR-CX` and `<relay_session_id>-OR-CD` across thread titles, packet trails, and future manifests | docs/superpowers/plans/2026-07-02-orchestra-session-manager.md |
 | Security | Non-GitHub remote allowlist | When non-GitHub users appear | Candidate | Target users report dropped safe GitLab, Codeberg, or GitHub Enterprise remotes | - |
 
 ## Update Rules

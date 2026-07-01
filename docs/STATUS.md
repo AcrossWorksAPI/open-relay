@@ -61,7 +61,11 @@ Local orchestra status GUI work is complete on PR #63 /
 `/status.json` snapshot for package/git version, Codex app-server health,
 GitHub auth, Claude CLI availability, and watcher evidence files without
 changing packet schemas, invoking agents, posting packets, installing a daemon,
-applying fixes, merging, publishing, or deploying.
+applying fixes, merging, publishing, or deploying. Orchestra session manager
+planning is now the next user-experience slice: make Orchestra the local
+manager for creating and viewing Open Relay sessions, generating Relay Session
+IDs, writing session manifests, and opening a ready Codex thread without
+showing raw logs.
 
 ## Active Work
 
@@ -103,6 +107,7 @@ applying fixes, merging, publishing, or deploying.
 | Local relay status indicator | Done | PR #61 merged optional `--status-file` and `--notify` support for the foreground relay watcher, including local status JSON, best-effort macOS notification warnings, parser/CLI/status tests, README/protocol docs, and package-smoke help coverage without daemon install, Codex wakeup, packet schema changes, fixes, merge, publish, or deploy. |
 | Local response watch implementation | Done | PR #62 merged experimental `open-relay experimental response-watch` to fetch a PR review-response packet, derive a resume-project packet, render a Codex prompt, and resume a local Codex thread after `--confirm-live`, with handled-response state, `--max-turns`, `--max-failures`, per-iteration receipts, fake-`gh` CLI dry-run coverage, and injected live Codex wake tests without schema changes, Claude invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. |
 | Local orchestra status GUI | Done | PR #63 / branch `codex/local-orchestra-status-gui` adds experimental `open-relay experimental orchestra`, a passive local HTTP dashboard and `/status.json` snapshot for package/git version, Codex app-server health, GitHub auth, Claude CLI availability, and watcher evidence files without packet schema changes, agent invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. |
+| Orchestra session manager planning | Planned | `docs/superpowers/plans/2026-07-02-orchestra-session-manager.md` promotes Orchestra into the local session manager for current/previous sessions, automatic Relay Session ID generation, session manifests, and no-turn Codex thread creation; live proof confirmed `thread/start` and `thread/name/set` can create and name a Codex thread. |
 | Product implementation | In progress | Validation, JSON packet generation, Markdown rendering, package install smoke, direct generator Markdown output, local handoff workflow, repo-local packet storage, protocol envelope dispatch, review-response validation/rendering, GitHub PR exact-packet transport, reviewer-produced response workflow, resume-project continuation packets, diff-summary capture, private redaction rules, agent-ready prompt rendering, local watcher proof, local relay watch, local relay status indicator, local response watch, and local orchestra status GUI are in place; native GitHub review import, implementation-handoff, automatic test-evidence capture, registry publishing, global storage, list/read/delete/archive commands, review-response storage, production daemon automation, and production external orchestration remain unbuilt. |
 | Verification setup | Done | `git diff --check`, `npm ci`, `npm run build`, `npm test`, `npm run check`, and `npm run smoke:pack` are local; GitHub Actions `Governance Checks` includes runtime and package smoke checks. |
 | PR workflow | Done | PR #1 was merged into `main`; `main` is protected. |
@@ -111,6 +116,7 @@ applying fixes, merging, publishing, or deploying.
 
 | Date | Command or evidence | Result | Notes |
 | --- | --- | --- | --- |
+| 2026-07-02 | Orchestra session launch no-turn proof | Passed | Disposable Codex app-server on `ws://127.0.0.1:43211` accepted `initialize`, `thread/start`, and `thread/name/set`, creating Codex thread `019f1f5b-1ee8-7042-ae0b-5deb57cfb008` titled `RI70MT79-OR-CX launch proof` without starting an agent turn. The proof also showed Open Relay session-manager implementation must own or verify app-server startup and run WebSocket control outside Codex's network-disabled shell sandbox. |
 | 2026-07-02 | Local orchestra status GUI branch checks | Passed | PR #63 / branch `codex/local-orchestra-status-gui` adds `open-relay experimental orchestra`; targeted `npm run build && node --test dist/tests/orchestraStatus.test.js dist/tests/cli.test.js` passed with 95 tests, `npm run check` passed with 250 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, `git diff --check` passed, and local dashboard smoke opened `http://127.0.0.1:43873/` with `/status.json` reporting `overall.status: ready` for Relay Session ID `R7M4Q9K2`. |
 | 2026-07-01 | Local response watch branch checks | Passed | PR #62 / branch `codex/local-response-watch` adds `open-relay experimental response-watch`, shared Codex app-server helper reuse, response-watch parser/state/receipt orchestration, dry-run GitHub PR response packet fetch/resume derivation, confirmed Codex wakeup tests, unconfirmed-live gate coverage, fake-`gh` CLI dry-run coverage, bounded failure watch receipt coverage, README/protocol docs, package-smoke help coverage, and governance updates without packet schema changes, Claude invocation, GitHub posting, daemon install, fixes, merge, publish, or deploy. Targeted `npm run build && node --test dist/tests/cli.test.js dist/tests/watcherProof.test.js dist/tests/responseWatch.test.js` passed with 111 tests, `npm run check` passed with 245 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
 | 2026-07-01 | Local relay status indicator branch checks | Passed | PR #61 / branch `codex/local-relay-status-indicator` adds optional relay-watch local status JSON and macOS notification support; targeted `npm run build && node --test dist/tests/relayWatch.test.js dist/tests/cli.test.js dist/tests/relayWatchStatus.test.js` passed with 101 tests, `npm run check` passed with 233 tests, `npm run smoke:pack` passed, `npm run release:preflight -- 0.1.0` passed, and `git diff --check` passed. |
@@ -187,8 +193,9 @@ applying fixes, merging, publishing, or deploying.
 
 ## Next Step
 
-Choose whether to publish `0.1.0` or plan the remaining implementation-handoff
-packet type for `0.1.x`.
+Implement the Orchestra session manager plan so a user can launch Orchestra,
+create a new Open Relay session, get an automatic Relay Session ID, and open a
+ready Codex thread without handling raw logs or process commands.
 
 ## Owner Decisions Needed
 
@@ -198,9 +205,9 @@ packet type for `0.1.x`.
   only the built-in neutral/Claude/Codex render templates for `0.1.x`?
 - Native GitHub review import remains a separate future decision after exact
   packet transport.
-- Relay Session ID/thread-title linking is flagged as a future workflow
-  candidate; the safe stage is the project/session orchestration layer, not the
-  current packet schema.
+- Relay Session ID/thread-title linking is planned in the Orchestra session
+  manager slice; the safe stage remains the project/session orchestration
+  layer, not the packet schema.
 - Can the Across Works npm org/account publish `@acrossworks/open-relay`?
 - Should the owner configure npm trusted publishing for
   `.github/workflows/release.yml` and publish `v0.1.0` when ready?
