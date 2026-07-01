@@ -101,6 +101,7 @@ function run(version) {
     "schemas/review-response.schema.json",
     "examples/review-request/relay.json",
     "examples/review-response/relay.json",
+    "examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json",
     "README.md",
     "LICENSE",
     "SECURITY.md",

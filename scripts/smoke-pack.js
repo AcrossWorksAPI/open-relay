@@ -57,6 +57,24 @@ try {
   runCli(cli, ["--help"], { contains: "open-relay render review-request" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr send" });
   runCli(cli, ["--help"], { contains: "open-relay transport github-pr fetch" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental watcher-proof" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental relay-watch" });
+  runCli(cli, ["--help"], { contains: "open-relay experimental response-watch" });
+  runCli(cli, ["--help"], { contains: "--max-posts <n>" });
+  runCli(cli, ["--help"], { contains: "--max-turns <n>" });
+  runCli(cli, ["--help"], { contains: "--status-file <path>" });
+  const watcherDryRun = runCli(cli, [
+    "experimental",
+    "watcher-proof",
+    "--relay-session-id", "SMOKE123",
+    "--codex-thread-id", "codex-thread",
+    "--dry-run"
+  ], {
+    contains: "OPEN_RELAY_CLAUDE_WATCHER_PROOF_OK"
+  });
+  const watcherReceipt = JSON.parse(watcherDryRun);
+  assert.equal(watcherReceipt.mode, "dry-run");
+  assert.equal(watcherReceipt.status, "dry-run");
   runCli(cli, ["validate", join(fixtureDir, "examples", "review-request", "relay.json")], {
     contains: "valid packet"
   });
@@ -379,6 +397,10 @@ function assertPackageContents(packManifest) {
   assert.ok(paths.includes("schemas/review-request.schema.json"), "tarball is missing public schema");
   assert.ok(paths.includes("schemas/review-response.schema.json"), "tarball is missing public review-response schema");
   assert.ok(paths.includes("schemas/resume-project.schema.json"), "tarball is missing public resume-project schema");
+  assert.ok(
+    paths.includes("examples/watcher-proof/r7m4q9k2-live-receipt.sanitized.json"),
+    "tarball is missing sanitized watcher proof receipt evidence"
+  );
   assert.ok(paths.includes("README.md"), "tarball is missing README.md");
   assert.ok(paths.includes("LICENSE"), "tarball is missing LICENSE");
 
