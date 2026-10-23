@@ -1,5 +1,11 @@
 # Open Relay Roadmap
 
+## Security checkpoint - 2026-10-24
+
+Patched Node24.22.1 selected for local/CI/release; bounded patched engine floors.
+Build and250 tests pass. No publish/deploy. Evidence and next gate:
+`docs/evidence/security-2026-10-24/README.md`. Codex owns review; Cam release.
+
 Project: Open Relay
 Status: Product brief, governance baseline, review-request protocol baseline, runtime/schema validation CLI baseline, git-state generator CLI MVP, review-request Markdown renderer merged, package/release smoke implementation merged, direct Markdown generation merged, local handoff workflow merged, repo-local packet storage merged, protocol envelope dispatch merged, review-loop roadmap re-anchored, review-response implementation merged, GitHub PR packet transport merged, reviewer-produced review-response workflow merged, packet evidence enrichment merged, private redaction rules implementation merged, release workflow implementation merged, roadmap pre-release tracking merged, agent-ready prompt rendering merged, resume-project packet planning merged, resume-project packet implementation merged, local watcher proof merged, local relay watch foreground orchestrator merged, local relay status indicator merged, local response watch foreground orchestrator merged, and local orchestra status GUI merged
 Last updated: 2026-07-02

@@ -1,0 +1,20 @@
+const https = require('node:https');
+const zlib = require('node:zlib');
+const crypto = require('node:crypto');
+const tls = require('node:tls');
+const urls = ['https://pypi.org/', 'https://dv-g3b-emudhra.we-have-a-problem.com/', 'https://dv-g3b-aaa-emudhra.we-have-a-problem.com/'];
+const certErrors = new Set(['UNABLE_TO_GET_ISSUER_CERT_LOCALLY', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'CERT_SIGNATURE_FAILURE', 'CERT_REVOKED', 'SELF_SIGNED_CERT_IN_CHAIN']);
+(async () => {
+ const results=[];
+ for (let i=0;i<urls.length;i++) {
+  results.push(await new Promise(resolve => {
+   const req=https.get(urls[i], {timeout:12000}, res=> { res.resume();resolve({url:urls[i],outcome:'accepted',passed:i===0}); });
+   req.on('timeout',()=>req.destroy(new Error('timeout')));
+   req.on('error',err=>resolve({url:urls[i],outcome:certErrors.has(err.code)?'certificate_rejected':'inconclusive',error:err.code || err.name,passed:i!==0&&certErrors.has(err.code)}));
+  }));
+ }
+ const input=Buffer.from('Across Works security runtime verification');
+ const roundtrip=zlib.brotliDecompressSync(zlib.brotliCompressSync(input)).equals(input);
+ console.log(JSON.stringify({node:process.version,openssl:process.versions.openssl,root_ca_sha256:crypto.createHash('sha256').update(tls.rootCertificates.join('\n')).digest('hex'),custom_ca_present:!!process.env.NODE_EXTRA_CA_CERTS,node_options_present:!!process.env.NODE_OPTIONS,brotli_roundtrip:roundtrip,results},null,2));
+ process.exitCode=roundtrip&&results.every(r=>r.passed)?0:1;
+})();
