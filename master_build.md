@@ -1,5 +1,11 @@
 # Open Relay Master Build
 
+## Security checkpoint - 2026-10-24
+
+Patched Node24.22.1 selected for local/CI/release; bounded patched engine floors.
+Build and250 tests pass. No publish/deploy. Evidence and next gate:
+`docs/evidence/security-2026-10-24/README.md`. Codex owns review; Cam release.
+
 Last updated: 2026-07-02
 
 This is the executive entrypoint for Open Relay. It links the current roadmap,
@@ -168,3 +174,10 @@ Current scope is the first local protocol and validation CLI baseline:
   deferred until the project/session orchestration layer is designed.
 - Git remote is configured as `https://github.com/AcrossWorksAPI/open-relay.git`.
 - No live version, deployment, or registry package evidence exists yet.
+
+## Security continuation - 24 October 2026
+
+Targeted fast-uri lock update clears the parser advisories. npm audit reports
+zero known vulnerabilities;250 tests, release:preflight --0.1.0 and smoke:pack
+pass (actual invocation separates -- and0.1.0). No publication/main change.
+Next: Claude exact-head review and Cam integration approval.

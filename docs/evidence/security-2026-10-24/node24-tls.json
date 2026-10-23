@@ -1,0 +1,27 @@
+{
+  "node": "v24.22.1",
+  "openssl": "4.0.3",
+  "root_ca_sha256": "f65b49101e3ee627d21073de1368a495a36fd3fc75a3b368a932889a2cd75c84",
+  "custom_ca_present": false,
+  "node_options_present": false,
+  "brotli_roundtrip": true,
+  "results": [
+    {
+      "url": "https://pypi.org/",
+      "outcome": "accepted",
+      "passed": true
+    },
+    {
+      "url": "https://dv-g3b-emudhra.we-have-a-problem.com/",
+      "outcome": "certificate_rejected",
+      "error": "CERT_REVOKED",
+      "passed": true
+    },
+    {
+      "url": "https://dv-g3b-aaa-emudhra.we-have-a-problem.com/",
+      "outcome": "certificate_rejected",
+      "error": "CERT_REVOKED",
+      "passed": true
+    }
+  ]
+}
