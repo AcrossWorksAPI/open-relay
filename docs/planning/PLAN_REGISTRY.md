@@ -191,3 +191,10 @@ or old plan files as inactive until this registry and current code agree.
 | Plan area | Status | Notes |
 | --- | --- | --- |
 | Prior product plans | Unknown; needs owner decision | The remote had only an initial README before this baseline; no implementation plans were found. |
+
+## Security continuation - 24 October 2026
+
+Targeted fast-uri lock update clears the parser advisories. npm audit reports
+zero known vulnerabilities;250 tests, release:preflight --0.1.0 and smoke:pack
+pass (actual invocation separates -- and0.1.0). No publication/main change.
+Next: Claude exact-head review and Cam integration approval.

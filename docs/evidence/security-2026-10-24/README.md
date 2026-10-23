@@ -21,3 +21,10 @@ CI initially failed that existing preflight when release used node-version-file.
 The release selector now retains its expected scalar contract at patched24.22.1.
 Corrected selector verification: release:preflight -- 0.1.0 and smoke:pack pass;
 no registry publication or tag was performed.
+
+## Security continuation - 24 October 2026
+
+Targeted fast-uri lock update clears the parser advisories. npm audit reports
+zero known vulnerabilities;250 tests, release:preflight --0.1.0 and smoke:pack
+pass (actual invocation separates -- and0.1.0). No publication/main change.
+Next: Claude exact-head review and Cam integration approval.

@@ -103,3 +103,10 @@ Markdown/JSON relay packet schema, not a SaaS app.
   creation/output coverage is `generate`, `render`, `handoff`, and `save`.
 - Do not mark a slice `Live` without deploy and smoke evidence in
   `docs/planning/VERSION_LEDGER.md` and `docs/STATUS.md`.
+
+## Security continuation - 24 October 2026
+
+Targeted fast-uri lock update clears the parser advisories. npm audit reports
+zero known vulnerabilities;250 tests, release:preflight --0.1.0 and smoke:pack
+pass (actual invocation separates -- and0.1.0). No publication/main change.
+Next: Claude exact-head review and Cam integration approval.
